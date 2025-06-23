@@ -1,31 +1,43 @@
- import React, { useState } from 'react';
-import api from './axios';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import axios from './axios'
 
-export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+export default function Login({ setAuth, setRole }) {
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
-      // 1. Obtener cookie CSRF (obligatorio antes del login)
-      await api.get('/sanctum/csrf-cookie');
+      // Paso 1: solicitar token CSRF
+      await axios.get('/sanctum/csrf-cookie')
 
-      // 2. Enviar credenciales
-      const response = await api.post('/api/login', {
-        email,
-        password
-      });
+      // Paso 2: login
+      await axios.post('/api/login', { email, password })
 
-      console.log('Login exitoso:', response.data);
-      setError(null);
+      // Paso 3: obtener usuario autenticado
+      const res = await axios.get('/api/user')
+      const role = res.data.role
+
+      // Actualiza estado global
+      setAuth(true)
+      setRole(role)
+
+      // Redireccionar
+      if (role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
+
     } catch (err) {
-      console.error('Error en login:', err);
-      setError('Credenciales incorrectas o error de conexión.');
+      console.error('Error al iniciar sesión', err)
+      setError('Credenciales inválidas o error de red.')
     }
-  };
+  }
 
   return (
     <div>
