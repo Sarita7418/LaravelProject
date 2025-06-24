@@ -31,9 +31,9 @@ export default function Router() {
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login setAuth={setIsAuthenticated} setRole={setUserRole} />} />
       <Route path="/dashboard" element={
-        <PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={['user']}>
-          <UserDashboard />
-        </PrivateRoute>
+      <PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={['user']}>
+        <UserDashboard setAuth={setIsAuthenticated} setRole={setUserRole} />
+      </PrivateRoute>
       } />
       <Route path="/admin" element={
         <PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={['admin']}>
