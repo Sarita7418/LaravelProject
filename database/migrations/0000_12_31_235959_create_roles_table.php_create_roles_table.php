@@ -7,20 +7,19 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ejecuta la migración.
      */
     public function up(): void
-{
-    Schema::create('roles', function (Blueprint $table) {
-        $table->id();
-        $table->string('name')->unique(); // admin, user, etc
-        $table->timestamps();
-    });
-}
-
+    {
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre')->unique(); // Ej: administrador, usuario
+            $table->timestamps();
+        });
+    }
 
     /**
-     * Reverse the migrations.
+     * Revierte la migración.
      */
     public function down(): void
     {
