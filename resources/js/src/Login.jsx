@@ -16,11 +16,11 @@ export default function Login({ setAuth, setRole }) {
       await axios.get('/sanctum/csrf-cookie')
 
       // Paso 2: login
-      await axios.post('/api/login', { email, password })
+      await axios.post('/api/login', { email, password }, { withCredentials: true })
 
       // Paso 3: obtener usuario autenticado
       const res = await axios.get('/api/user')
-      const role = res.data.role
+      const role = res.data.role?.name
 
       // Actualiza estado global
       setAuth(true)

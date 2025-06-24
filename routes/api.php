@@ -13,6 +13,7 @@ use Illuminate\Session\Middleware\StartSession;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
+
 Route::middleware([
     EnsureFrontendRequestsAreStateful::class,
     AddQueuedCookiesToResponse::class,
@@ -25,7 +26,7 @@ Route::middleware([
     Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
 
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        return $request->user()->load('role'); // 👈 Incluye el rol asociado
     })->middleware('auth:sanctum');
 
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');

@@ -11,11 +11,12 @@ export default function Router() {
   const [userRole, setUserRole] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // ...
   useEffect(() => {
-    axios.get('/api/user')
+    axios.get('/api/user', { withCredentials: true })
       .then(res => {
         setIsAuthenticated(true)
-        setUserRole(res.data.role)
+        setUserRole(res.data.role?.name) // <- 👈 accede al nombre del rol
       })
       .catch(() => {
         setIsAuthenticated(false)
@@ -23,6 +24,8 @@ export default function Router() {
       })
       .finally(() => setLoading(false))
   }, [])
+  // ...
+
 
   if (loading) return <div>Cargando...</div>
 
