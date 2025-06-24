@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class EmailVerificationNotificationController extends Controller
 {
     /**
-     * Send a new email verification notification.
+     * Enviar un nuevo correo de verificación.
      */
     public function store(Request $request): JsonResponse|RedirectResponse
     {
@@ -20,6 +20,6 @@ class EmailVerificationNotificationController extends Controller
 
         $request->user()->sendEmailVerificationNotification();
 
-        return response()->json(['status' => 'verification-link-sent']);
+        return response()->json(['estado' => 'enlace-de-verificacion-enviado']);
     }
 }

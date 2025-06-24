@@ -15,7 +15,7 @@ use Illuminate\Validation\ValidationException;
 class NewPasswordController extends Controller
 {
     /**
-     * Handle an incoming new password request.
+     * Maneja una solicitud de nueva contraseña.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -23,31 +23,28 @@ class NewPasswordController extends Controller
     {
         $request->validate([
             'token' => ['required'],
-            'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'correo' => ['required', 'email'],
+            'contrasena' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) use ($request) {
-                $user->forceFill([
-                    'password' => Hash::make($request->string('password')),
+        $estado = Password::reset(
+            $request->only('correo', 'contrasena', 'contrasena_confirmation', 'token'),
+            function ($usuario) use ($request) {
+                $usuario->forceFill([
+                    'contrasena' => Hash::make($request->string('contrasena')),
                     'remember_token' => Str::random(60),
                 ])->save();
 
-                event(new PasswordReset($user));
+                event(new PasswordReset($usuario));
             }
         );
 
-        if ($status != Password::PASSWORD_RESET) {
+        if ($estado != Password::PASSWORD_RESET) {
             throw ValidationException::withMessages([
-                'email' => [__($status)],
+                'correo' => [__($estado)],
             ]);
         }
 
-        return response()->json(['status' => __($status)]);
+        return response()->json(['estado' => __($estado)]);
     }
 }
