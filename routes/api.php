@@ -26,7 +26,7 @@ Route::middleware([
     Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
 
     Route::get('/user', function (Request $request) {
-        return $request->user()->load('role'); // 👈 Incluye el rol asociado
+        return $request->user()->load('role'); 
     })->middleware('auth:sanctum');
 
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');
