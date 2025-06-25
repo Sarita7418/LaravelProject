@@ -34,27 +34,3 @@ const UserDashboard = ({ setAuth, setRole }) => {
 };
 
 export default UserDashboard;
-// Este componente es la vista del usuario normal en el dashboard
-// Aquí puedes agregar más funcionalidades específicas para el usuario normal
-// Por ejemplo, mostrar información del usuario, estadísticas, etc.
-// Recuerda que este componente se renderiza solo si el usuario está autenticado y tiene el rol de 'user'
-// Puedes personalizarlo según tus necesidades
-// Asegúrate de que el componente esté protegido por PrivateRoute en tu Router.jsx
-// Esto garantiza que solo los usuarios autenticados y con el rol adecuado puedan acceder a esta vista
-// También puedes agregar más lógica para manejar errores, cargar datos del usuario, etc.
-// Este componente se usa en Router.jsx dentro de la ruta /dashboard
-// Asegúrate de que el componente esté correctamente importado y utilizado en Router.jsx
-// Puedes agregar más funcionalidades específicas para el usuario normal aquí
-// Por ejemplo, mostrar información del usuario, estadísticas, etc.
-// Recuerda que este componente se renderiza solo si el usuario está autenticado y tiene el rol de 'user'
-// Puedes personalizarlo según tus necesidades
-// Asegúrate de que el componente esté protegido por PrivateRoute en tu Router.jsx
-// Esto garantiza que solo los usuarios autenticados y con el rol adecuado puedan acceder a esta vista
-// También puedes agregar más lógica para manejar errores, cargar datos del usuario, etc.
-// Este componente se usa en Router.jsx dentro de la ruta /dashboard
-// Asegúrate de que el componente esté correctamente importado y utilizado en Router.jsx
-// Puedes agregar más funcionalidades específicas para el usuario normal aquí
-// Por ejemplo, mostrar información del usuario, estadísticas, etc.
-// Recuerda que este componente se renderiza solo si el usuario está autenticado y tiene el rol de 'user'
-// Puedes personalizarlo según tus necesidades
-// Asegúrate de que el componente esté protegido por PrivateRoute en tu Router.jsx
