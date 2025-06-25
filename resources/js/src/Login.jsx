@@ -20,7 +20,10 @@ export default function Login({ setAuth, setRole }) {
 
       // Paso 3: obtener usuario autenticado
       const res = await axios.get('/api/user')
-      const role = res.data.role?.name
+      const role = res.data.role?.descripcion
+
+      console.log('Respuesta del backend:', res.data);
+      console.log('Rol recibido:', res.data.role);
 
       // Actualiza estado global
       setAuth(true)

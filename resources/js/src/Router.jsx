@@ -16,7 +16,7 @@ export default function Router() {
     axios.get('/api/user', { withCredentials: true })
       .then(res => {
         setIsAuthenticated(true)
-        setUserRole(res.data.role?.name) // <- 👈 accede al nombre del rol
+        setUserRole(res.data.role?.descripcion) // <- 👈 accede al nombre del rol
       })
       .catch(() => {
         setIsAuthenticated(false)
