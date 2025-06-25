@@ -19,7 +19,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-    'name', 'email', 'password', 'id_rol',
+    'name', 'email', 'password', 'id_rol', 'codigo_verificacion', 'codigo_expira_en', 'dos_pasos_habilitado',
 ];
 
 
@@ -31,6 +31,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'codigo_verificacion',
     ];
 
     /**
@@ -42,6 +43,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'codigo_expira_en' => 'datetime',
+            'dos_pasos_habilitado' => 'boolean',
             'password' => 'hashed',
         ];
     }

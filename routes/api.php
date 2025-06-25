@@ -12,6 +12,7 @@ use Illuminate\Session\Middleware\StartSession;
 // 👇 Importa controladores AQUÍ, antes de la función
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\AutenticacionDosPasosController;
 
 use App\Http\Controllers\Admin\RolPermisoController;
 
@@ -38,4 +39,8 @@ Route::middleware([
     Route::post('/roles', [RolPermisoController::class, 'store']);
     Route::get('/permisos', [RolPermisoController::class, 'permisos']);
     Route::post('/roles/{id}/permisos', [RolPermisoController::class, 'asignarPermisos']);
+    Route::post('/dos-pasos/enviar-codigo', [AutenticacionDosPasosController::class, 'enviarCodigo']);
+    Route::post('/dos-pasos/verificar-codigo', [AutenticacionDosPasosController::class, 'verificarCodigo']);
+    Route::post('/dos-pasos/habilitar', [AutenticacionDosPasosController::class, 'habilitarDosPasos']);
+    Route::post('/dos-pasos/deshabilitar', [AutenticacionDosPasosController::class, 'deshabilitarDosPasos']);
 });
