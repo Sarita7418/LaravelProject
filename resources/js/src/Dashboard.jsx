@@ -18,7 +18,7 @@ export default function Dashboard() {
   const handleLogout = async () => {
     try {
       await api.post('/api/logout');
-      window.location.href = '/'; // redirigir a login
+      window.location.href = '/';
     } catch (err) {
       console.error('Error al cerrar sesión', err);
     }
@@ -42,8 +42,8 @@ export default function Dashboard() {
       <h2>Bienvenido al Dashboard</h2>
       {user ? (
         <div>
-          <p><strong>Nombre:</strong> {user.name}</p>
-          <p><strong>Correo:</strong> {user.email}</p>
+          <p><strong>Nombre:</strong> {user.nombre}</p>
+          <p><strong>Correo:</strong> {user.correo}</p>
           <button onClick={handleLogout}>Cerrar sesión</button>
         </div>
       ) : (

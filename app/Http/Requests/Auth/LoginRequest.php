@@ -5,9 +5,11 @@ namespace App\Http\Requests\Auth;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\Usuario;
 
 class LoginRequest extends FormRequest
 {
@@ -28,13 +30,17 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('correo', 'contrasena'), $this->boolean('remember'))) {
+        $usuario = Usuario::where('correo', $this->correo)->first();
+
+        if (! $usuario || ! Hash::check($this->contrasena, $usuario->contrasena)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
                 'correo' => __('auth.failed'),
             ]);
         }
+
+        Auth::login($usuario, $this->boolean('remember'));
 
         RateLimiter::clear($this->throttleKey());
     }
@@ -59,6 +65,6 @@ class LoginRequest extends FormRequest
 
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->input('correo')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->input('correo')) . '|' . $this->ip());
     }
 }

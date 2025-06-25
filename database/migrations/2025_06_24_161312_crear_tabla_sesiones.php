@@ -9,12 +9,12 @@ return new class extends Migration {
     {
         Schema::create('sesiones', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('usuario_id')->nullable()->index();
-            $table->string('ip', 45)->nullable();
-            $table->text('navegador')->nullable();
-            $table->longText('datos');
-            $table->integer('ultima_actividad')->index();
-            $table->foreign('usuario_id')->references('id')->on('usuarios')->onDelete('set null');
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+            $table->foreign('user_id')->references('id')->on('usuarios')->onDelete('set null');
 
         });
     }

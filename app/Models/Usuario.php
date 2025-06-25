@@ -16,7 +16,10 @@ class Usuario extends Authenticatable
 
     // Campos que se pueden asignar masivamente
     protected $fillable = [
-        'nombre', 'correo', 'contrasena', 'rol_id',
+        'nombre',
+        'correo',
+        'contrasena',
+        'rol_id',
     ];
 
     // Campos ocultos en serialización (JSON, etc.)
@@ -57,9 +60,13 @@ class Usuario extends Authenticatable
         return $this->correo;
     }
 
-    public function sendEmailVerificationNotification()
+    public function getAuthPassword()
     {
-        $this->notify(new \App\Notifications\VerifyEmail);
+        return $this->contrasena; // 👈 Laravel usará esto en vez de 'password'
     }
 
+    public function getAuthIdentifierName()
+    {
+        return 'correo'; // 👈 Laravel usará esto en vez de 'email'
+    }
 }

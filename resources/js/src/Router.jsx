@@ -13,17 +13,18 @@ export default function Router() {
 
   // ...
   useEffect(() => {
-    axios.get('/api/user', { withCredentials: true })
-      .then(res => {
-        setIsAuthenticated(true)
-        setUserRole(res.data.role?.name) // <- 👈 accede al nombre del rol
-      })
-      .catch(() => {
-        setIsAuthenticated(false)
-        setUserRole(null)
-      })
-      .finally(() => setLoading(false))
-  }, [])
+  axios.get('/api/user', { withCredentials: true })
+    .then(res => {
+      setIsAuthenticated(true)
+      setUserRole(res.data.rol?.nombre) // <- ahora coincide con tu modelo en español
+    })
+    .catch(() => {
+      setIsAuthenticated(false)
+      setUserRole(null)
+    })
+    .finally(() => setLoading(false))
+}, [])
+
   // ...
 
 
@@ -34,12 +35,12 @@ export default function Router() {
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login setAuth={setIsAuthenticated} setRole={setUserRole} />} />
       <Route path="/dashboard" element={
-        <PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={['user']}>
+        <PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={['usuario']}>
           <UserDashboard />
         </PrivateRoute>
       } />
       <Route path="/admin" element={
-        <PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={['admin']}>
+        <PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={['administrador']}>
           <AdminDashboard />
         </PrivateRoute>
       } />
