@@ -16,6 +16,7 @@ return new class extends Migration
     $table->string('nombre')->unique(); // Ej: crear_usuario, editar_rol, etc.
     $table->timestamps();
 });
+
     }
 
     /**
