@@ -13,6 +13,8 @@ use Illuminate\Session\Middleware\StartSession;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
+use App\Http\Controllers\Admin\RolPermisoController;
+
 
 Route::middleware([
     EnsureFrontendRequestsAreStateful::class,
@@ -30,4 +32,10 @@ Route::middleware([
     })->middleware('auth:sanctum');
 
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');
+
+    // 👇 Rutas protegidas para gestión de roles y permisos
+    Route::get('/roles', [RolPermisoController::class, 'index']);
+    Route::post('/roles', [RolPermisoController::class, 'store']);
+    Route::get('/permisos', [RolPermisoController::class, 'permisos']);
+    Route::post('/roles/{id}/permisos', [RolPermisoController::class, 'asignarPermisos']);
 });

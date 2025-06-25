@@ -51,4 +51,9 @@ class User extends Authenticatable
     return $this->belongsTo(Role::class, 'id_rol');
 }
 
+    public function permisos()
+{
+    return $this->role->permisos();
+}
+
 }
