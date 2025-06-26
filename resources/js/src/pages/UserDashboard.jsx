@@ -24,13 +24,13 @@ const UserDashboard = ({ setAuth, setRole }) => {
     }
   };
 
-  return (
-    <div>
-      <h1>Bienvenido Usuario</h1>
-      <p>Esta es la vista del usuario normal.</p>
-      <button onClick={handleLogout}>Cerrar sesión</button>
-    </div>
-  );
+    return (
+      <div>
+        <h1>Bienvenido Usuario</h1>
+        <p>Esta es la vista del usuario normal.</p>
+        <button onClick={handleLogout}>Cerrar sesión</button>
+      </div>
+    );
 };
 
 export default UserDashboard;
