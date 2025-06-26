@@ -41,11 +41,9 @@ Route::middleware([
 
 
         //Roles Crud
-        Route::middleware('auth:sanctum')->group(function () {
-            Route::get('/roles', [RolCrudController::class, 'index']);
-            Route::post('/roles', [RolCrudController::class, 'store']);
-            Route::delete('/roles/{id}', [RolCrudController::class, 'destroy']);
-        });
+        Route::get('/roles', [RolCrudController::class, 'index']);
+        Route::post('/roles', [RolCrudController::class, 'store']);
+        Route::delete('/roles/{id}', [RolCrudController::class, 'destroy']);
 
         //Usuarios Crud
 

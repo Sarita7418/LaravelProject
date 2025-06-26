@@ -2,7 +2,7 @@ import React from 'react'
 
 function Usuarios() {
   return (
-    <div>Usuarios</div>
+    <div>CRUD de usuarios (En proceso)</div>
   )
 }
 

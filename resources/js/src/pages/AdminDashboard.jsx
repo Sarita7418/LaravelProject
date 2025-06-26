@@ -8,7 +8,6 @@ const AdminDashboard = () => {
       <h1>Bienvenido Administrador</h1>
       <Roles/>
       <Usuarios/>
-      <p>Esta es la vista del panel de administración.</p>
     </div>
   );
 };
