@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from './axios'
 
-export default function Login({ setAuth, setRole }) {
+export default function Login({ setAuth, setPermisos }) {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -20,20 +20,23 @@ export default function Login({ setAuth, setRole }) {
 
       // Paso 3: obtener usuario autenticado
       const res = await axios.get('/api/user')
-      const role = res.data.role?.descripcion
+      console.log('Respuesta completa del backend:', res.data)
 
-      console.log('Respuesta del backend:', res.data);
-      console.log('Rol recibido:', res.data.role);
+      const permisos = res.data.permisos
+
+      console.log('Permisos del usuario:', permisos)
 
       // Actualiza estado global
       setAuth(true)
-      setRole(role)
+      setPermisos(permisos)
 
       // Redireccionar
-      if (role === 'admin') {
+      if (permisos.includes('ver_dashboard')) {
         navigate('/admin')
-      } else {
+      } else if (permisos.includes('ver_dashboard')) {
         navigate('/dashboard')
+      } else {
+        navigate('/unauthorized')
       }
 
     } catch (err) {

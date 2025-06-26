@@ -8,38 +8,35 @@ import axios from './axios'
 
 export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [userRole, setUserRole] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [permisos, setPermisos] = useState([])
 
-  // ...
   useEffect(() => {
     axios.get('/api/user', { withCredentials: true })
       .then(res => {
         setIsAuthenticated(true)
-        setUserRole(res.data.role?.descripcion) // <- 👈 accede al nombre del rol
+        setPermisos(res.data.permisos)
       })
       .catch(() => {
         setIsAuthenticated(false)
-        setUserRole(null)
+        setPermisos([])
       })
       .finally(() => setLoading(false))
   }, [])
-  // ...
-
 
   if (loading) return <div>Cargando...</div>
 
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="/login" element={<Login setAuth={setIsAuthenticated} setRole={setUserRole} />} />
+      <Route path="/login" element={<Login setAuth={setIsAuthenticated} setPermisos={setPermisos} />} />
       <Route path="/dashboard" element={
-        <PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={['user']}>
+        <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['ver_dashboard']}>
           <UserDashboard />
         </PrivateRoute>
       } />
       <Route path="/admin" element={
-        <PrivateRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={['admin']}>
+        <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['ver_dashboard']}>
           <AdminDashboard />
         </PrivateRoute>
       } />

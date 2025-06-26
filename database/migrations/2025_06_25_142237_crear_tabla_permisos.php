@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('permisos', function (Blueprint $table) {
     $table->id();
-    $table->string('nombre')->unique(); // Ej: crear_usuario, editar_rol, etc.
+    $table->string('descripcion')->unique(); // Ej: crear_usuario, editar_rol, etc.
     $table->timestamps();
 });
 
