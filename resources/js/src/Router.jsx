@@ -36,7 +36,7 @@ export default function Router() {
         </PrivateRoute>
       } />
       <Route path="/admin" element={
-        <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['ver_dashboard']}>
+        <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['admin_panel']}>
           <AdminDashboard />
         </PrivateRoute>
       } />

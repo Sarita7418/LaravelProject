@@ -31,7 +31,7 @@ export default function Login({ setAuth, setPermisos }) {
       setPermisos(permisos)
 
       // Redireccionar
-      if (permisos.includes('ver_dashboard')) {
+      if (permisos.includes('admin_panel')) {
         navigate('/admin')
       } else if (permisos.includes('ver_dashboard')) {
         navigate('/dashboard')
