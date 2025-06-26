@@ -42,4 +42,24 @@ class RolCrudController extends Controller
 
         return response()->json(['message' => 'Rol eliminado correctamente']);
     }
+    public function update(Request $request, $id)
+{
+    $request->validate([
+        'descripcion' => 'required|string|max:255|unique:roles,descripcion,' . $id,
+    ]);
+
+    $rol = Role::find($id);
+
+    if (! $rol) {
+        return response()->json(['message' => 'Rol no encontrado'], 404);
+    }
+
+    $rol->descripcion = $request->descripcion;
+    $rol->save();
+
+    return response()->json([
+        'message' => 'Rol actualizado correctamente',
+        'rol' => $rol
+    ]);
+}
 }

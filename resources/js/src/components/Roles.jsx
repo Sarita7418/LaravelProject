@@ -7,6 +7,7 @@ function Roles() {
   const [formVisible, setFormVisible] = useState(false)
   const [descripcion, setDescripcion] = useState('')
   const [loading, setLoading] = useState(false)
+  const [rolEditando, setRolEditando] = useState(null) // ID del rol a editar
 
   useEffect(() => {
     axios.get('/sanctum/csrf-cookie').then(() => {
@@ -37,14 +38,39 @@ function Roles() {
     setLoading(true)
     try {
       await axios.post('/api/roles', { descripcion })
-      setDescripcion('')
-      setFormVisible(false)
+      resetFormulario()
       fetchRoles()
     } catch (error) {
       console.error('Error al crear rol:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const actualizarRol = async () => {
+    if (!descripcion.trim() || !rolEditando) return
+    setLoading(true)
+    try {
+      await axios.put(`/api/roles/${rolEditando}`, { descripcion })
+      resetFormulario()
+      fetchRoles()
+    } catch (error) {
+      console.error('Error al actualizar rol:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const iniciarEdicion = (rol) => {
+    setFormVisible(true)
+    setDescripcion(rol.descripcion)
+    setRolEditando(rol.id)
+  }
+
+  const resetFormulario = () => {
+    setFormVisible(false)
+    setDescripcion('')
+    setRolEditando(null)
   }
 
   return (
@@ -63,7 +89,9 @@ function Roles() {
             <tr key={rol.id}>
               <td>{rol.descripcion}</td>
               <td>
-                {/* <button className="edit-btn">Editar</button> */}
+                <button className="edit-btn" onClick={() => iniciarEdicion(rol)}>
+                  Editar
+                </button>
                 <button className="delete-btn" onClick={() => eliminarRol(rol.id)}>
                   Eliminar
                 </button>
@@ -88,16 +116,20 @@ function Roles() {
             className="form-input"
           />
           <div className="form-actions">
-            <button className="create-btn" onClick={crearRol} disabled={loading}>
-              {loading ? 'Creando...' : 'Crear Rol'}
-            </button>
             <button
-              className="cancel-btn"
-              onClick={() => {
-                setFormVisible(false)
-                setDescripcion('')
-              }}
+              className="create-btn"
+              onClick={rolEditando ? actualizarRol : crearRol}
+              disabled={loading}
             >
+              {loading
+                ? rolEditando
+                  ? 'Actualizando...'
+                  : 'Creando...'
+                : rolEditando
+                ? 'Actualizar Rol'
+                : 'Crear Rol'}
+            </button>
+            <button className="cancel-btn" onClick={resetFormulario}>
               Cancelar
             </button>
           </div>

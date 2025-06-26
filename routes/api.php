@@ -33,12 +33,12 @@ Route::middleware([
         })->middleware('auth:sanctum');
 
         Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');
-    // 👇 Rutas protegidas para gestión de roles y permisos
-    Route::post('/dos-pasos/enviar-codigo', [AutenticacionDosPasosController::class, 'enviarCodigo']);
-    Route::post('/dos-pasos/verificar-codigo', [AutenticacionDosPasosController::class, 'verificarCodigo']);
-    Route::post('/dos-pasos/habilitar', [AutenticacionDosPasosController::class, 'habilitarDosPasos']);
-    Route::post('/dos-pasos/deshabilitar', [AutenticacionDosPasosController::class, 'deshabilitarDosPasos']);
-    // 👇 Rutas protegidas para gestión de roles y permisos
+        // 👇 Rutas protegidas para gestión de roles y permisos
+        Route::post('/dos-pasos/enviar-codigo', [AutenticacionDosPasosController::class, 'enviarCodigo']);
+        Route::post('/dos-pasos/verificar-codigo', [AutenticacionDosPasosController::class, 'verificarCodigo']);
+        Route::post('/dos-pasos/habilitar', [AutenticacionDosPasosController::class, 'habilitarDosPasos']);
+        Route::post('/dos-pasos/deshabilitar', [AutenticacionDosPasosController::class, 'deshabilitarDosPasos']);
+        // 👇 Rutas protegidas para gestión de roles y permisos
         Route::get('/roles', [RolPermisoController::class, 'index']);
         Route::post('/roles', [RolPermisoController::class, 'store']);
         Route::get('/permisos', [RolPermisoController::class, 'permisos']);
@@ -49,6 +49,8 @@ Route::middleware([
         Route::get('/roles', [RolCrudController::class, 'index']);
         Route::post('/roles', [RolCrudController::class, 'store']);
         Route::delete('/roles/{id}', [RolCrudController::class, 'destroy']);
+        Route::put('/roles/{id}', [RolCrudController::class, 'update']);
+
 
         //Usuarios Crud
-});
+    });
