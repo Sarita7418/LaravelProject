@@ -1,12 +1,14 @@
 // PrivateRoute.jsx
 import { Navigate } from 'react-router-dom'
 
-export default function PrivateRoute({ isAuthenticated, userRole, allowedRoles, children }) {
+export default function PrivateRoute({ isAuthenticated, userPermisos, allowedPermisos, children }) {
   if (!isAuthenticated) {
     return <Navigate to="/login" />
   }
 
-  if (!allowedRoles.includes(userRole)) {
+  // Si no tiene al menos uno de los permisos requeridos
+  const tienePermiso = allowedPermisos.some(permiso => userPermisos.includes(permiso))
+  if (!tienePermiso) {
     return <Navigate to="/unauthorized" />
   }
 
