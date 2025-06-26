@@ -29,7 +29,7 @@ Route::middleware([
 // ✅ Endpoint que devuelve los datos del usuario logueado, incluyendo rol y permisos
 Route::get('/user', function (Request $request) {
     $user = $request->user()->load('role.permisos'); // Asegúrate de tener estas relaciones en el modelo User
-    $permisos = $user->role->permisos->pluck('nombre');
+    $permisos = $user->role->permisos->pluck('descripcion');
 
     return [
         'id' => $user->id,
