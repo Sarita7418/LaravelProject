@@ -9,6 +9,7 @@ use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Session\Middleware\StartSession;
 use App\Http\Controllers\Crud\RolCrudController;
+use App\Http\Controllers\Crud\UsuarioCrudController;
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -63,5 +64,11 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->midd
         Route::put('/roles/{id}', [RolCrudController::class, 'update']);
 
 
-        //Usuarios Crud
+         //Usuarios Crud
+        Route::get('/usuarios', [UsuarioCrudController::class, 'index']);
+        Route::post('/usuarios', [UsuarioCrudController::class, 'store']);
+        Route::delete('/usuarios/{id}', [UsuarioCrudController::class, 'destroy']);
+        Route::put('/usuarios/{id}', [UsuarioCrudController::class, 'update']);
+        Route::get('/usuarios/roles', [UsuarioCrudController::class, 'getRoles']);
+
     });
