@@ -13,8 +13,15 @@ class AutenticacionDosPasosController extends Controller
     public function enviarCodigo(Request $request)
     {
         $usuario = Auth::user();
+
+        // Validar que el usuario esté autenticado
+        if (!$usuario) {
+            return response()->json(['error' => 'No autenticado.'], 401);
+        }
+
+        /** @var \App\Models\User $usuario */
         $codigo = rand(100000, 999999);
-        
+
         // Guardar código con expiración de 10 minutos
         $usuario->update([
             'codigo_verificacion' => $codigo,
@@ -40,7 +47,13 @@ class AutenticacionDosPasosController extends Controller
         ]);
 
         $usuario = Auth::user();
-        
+
+        if (!$usuario) {
+            return response()->json(['error' => 'No autenticado.'], 401);
+        }
+
+        /** @var \App\Models\User $usuario */
+
         // Verificar si el código existe y no ha expirado
         if (!$usuario->codigo_verificacion || 
             Carbon::now()->gt($usuario->codigo_expira_en)) {
@@ -72,6 +85,13 @@ class AutenticacionDosPasosController extends Controller
     public function habilitarDosPasos(Request $request)
     {
         $usuario = Auth::user();
+
+        if (!$usuario) {
+            return response()->json(['error' => 'No autenticado.'], 401);
+        }
+
+        /** @var \App\Models\User $usuario */
+
         $usuario->update(['dos_pasos_habilitado' => true]);
 
         return response()->json([
@@ -82,6 +102,13 @@ class AutenticacionDosPasosController extends Controller
     public function deshabilitarDosPasos(Request $request)
     {
         $usuario = Auth::user();
+
+        if (!$usuario) {
+            return response()->json(['error' => 'No autenticado.'], 401);
+        }
+
+        /** @var \App\Models\User $usuario */
+
         $usuario->update(['dos_pasos_habilitado' => false]);
 
         return response()->json([
@@ -94,11 +121,11 @@ class AutenticacionDosPasosController extends Controller
         $partes = explode('@', $email);
         $nombre = $partes[0];
         $dominio = $partes[1];
-        
+
         if (strlen($nombre) <= 2) {
             return '*' . substr($nombre, -1) . '@' . $dominio;
         }
-        
+
         return substr($nombre, 0, 2) . str_repeat('*', strlen($nombre) - 2) . '@' . $dominio;
     }
 }

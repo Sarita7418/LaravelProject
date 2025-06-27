@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from './axios'
 import AutenticacionDosPasos from './AutenticacionDosPasos'
 
-export default function Login({ setAuth, setRole }) {
+export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -14,15 +14,7 @@ export default function Login({ setAuth, setRole }) {
   const handleLogin = async (e) => {
     e.preventDefault()
 
-    // Limpiar estados previos antes de iniciar nuevo login
-    setError('')
-    setMostrarDosPasos(false)
-    setUsuarioEmail('')
-
     try {
-      // Paso 0: Cerrar sesión previa si existe (importante para evitar conflictos)
-      await axios.post('/api/logout').catch(() => {}) // Ignorar errores si no hay sesión activa
-      
       // Paso 1: solicitar token CSRF
       await axios.get('/sanctum/csrf-cookie')
 
@@ -31,55 +23,80 @@ export default function Login({ setAuth, setRole }) {
 
       // Paso 3: obtener usuario autenticado
       const res = await axios.get('/api/user')
-      const role = res.data.role?.descripcion
+      console.log('Respuesta completa del backend:', res.data)
+
+      const permisos = res.data.permisos
       const dosPasosHabilitado = res.data.dos_pasos_habilitado
 
-      console.log('Respuesta del backend:', res.data);
-      console.log('Rol recibido:', res.data.role);
-      console.log('2FA habilitado:', dosPasosHabilitado);
+      console.log('Permisos del usuario:', permisos)
+      console.log('Dos pasos habilitado:', dosPasosHabilitado)
 
       if (dosPasosHabilitado) {
-        // Mostrar componente de 2FA
         setUsuarioEmail(res.data.email)
         setMostrarDosPasos(true)
+        if (setPendingTwoFactor) {
+          setPendingTwoFactor(true)
+        }
       } else {
-        // Login normal sin 2FA
-        completarLogin(role)
+        // Login directo sin 2FA
+        completarLogin(permisos)
       }
 
     } catch (err) {
       console.error('Error al iniciar sesión', err)
       setError('Credenciales inválidas o error de red.')
-      // Limpiar estados en caso de error
-      setMostrarDosPasos(false)
-      setUsuarioEmail('')
     }
   }
 
-  const completarLogin = (role) => {
-    // Actualiza estado global
+  const completarLogin = (permisos) => {
+    let permisosArray = []
+    if (Array.isArray(permisos)) {
+      permisosArray = permisos
+    } else if (typeof permisos === 'string') {
+      if (permisos === 'admin') {
+        permisosArray = ['admin_panel']
+      } else if (permisos === 'user') {
+        permisosArray = ['ver_dashboard']
+      } else {
+        permisosArray = [permisos]
+      }
+    }
+
     setAuth(true)
-    setRole(role)
+    setPermisos(permisosArray)
+    if (setPendingTwoFactor) {
+      setPendingTwoFactor(false)
+    }
 
     // Redireccionar
-    if (role === 'admin') {
+    if (permisosArray.includes('admin_panel')) {
       navigate('/admin')
-    } else {
+    } else if (permisosArray.includes('ver_dashboard')) {
       navigate('/dashboard')
+    } else {
+      navigate('/unauthorized')
     }
   }
 
-  const manejarVerificacionExitosa = (usuario, rol) => {
-    console.log('Verificación 2FA exitosa:', usuario, rol)
-    completarLogin(rol)
+  const manejarVerificacionExitosa = (usuario, permisos) => {
+    console.log('Verificación 2FA exitosa')
+    const permisosFinales = permisos || usuario?.permisos || []
+    completarLogin(permisosFinales)
   }
 
-  const manejarCancelarDosPasos = () => {
+  const manejarCancelarDosPasos = async () => {
     setMostrarDosPasos(false)
     setUsuarioEmail('')
     setError('')
-    // Cerrar sesión del backend
-    axios.post('/api/logout').catch(console.error)
+    if (setPendingTwoFactor) {
+      setPendingTwoFactor(false)
+    }
+    
+    try {
+      await axios.post('/api/logout')
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
+    }
   }
 
   if (mostrarDosPasos) {
