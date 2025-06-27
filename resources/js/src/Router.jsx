@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import Login from './Login'
+import Login from './LoginConDosPasos' 
 import UserDashboard from './pages/UserDashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import PrivateRoute from './PrivateRoute'
@@ -10,6 +10,7 @@ export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
   const [permisos, setPermisos] = useState([])
+  const [pendingTwoFactor, setPendingTwoFactor] = useState(false) // Agregado para manejar 2FA
 
   useEffect(() => {
     axios.get('/api/user', { withCredentials: true })
@@ -29,7 +30,13 @@ export default function Router() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="/login" element={<Login setAuth={setIsAuthenticated} setPermisos={setPermisos} />} />
+      <Route path="/login" element={
+        <Login 
+          setAuth={setIsAuthenticated} 
+          setPermisos={setPermisos} 
+          setPendingTwoFactor={setPendingTwoFactor} // Pasado como prop
+        />
+      } />
       <Route path="/dashboard" element={
         <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['ver_dashboard']}>
           <UserDashboard />
