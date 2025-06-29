@@ -26,6 +26,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       console.log('Respuesta completa del backend:', res.data)
 
       const permisos = res.data.permisos
+      const rutas = permisos.map(p => p.ruta).filter(Boolean)
       const dosPasosHabilitado = res.data.dos_pasos_habilitado
 
       console.log('Permisos del usuario:', permisos)
@@ -38,9 +39,9 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
           setPendingTwoFactor(true)
         }
       } else {
-        // Login directo sin 2FA
-        completarLogin(permisos)
+        completarLogin(rutas) // ← esto sí es un array de strings: ['/admin', '/dashboard', etc]
       }
+
 
     } catch (err) {
       console.error('Error al iniciar sesión', err)
@@ -48,41 +49,34 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     }
   }
 
-  const completarLogin = (permisos) => {
-    let permisosArray = []
-    if (Array.isArray(permisos)) {
-      permisosArray = permisos
-    } else if (typeof permisos === 'string') {
-      if (permisos === 'admin') {
-        permisosArray = ['admin_panel']
-      } else if (permisos === 'user') {
-        permisosArray = ['ver_dashboard']
-      } else {
-        permisosArray = [permisos]
-      }
-    }
+  const completarLogin = (rutas) => {
+  setAuth(true)
+  setPermisos(rutas)
 
-    setAuth(true)
-    setPermisos(permisosArray)
-    if (setPendingTwoFactor) {
-      setPendingTwoFactor(false)
-    }
-
-    // Redireccionar
-    if (permisosArray.includes('admin_panel')) {
-      navigate('/admin')
-    } else if (permisosArray.includes('ver_dashboard')) {
-      navigate('/dashboard')
-    } else {
-      navigate('/unauthorized')
-    }
+  if (setPendingTwoFactor) {
+    setPendingTwoFactor(false)
   }
+
+  // Redireccionar
+  if (rutas.includes('/admin')) {
+    navigate('/admin')
+  } else if (rutas.includes('/dashboard')) {
+    navigate('/dashboard')
+  } else {
+    navigate('/unauthorized')
+  }
+}
+
+
+
 
   const manejarVerificacionExitosa = (usuario, permisos) => {
-    console.log('Verificación 2FA exitosa')
-    const permisosFinales = permisos || usuario?.permisos || []
-    completarLogin(permisosFinales)
-  }
+  console.log('Verificación 2FA exitosa')
+  const rutas = (permisos || usuario?.permisos || []).map(p => p.ruta).filter(Boolean)
+  completarLogin(rutas)
+}
+
+
 
   const manejarCancelarDosPasos = async () => {
     setMostrarDosPasos(false)
@@ -91,7 +85,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     if (setPendingTwoFactor) {
       setPendingTwoFactor(false)
     }
-    
+
     try {
       await axios.post('/api/logout')
     } catch (error) {

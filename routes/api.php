@@ -29,18 +29,46 @@ Route::middleware([
        Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
 
        // ✅ Endpoint que devuelve los datos del usuario logueado, incluyendo rol y permisos
-       Route::get('/user', function (Request $request) {
-           $user = $request->user()->load('role.permisos');
-           $permisos = $user->role->permisos->pluck('descripcion');
+      Route::get('/user', function (Request $request) {
+    $user = $request->user()->load('role.permisos.url');
 
-           return [
-               'id' => $user->id,
-               'name' => $user->name,
-               'email' => $user->email,
-               'dos_pasos_habilitado' => $user->dos_pasos_habilitado, // ← Campo agregado
+    // En vez de pluck('descripcion'), pluck el nombre del ítem o la ruta
+    $permisos = $user->role->permisos->map(function ($permiso) {
+        return [
+            'item' => $permiso->item,
+            'ruta' => optional($permiso->url)->ruta,
+        ];
+    });
+
+    return [
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'dos_pasos_habilitado' => $user->dos_pasos_habilitado,
+        'rol' => $user->role->descripcion,
+        'permisos' => $permisos,
+    ];
+})->middleware('auth:sanctum');
+
+
+       // ✅ NUEVO: Endpoint para obtener rutas reales (URL) accesibles para el usuario autenticado
+       Route::get('/accesos', function (Request $request) {
+           $user = $request->user();
+
+           $menuItems = $user->role->permisos()->with('url')->get();
+
+           $accesos = $menuItems->map(function ($item) {
+               return [
+                   'item' => $item->item,
+                   'nivel' => $item->nivel,
+                   'ruta' => optional($item->url)->ruta,
+               ];
+           });
+
+           return response()->json([
                'rol' => $user->role->descripcion,
-               'permisos' => $permisos,
-           ];
+               'accesos' => $accesos,
+           ]);
        })->middleware('auth:sanctum');
 
        Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');

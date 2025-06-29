@@ -21,6 +21,7 @@ export default function Login({ setAuth, setPermisos }) {
       // Paso 3: obtener usuario autenticado
       const res = await axios.get('/api/user')
       console.log('Respuesta completa del backend:', res.data)
+      const rutas = permisos.map(p => p.ruta).filter(Boolean)
 
       const permisos = res.data.permisos
 
@@ -31,9 +32,9 @@ export default function Login({ setAuth, setPermisos }) {
       setPermisos(permisos)
 
       // Redireccionar
-      if (permisos.includes('admin_panel')) {
+      if (rutas.includes('/admin')) {
         navigate('/admin')
-      } else if (permisos.includes('ver_dashboard')) {
+      } else if (rutas.includes('/dashboard')) {
         navigate('/dashboard')
       } else {
         navigate('/unauthorized')
