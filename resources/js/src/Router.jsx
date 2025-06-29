@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import Login from './LoginConDosPasos' 
+import Login from './LoginConDosPasos'
 import UserDashboard from './pages/UserDashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import PrivateRoute from './PrivateRoute'
@@ -31,22 +31,23 @@ export default function Router() {
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={
-        <Login 
-          setAuth={setIsAuthenticated} 
-          setPermisos={setPermisos} 
+        <Login
+          setAuth={setIsAuthenticated}
+          setPermisos={setPermisos}
           setPendingTwoFactor={setPendingTwoFactor} // Pasado como prop
         />
       } />
       <Route path="/dashboard" element={
-        <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['ver_dashboard']}>
+        <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['/dashboard']}>
           <UserDashboard />
         </PrivateRoute>
       } />
       <Route path="/admin" element={
-        <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['admin_panel']}>
+        <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['/admin']}>
           <AdminDashboard />
         </PrivateRoute>
       } />
+
       <Route path="/unauthorized" element={<h1>No autorizado</h1>} />
     </Routes>
   )

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 
 class Role extends Model
 {
@@ -15,9 +17,9 @@ class Role extends Model
         return $this->hasMany(User::class);
     }
 
-public function permisos()
-{
-    return $this->belongsToMany(Permiso::class, 'permiso_rol', 'rol_id', 'permiso_id')->withTimestamps();
-}
+ public function permisos(): BelongsToMany
+    {
+        return $this->belongsToMany(MenuItem::class, 'permisos', 'id_rol', 'id_menu_item');
+    }
 
 }

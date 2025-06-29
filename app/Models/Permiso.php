@@ -7,10 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Permiso extends Model
 {
     protected $table = 'permisos';
-    protected $fillable = ['nombre'];
 
-    public function roles()
+    protected $fillable = ['id_menu_item', 'id_rol'];
+
+    public function menuItem()
     {
-        return $this->belongsToMany(Role::class, 'permiso_rol', 'permiso_id', 'rol_id');
+        return $this->belongsTo(MenuItem::class, 'id_menu_item');
+    }
+
+    public function rol()
+    {
+        return $this->belongsTo(Role::class, 'id_rol');
     }
 }
