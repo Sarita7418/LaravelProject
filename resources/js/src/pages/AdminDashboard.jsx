@@ -1,21 +1,11 @@
-import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from '../axios' // 👈 asegúrate de que aquí esté bien configurado
-import Roles from '../components/Roles'
-import Usuarios from '../components/Usuarios'
+import React from 'react'
+import { useNavigate, Outlet } from 'react-router-dom'
+import axios from '../axios'
+import MenuJerarquico from '../components/MenuJerarquico'
+import './AdminDashboard.css'
 
 const AdminDashboard = ({ setAuth, setRole }) => {
   const navigate = useNavigate()
-
-  // 🔍 Este useEffect consulta el endpoint y muestra los datos del menú
-  useEffect(() => {
-    axios.get('/api/menu-items') // 👈 asegúrate que esta ruta exista
-      .then(res => {
-        console.log('✅ Menú anidado:', JSON.stringify(res.data, null, 2))
-        // Puedes copiar res.data completo desde la consola del navegador
-      })
-      .catch(err => console.error('❌ Error al obtener menu-items:', err))
-  }, [])
 
   const handleLogout = async () => {
     try {
@@ -30,12 +20,18 @@ const AdminDashboard = ({ setAuth, setRole }) => {
   }
 
   return (
-    <div>
-      <h1>Bienvenido Administrador</h1>
-      <p>Esta es la vista del panel de administración.</p>
-      <Roles />
-      <Usuarios />
-      <button onClick={handleLogout}>Cerrar sesión</button>
+    <div className="dashboard-container">
+      <aside className="sidebar">
+        <MenuJerarquico />
+        <button className="logout-button" onClick={handleLogout}>
+          Cerrar sesión
+        </button>
+      </aside>
+
+      <main className="main-content">
+        <h1 className="title">Bienvenido Administrador</h1>
+        <Outlet /> {/* 👈 aquí se renderizan Usuarios, Roles, etc */}
+      </main>
     </div>
   )
 }

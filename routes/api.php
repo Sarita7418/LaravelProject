@@ -74,7 +74,7 @@ Route::middleware([
 
       // api.php
 Route::get('/menu-items', function () {
-    $menuItems = \App\Models\MenuItem::with('hijos')->whereNull('id_padre')->get();
+    $menuItems = \App\Models\MenuItem::with(['hijos.url', 'url'])->whereNull('id_padre')->get();
     return response()->json($menuItems);
 })->middleware('auth:sanctum');
 
