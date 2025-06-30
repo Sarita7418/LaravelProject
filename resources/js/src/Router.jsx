@@ -2,6 +2,9 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './LoginConDosPasos'
 import UserDashboard from './pages/UserDashboard'
 import AdminDashboard from './pages/AdminDashboard'
+import Usuarios from './components/Usuarios'
+import Roles from './components/Roles'
+
 import PrivateRoute from './PrivateRoute'
 import { useEffect, useState } from 'react'
 import axios from './axios'
@@ -30,6 +33,7 @@ export default function Router() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
+
       <Route path="/login" element={
         <Login
           setAuth={setIsAuthenticated}
@@ -37,16 +41,31 @@ export default function Router() {
           setPendingTwoFactor={setPendingTwoFactor} // Pasado como prop
         />
       } />
+
       <Route path="/dashboard" element={
         <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['/dashboard']}>
           <UserDashboard />
         </PrivateRoute>
       } />
+
+      {/* ✅ Ruta principal para Admin, ahora con rutas anidadas */}
       <Route path="/admin" element={
         <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['/admin']}>
-          <AdminDashboard />
+          <AdminDashboard setAuth={setIsAuthenticated} setRole={() => {}} />
         </PrivateRoute>
-      } />
+      }>
+        {/* 👇 Subrutas de admin */}
+        <Route path="usuarios" element={
+          <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['/admin/usuarios']}>
+            <Usuarios />
+          </PrivateRoute>
+        } />
+        <Route path="roles" element={
+          <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['/admin/roles']}>
+            <Roles />
+          </PrivateRoute>
+        } />
+      </Route>
 
       <Route path="/unauthorized" element={<h1>No autorizado</h1>} />
     </Routes>

@@ -11,6 +11,16 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   const [mostrarDosPasos, setMostrarDosPasos] = useState(false)
   const [usuarioEmail, setUsuarioEmail] = useState('')
 
+  const extraerRutasDesdePermisos = (permisos) => {
+    if (!Array.isArray(permisos)) return []
+
+    if (typeof permisos[0] === 'string') {
+      return permisos
+    }
+
+    return permisos.map(p => p.ruta).filter(Boolean)
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault()
 
@@ -26,8 +36,9 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       console.log('Respuesta completa del backend:', res.data)
 
       const permisos = res.data.permisos
-      const rutas = permisos.map(p => p.ruta).filter(Boolean)
+      const rutas = extraerRutasDesdePermisos(permisos)
       const dosPasosHabilitado = res.data.dos_pasos_habilitado
+
 
       console.log('Permisos del usuario:', permisos)
       console.log('Dos pasos habilitado:', dosPasosHabilitado)
@@ -50,31 +61,42 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   }
 
   const completarLogin = (rutas) => {
-  setAuth(true)
-  setPermisos(rutas)
+    setAuth(true)
+    setPermisos(rutas)
 
-  if (setPendingTwoFactor) {
-    setPendingTwoFactor(false)
+    if (setPendingTwoFactor) {
+      setPendingTwoFactor(false)
+    }
+
+    // Redireccionar
+    if (rutas.includes('/admin')) {
+      navigate('/admin')
+    } else if (rutas.includes('/dashboard')) {
+      navigate('/dashboard')
+    } else {
+      navigate('/unauthorized')
+    }
   }
 
-  // Redireccionar
-  if (rutas.includes('/admin')) {
-    navigate('/admin')
-  } else if (rutas.includes('/dashboard')) {
-    navigate('/dashboard')
-  } else {
-    navigate('/unauthorized')
-  }
-}
 
 
 
-
-  const manejarVerificacionExitosa = (usuario, permisos) => {
+  const manejarVerificacionExitosa = async () => {
   console.log('Verificación 2FA exitosa')
-  const rutas = (permisos || usuario?.permisos || []).map(p => p.ruta).filter(Boolean)
-  completarLogin(rutas)
+
+  try {
+    const res = await axios.get('/api/user')
+    const permisos = res.data.permisos
+    const rutas = extraerRutasDesdePermisos(permisos)
+
+    completarLogin(rutas)
+  } catch (error) {
+    console.error('Error al obtener usuario después del 2FA:', error)
+    setError('Error al cargar los datos del usuario.')
+    navigate('/login')
+  }
 }
+
 
 
 

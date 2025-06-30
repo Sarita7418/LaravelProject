@@ -12,24 +12,26 @@ class MenuItemSeeder extends Seeder
 {
     public function run(): void
     {
-        $url1 = Url::firstOrCreate(
-    ['ruta' => '/dashboard'],
-    ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
-);
-    $url2 = Url::firstOrCreate(
-    ['ruta' => '/usuarios'],
-    ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
-);
+        // URLs correctas
+        $urlDashboard = Url::firstOrCreate(
+            ['ruta' => '/dashboard'],
+            ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
+        );
 
-$url3 = Url::firstOrCreate(
-    ['ruta' => '/roles'],
-    ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
-);
+        $urlUsuariosAdmin = Url::firstOrCreate(
+            ['ruta' => '/admin/usuarios'],
+            ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
+        );
 
-$url4 = Url::firstOrCreate(
-    ['ruta' => '/admin'],
-    ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
-);
+        $urlRolesAdmin = Url::firstOrCreate(
+            ['ruta' => '/admin/roles'],
+            ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
+        );
+
+        $urlAdmin = Url::firstOrCreate(
+            ['ruta' => '/admin'],
+            ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
+        );
 
         // Menús jerárquicos
         $menu1 = MenuItem::create([
@@ -45,7 +47,7 @@ $url4 = Url::firstOrCreate(
             'id_padre' => $menu1->id,
             'nivel' => 2,
             'item' => 'Usuarios',
-            'id_url' => $url2->id,
+            'id_url' => $urlUsuariosAdmin->id, 
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
@@ -54,7 +56,7 @@ $url4 = Url::firstOrCreate(
             'id_padre' => $menu1->id,
             'nivel' => 2,
             'item' => 'Roles',
-            'id_url' => $url3->id,
+            'id_url' => $urlRolesAdmin->id,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
@@ -63,16 +65,16 @@ $url4 = Url::firstOrCreate(
             'id_padre' => null,
             'nivel' => 1,
             'item' => 'Dashboard',
-            'id_url' => $url1->id,
+            'id_url' => $urlDashboard->id,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
 
-         $menu5 = MenuItem::create([
+        $menu5 = MenuItem::create([
             'id_padre' => null,
             'nivel' => 1,
             'item' => 'DashboardAdmin',
-            'id_url' => $url4->id,
+            'id_url' => $urlAdmin->id,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
@@ -83,7 +85,13 @@ $url4 = Url::firstOrCreate(
 
         // Relacionar menús con roles
         if ($adminRole) {
-            $adminRole->permisos()->attach([$menu1->id, $menu2->id, $menu3->id, $menu4->id, $menu5->id ], [
+            $adminRole->permisos()->attach([
+                $menu1->id,
+                $menu2->id,
+                $menu3->id,
+                $menu4->id,
+                $menu5->id
+            ], [
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]);
