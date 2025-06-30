@@ -10,10 +10,10 @@ class MenuItem extends Model
 
     protected $fillable = ['id_padre', 'nivel', 'item', 'id_url'];
 
-    public function hijos()
-    {
-        return $this->hasMany(MenuItem::class, 'id_padre');
-    }
+public function hijos()
+{
+    return $this->hasMany(MenuItem::class, 'id_padre')->with('hijos');
+}
 
     public function padre()
     {

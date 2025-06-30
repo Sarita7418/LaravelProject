@@ -1,11 +1,21 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from '../axios'
+import axios from '../axios' // 👈 asegúrate de que aquí esté bien configurado
 import Roles from '../components/Roles'
 import Usuarios from '../components/Usuarios'
 
 const AdminDashboard = ({ setAuth, setRole }) => {
   const navigate = useNavigate()
+
+  // 🔍 Este useEffect consulta el endpoint y muestra los datos del menú
+  useEffect(() => {
+    axios.get('/api/menu-items') // 👈 asegúrate que esta ruta exista
+      .then(res => {
+        console.log('✅ Menú anidado:', JSON.stringify(res.data, null, 2))
+        // Puedes copiar res.data completo desde la consola del navegador
+      })
+      .catch(err => console.error('❌ Error al obtener menu-items:', err))
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -31,4 +41,3 @@ const AdminDashboard = ({ setAuth, setRole }) => {
 }
 
 export default AdminDashboard
-
