@@ -30,7 +30,7 @@ const AdminDashboard = ({ setAuth, setRole }) => {
 
       <main className="main-content">
         <h1 className="title">Bienvenido Administrador</h1>
-        <Outlet /> {/* 👈 aquí se renderizan Usuarios, Roles, etc */}
+        <Outlet />
       </main>
     </div>
   )

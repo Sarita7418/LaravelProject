@@ -15,6 +15,13 @@ export default function Router() {
   const [permisos, setPermisos] = useState([])
   const [pendingTwoFactor, setPendingTwoFactor] = useState(false) // Agregado para manejar 2FA
 
+  // Diccionario de componentes disponibles según ruta
+  const rutasComponentes = {
+    '/admin/usuarios': <Usuarios />,
+    '/admin/roles': <Roles />
+    // puedes agregar más rutas dinámicas aquí sin tocar JSX
+  }
+
   useEffect(() => {
     axios.get('/api/user', { withCredentials: true })
       .then(res => {
@@ -48,23 +55,32 @@ export default function Router() {
         </PrivateRoute>
       } />
 
-      {/* ✅ Ruta principal para Admin, ahora con rutas anidadas */}
       <Route path="/admin" element={
         <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['/admin']}>
-          <AdminDashboard setAuth={setIsAuthenticated} setRole={() => {}} />
+          <AdminDashboard setAuth={setIsAuthenticated} setRole={() => { }} />
         </PrivateRoute>
       }>
-        {/* 👇 Subrutas de admin */}
-        <Route path="usuarios" element={
-          <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['/admin/usuarios']}>
-            <Usuarios />
-          </PrivateRoute>
-        } />
-        <Route path="roles" element={
-          <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['/admin/roles']}>
-            <Roles />
-          </PrivateRoute>
-        } />
+        {permisos
+          .filter(p => p.startsWith('/admin/') && p !== '/admin')
+          .map(ruta => {
+            const subPath = ruta.replace('/admin/', '')
+            const componente = rutasComponentes[ruta]
+            return componente ? (
+              <Route
+                key={ruta}
+                path={subPath}
+                element={
+                  <PrivateRoute
+                    isAuthenticated={isAuthenticated}
+                    userPermisos={permisos}
+                    allowedPermisos={[ruta]}
+                  >
+                    {componente}
+                  </PrivateRoute>
+                }
+              />
+            ) : null
+          })}
       </Route>
 
       <Route path="/unauthorized" element={<h1>No autorizado</h1>} />
