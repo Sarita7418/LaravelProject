@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
+use App\Models\CodigoVerificacion;
 use Carbon\Carbon;
 
 class AutenticacionDosPasosController extends Controller
@@ -13,22 +14,21 @@ class AutenticacionDosPasosController extends Controller
     public function enviarCodigo(Request $request)
     {
         $usuario = Auth::user();
-
-        // Validar que el usuario esté autenticado
         if (!$usuario) {
             return response()->json(['error' => 'No autenticado.'], 401);
         }
 
-        /** @var \App\Models\User $usuario */
         $codigo = rand(100000, 999999);
 
-        // Guardar código con expiración de 10 minutos
-        $usuario->update([
-            'codigo_verificacion' => $codigo,
-            'codigo_expira_en' => Carbon::now()->addMinutes(10)
-        ]);
+        CodigoVerificacion::updateOrCreate(
+            ['usuario_id' => $usuario->id],
+            [
+                'codigo' => $codigo,
+                'expira_en' => Carbon::now()->addMinutes(10),
+                'habilitado' => false
+            ]
+        );
 
-        // Enviar código por correo
         Mail::raw("Tu código de verificación es: {$codigo}", function ($message) use ($usuario) {
             $message->to($usuario->email)
                     ->subject('Código de Verificación - Autenticación de Dos Pasos');
@@ -47,73 +47,68 @@ class AutenticacionDosPasosController extends Controller
         ]);
 
         $usuario = Auth::user();
-
         if (!$usuario) {
             return response()->json(['error' => 'No autenticado.'], 401);
         }
 
-        /** @var \App\Models\User $usuario */
+        $registro = CodigoVerificacion::where('usuario_id', $usuario->id)->first();
 
-        // Verificar si el código existe y no ha expirado
-        if (!$usuario->codigo_verificacion || 
-            Carbon::now()->gt($usuario->codigo_expira_en)) {
-            return response()->json([
-                'error' => 'Código expirado o inválido'
-            ], 400);
+        if (!$registro || !$registro->codigo || Carbon::now()->gt($registro->expira_en)) {
+            return response()->json(['error' => 'Código expirado o inválido'], 400);
         }
 
-        // Verificar si el código coincide
-        if ($usuario->codigo_verificacion !== $request->codigo) {
-            return response()->json([
-                'error' => 'Código incorrecto'
-            ], 400);
+        if ($registro->codigo !== $request->codigo) {
+            return response()->json(['error' => 'Código incorrecto'], 400);
         }
 
-        // Limpiar código después de verificación exitosa
-        $usuario->update([
-            'codigo_verificacion' => null,
-            'codigo_expira_en' => null
+        $registro->update([
+            'codigo' => null,
+            'expira_en' => null,
+            'habilitado' => true
         ]);
+
+        $usuario = User::with('role')->find($usuario->id);
 
         return response()->json([
             'mensaje' => 'Código verificado correctamente',
-            'usuario' => $usuario->load('role'),
-            'rol' => $usuario->role?->descripcion
+            'usuario' => $usuario,
+            'rol' => $usuario->role ? $usuario->role->descripcion : null
         ]);
     }
 
     public function habilitarDosPasos(Request $request)
     {
         $usuario = Auth::user();
-
         if (!$usuario) {
             return response()->json(['error' => 'No autenticado.'], 401);
         }
 
-        /** @var \App\Models\User $usuario */
+        CodigoVerificacion::updateOrCreate(
+            ['usuario_id' => $usuario->id],
+            ['habilitado' => true]
+        );
 
-        $usuario->update(['dos_pasos_habilitado' => true]);
-
-        return response()->json([
-            'mensaje' => 'Autenticación de dos pasos habilitada'
-        ]);
+        return response()->json(['mensaje' => 'Autenticación de dos pasos habilitada']);
     }
 
     public function deshabilitarDosPasos(Request $request)
     {
         $usuario = Auth::user();
-
         if (!$usuario) {
             return response()->json(['error' => 'No autenticado.'], 401);
         }
 
-        /** @var \App\Models\User $usuario */
+        $registro = CodigoVerificacion::where('usuario_id', $usuario->id)->first();
 
-        $usuario->update(['dos_pasos_habilitado' => false]);
+        if ($registro) {
+            $registro->update([
+                'habilitado' => false,
+                'codigo' => null,
+                'expira_en' => null
+            ]);
+        }
 
-        return response()->json([
-            'mensaje' => 'Autenticación de dos pasos deshabilitada'
-        ]);
+        return response()->json(['mensaje' => 'Autenticación de dos pasos deshabilitada']);
     }
 
     private function ocultarCorreo($email)
