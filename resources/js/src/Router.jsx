@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './LoginConDosPasos'
-import UserDashboard from './pages/UserDashboard'
-import AdminDashboard from './pages/AdminDashboard'
+import Dashboard from './pages/Dashboard'
+import Administracion from './pages/Administracion'
 import Usuarios from './components/Usuarios'
 import Roles from './components/Roles'
 
@@ -15,12 +15,14 @@ export default function Router() {
   const [permisos, setPermisos] = useState([])
   const [pendingTwoFactor, setPendingTwoFactor] = useState(false) // Agregado para manejar 2FA
 
-  // Diccionario de componentes disponibles según ruta
-  const rutasComponentes = {
-    '/admin/usuarios': <Usuarios />,
-    '/admin/roles': <Roles />
-    // puedes agregar más rutas dinámicas aquí sin tocar JSX
+  // Diccionario de componentes disponibles según nombre de BDD
+  const componentesDisponibles = {
+    Dashboard: Dashboard,
+    Administracion: Administracion,
+    Usuarios: Usuarios,
+    Roles: Roles
   }
+
 
   useEffect(() => {
     axios.get('/api/user', { withCredentials: true })
@@ -49,39 +51,28 @@ export default function Router() {
         />
       } />
 
-      <Route path="/dashboard" element={
-        <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['/dashboard']}>
-          <UserDashboard />
-        </PrivateRoute>
-      } />
+      {permisos.map(p => {
+        const ruta = p.ruta || p // soporta tanto array de strings como objetos { ruta }
+        const nombreComponente = p.componente || ruta.split('/').pop()?.charAt(0).toUpperCase() + ruta.split('/').pop()?.slice(1)
 
-      <Route path="/admin" element={
-        <PrivateRoute isAuthenticated={isAuthenticated} userPermisos={permisos} allowedPermisos={['/admin']}>
-          <AdminDashboard setAuth={setIsAuthenticated} setRole={() => { }} />
-        </PrivateRoute>
-      }>
-        {permisos
-          .filter(p => p.startsWith('/admin/') && p !== '/admin')
-          .map(ruta => {
-            const subPath = ruta.replace('/admin/', '')
-            const componente = rutasComponentes[ruta]
-            return componente ? (
-              <Route
-                key={ruta}
-                path={subPath}
-                element={
-                  <PrivateRoute
-                    isAuthenticated={isAuthenticated}
-                    userPermisos={permisos}
-                    allowedPermisos={[ruta]}
-                  >
-                    {componente}
-                  </PrivateRoute>
-                }
-              />
-            ) : null
-          })}
-      </Route>
+        const Componente = componentesDisponibles[nombreComponente]
+
+        return Componente ? (
+          <Route
+            key={ruta}
+            path={ruta}
+            element={
+              <PrivateRoute
+                isAuthenticated={isAuthenticated}
+                userPermisos={permisos.map(p => typeof p === 'string' ? p : p.ruta)}
+                allowedPermisos={[ruta]}
+              >
+                <Componente />
+              </PrivateRoute>
+            }
+          />
+        ) : null
+      })}
 
       <Route path="/unauthorized" element={<h1>No autorizado</h1>} />
     </Routes>

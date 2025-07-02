@@ -12,41 +12,14 @@ class MenuItemSeeder extends Seeder
 {
     public function run(): void
     {
-        // Obtener URLs ya creadas desde UrlsSeeder
+        // Obtener URLs
         $urlDashboard = Url::where('ruta', '/dashboard')->first();
-        $urlUsuariosAdmin = Url::where('ruta', '/admin/usuarios')->first();
-        $urlRolesAdmin = Url::where('ruta', '/admin/roles')->first();
-        $urlAdmin = Url::where('ruta', '/admin')->first();
+        $urlAdmin = Url::where('ruta', '/dashboard/admin')->first();
+        $urlUsuarios = Url::where('ruta', '/dashboard/admin/usuarios')->first();
+        $urlRoles = Url::where('ruta', '/dashboard/admin/roles')->first();
 
-        // Menús jerárquicos
-        $menu1 = MenuItem::create([
-            'id_padre' => null,
-            'nivel' => 1,
-            'item' => 'Administración',
-            'id_url' => null,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now()
-        ]);
-
-        $menu2 = MenuItem::create([
-            'id_padre' => $menu1->id,
-            'nivel' => 2,
-            'item' => 'Usuarios',
-            'id_url' => optional($urlUsuariosAdmin)->id,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now()
-        ]);
-
-        $menu3 = MenuItem::create([
-            'id_padre' => $menu1->id,
-            'nivel' => 2,
-            'item' => 'Roles',
-            'id_url' => optional($urlRolesAdmin)->id,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now()
-        ]);
-
-        $menu4 = MenuItem::create([
+        // Nivel 1
+        $dashboardMenu = MenuItem::create([
             'id_padre' => null,
             'nivel' => 1,
             'item' => 'Dashboard',
@@ -55,27 +28,45 @@ class MenuItemSeeder extends Seeder
             'updated_at' => Carbon::now()
         ]);
 
-        $menu5 = MenuItem::create([
-            'id_padre' => null,
-            'nivel' => 1,
-            'item' => 'DashboardAdmin',
+        // Nivel 2
+        $adminMenu = MenuItem::create([
+            'id_padre' => $dashboardMenu->id,
+            'nivel' => 2,
+            'item' => 'Administración',
             'id_url' => optional($urlAdmin)->id,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
 
-        // Buscar los roles
+        // Nivel 3
+        $usuariosMenu = MenuItem::create([
+            'id_padre' => $adminMenu->id,
+            'nivel' => 3,
+            'item' => 'Usuarios',
+            'id_url' => optional($urlUsuarios)->id,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+        ]);
+
+        $rolesMenu = MenuItem::create([
+            'id_padre' => $adminMenu->id,
+            'nivel' => 3,
+            'item' => 'Roles',
+            'id_url' => optional($urlRoles)->id,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+        ]);
+
+        // Roles
         $adminRole = Role::where('descripcion', 'admin')->first();
         $userRole = Role::where('descripcion', 'user')->first();
 
-        // Relacionar menús con roles
         if ($adminRole) {
             $adminRole->permisos()->attach([
-                $menu1->id,
-                $menu2->id,
-                $menu3->id,
-                $menu4->id,
-                $menu5->id
+                $dashboardMenu->id,
+                $adminMenu->id,
+                $usuariosMenu->id,
+                $rolesMenu->id,
             ], [
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
@@ -83,7 +74,7 @@ class MenuItemSeeder extends Seeder
         }
 
         if ($userRole) {
-            $userRole->permisos()->attach([$menu4->id], [
+            $userRole->permisos()->attach([$dashboardMenu->id], [
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]);

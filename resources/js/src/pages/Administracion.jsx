@@ -2,9 +2,9 @@ import React from 'react'
 import { useNavigate, Outlet } from 'react-router-dom'
 import axios from '../axios'
 import MenuJerarquico from '../components/MenuJerarquico'
-import './AdminDashboard.css'
+import './Administracion.css'
 
-const AdminDashboard = ({ setAuth, setRole }) => {
+const Administracion = ({ setAuth, setRole }) => {
   const navigate = useNavigate()
 
   const handleLogout = async () => {
@@ -36,4 +36,4 @@ const AdminDashboard = ({ setAuth, setRole }) => {
   )
 }
 
-export default AdminDashboard
+export default Administracion

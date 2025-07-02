@@ -13,25 +13,25 @@ class UrlsSeeder extends Seeder
         DB::table('urls')->insert([
             [
                 'ruta' => '/dashboard',
-                'componente' => 'UserDashboard',
+                'componente' => 'Dashboard',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
             [
-                'ruta' => '/admin/usuarios',
+                'ruta' => '/dashboard/admin',
+                'componente' => 'Administracion',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'ruta' => '/dashboard/admin/usuarios',
                 'componente' => 'Usuarios',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
             [
-                'ruta' => '/admin/roles',
+                'ruta' => '/dashboard/admin/roles',
                 'componente' => 'Roles',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'ruta' => '/admin',
-                'componente' => 'AdminDashboard',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],

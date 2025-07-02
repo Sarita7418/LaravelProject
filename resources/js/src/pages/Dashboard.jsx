@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../axios'; // Usa tu instancia de Axios
 
-const UserDashboard = ({ setAuth, setRole }) => {
+const Dashboard = ({ setAuth, setRole }) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -33,4 +33,4 @@ const UserDashboard = ({ setAuth, setRole }) => {
     );
 };
 
-export default UserDashboard;
+export default Dashboard;
