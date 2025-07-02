@@ -12,26 +12,11 @@ class MenuItemSeeder extends Seeder
 {
     public function run(): void
     {
-        // URLs correctas
-        $urlDashboard = Url::firstOrCreate(
-            ['ruta' => '/dashboard'],
-            ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
-        );
-
-        $urlUsuariosAdmin = Url::firstOrCreate(
-            ['ruta' => '/admin/usuarios'],
-            ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
-        );
-
-        $urlRolesAdmin = Url::firstOrCreate(
-            ['ruta' => '/admin/roles'],
-            ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
-        );
-
-        $urlAdmin = Url::firstOrCreate(
-            ['ruta' => '/admin'],
-            ['created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
-        );
+        // Obtener URLs ya creadas desde UrlsSeeder
+        $urlDashboard = Url::where('ruta', '/dashboard')->first();
+        $urlUsuariosAdmin = Url::where('ruta', '/admin/usuarios')->first();
+        $urlRolesAdmin = Url::where('ruta', '/admin/roles')->first();
+        $urlAdmin = Url::where('ruta', '/admin')->first();
 
         // Menús jerárquicos
         $menu1 = MenuItem::create([
@@ -47,7 +32,7 @@ class MenuItemSeeder extends Seeder
             'id_padre' => $menu1->id,
             'nivel' => 2,
             'item' => 'Usuarios',
-            'id_url' => $urlUsuariosAdmin->id, 
+            'id_url' => optional($urlUsuariosAdmin)->id,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
@@ -56,7 +41,7 @@ class MenuItemSeeder extends Seeder
             'id_padre' => $menu1->id,
             'nivel' => 2,
             'item' => 'Roles',
-            'id_url' => $urlRolesAdmin->id,
+            'id_url' => optional($urlRolesAdmin)->id,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
@@ -65,7 +50,7 @@ class MenuItemSeeder extends Seeder
             'id_padre' => null,
             'nivel' => 1,
             'item' => 'Dashboard',
-            'id_url' => $urlDashboard->id,
+            'id_url' => optional($urlDashboard)->id,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
@@ -74,7 +59,7 @@ class MenuItemSeeder extends Seeder
             'id_padre' => null,
             'nivel' => 1,
             'item' => 'DashboardAdmin',
-            'id_url' => $urlAdmin->id,
+            'id_url' => optional($urlAdmin)->id,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);
