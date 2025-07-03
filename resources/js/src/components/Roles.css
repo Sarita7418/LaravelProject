@@ -13,6 +13,34 @@
   text-align: center;
 }
 
+.toggle-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  border: 2px solid #3b82f6;
+  background: #2a2a2a;
+  color: #3b82f6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.toggle-btn:hover {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
 .roles-table {
   width: 100%;
   border-collapse: collapse;
@@ -29,6 +57,26 @@
 .roles-table th {
   background-color: #2b2b2b;
   font-weight: bold;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status.active {
+  background: #065f46;
+  color: #10b981;
+  border: 1px solid #10b981;
+}
+
+.status.inactive {
+  background: #7f1d1d;
+  color: #ef4444;
+  border: 1px solid #ef4444;
 }
 
 .delete-btn,
@@ -74,6 +122,22 @@
   background-color: #4b5563;
 }
 
+.reactivate-btn {
+  background: #15803d;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  margin-right: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.reactivate-btn:hover {
+  background: #166534;
+}
+
 .form-container {
   margin-top: 30px;
 }
@@ -112,4 +176,3 @@
 .edit-btn:hover {
   background-color: #2563eb;
 }
-

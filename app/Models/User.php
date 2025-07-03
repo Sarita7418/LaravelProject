@@ -17,6 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'id_rol',
+        'estado',
     ];
 
     protected $hidden = [
@@ -27,6 +28,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'estado' => 'boolean',
     ];
 
     public function role()
@@ -42,5 +44,17 @@ class User extends Authenticatable
     public function codigoVerificacion()
     {
         return $this->hasOne(CodigoVerificacion::class, 'usuario_id');
+    }
+
+   
+    public function scopeActivos($query)
+    {
+        return $query->where('estado', 1);
+    }
+
+    
+    public function scopeInactivos($query)
+    {
+        return $query->where('estado', 0);
     }
 }

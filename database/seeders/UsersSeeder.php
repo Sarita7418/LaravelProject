@@ -16,6 +16,7 @@ class UsersSeeder extends Seeder
                 'email' => 'admin@gmail.com',
                 'password' => bcrypt('admin123'),
                 'id_rol' => 1,
+                'estado' => 1,
                 'habilitado_2fa' => false,
             ],
             [
@@ -23,6 +24,7 @@ class UsersSeeder extends Seeder
                 'email' => 'user@gmail.com',
                 'password' => bcrypt('user123'),
                 'id_rol' => 2,
+                'estado' => 1,
                 'habilitado_2fa' => false,
             ],
             [
@@ -30,6 +32,7 @@ class UsersSeeder extends Seeder
                 'email' => 'mg26667418@gmail.com',
                 'password' => bcrypt('contra123'),
                 'id_rol' => 1,
+                'estado' => 1,
                 'habilitado_2fa' => true,
             ],
             [
@@ -37,6 +40,7 @@ class UsersSeeder extends Seeder
                 'email' => 'maumenachotri224@gmail.com',
                 'password' => bcrypt('contra123'),
                 'id_rol' => 1,
+                'estado' => 1,
                 'habilitado_2fa' => true,
             ],
             [
@@ -44,6 +48,7 @@ class UsersSeeder extends Seeder
                 'email' => 'kiaritapino11@gmail.com',
                 'password' => bcrypt('contra123'),
                 'id_rol' => 1,
+                'estado' => 1,
                 'habilitado_2fa' => true,
             ],
             [
@@ -51,6 +56,7 @@ class UsersSeeder extends Seeder
                 'email' => 'evelynburgoa04@gmail.com',
                 'password' => bcrypt('contra123'),
                 'id_rol' => 1,
+                'estado' => 1,
                 'habilitado_2fa' => true,
             ],
             [
@@ -58,6 +64,7 @@ class UsersSeeder extends Seeder
                 'email' => 'huanapacowara@gmail.com',
                 'password' => bcrypt('contra123'),
                 'id_rol' => 1,
+                'estado' => 1,
                 'habilitado_2fa' => true,
             ],
         ];
