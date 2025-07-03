@@ -20,14 +20,13 @@ class AutenticacionDosPasosController extends Controller
 
         $codigo = rand(100000, 999999);
 
-        CodigoVerificacion::updateOrCreate(
-            ['usuario_id' => $usuario->id],
-            [
-                'codigo' => $codigo,
-                'expira_en' => Carbon::now()->addMinutes(10),
-                'habilitado' => false
-            ]
-        );
+        // Crear registro dinámicamente
+        CodigoVerificacion::create([
+            'usuario_id' => $usuario->id,
+            'codigo' => $codigo,
+            'expira_en' => Carbon::now()->addMinutes(10),
+            'habilitado' => false
+        ]);
 
         Mail::raw("Tu código de verificación es: {$codigo}", function ($message) use ($usuario) {
             $message->to($usuario->email)
@@ -51,21 +50,16 @@ class AutenticacionDosPasosController extends Controller
             return response()->json(['error' => 'No autenticado.'], 401);
         }
 
-        $registro = CodigoVerificacion::where('usuario_id', $usuario->id)->first();
+        $registro = CodigoVerificacion::where('usuario_id', $usuario->id)
+            ->where('codigo', $request->codigo)
+            ->first();
 
-        if (!$registro || !$registro->codigo || Carbon::now()->gt($registro->expira_en)) {
+        if (!$registro || Carbon::now()->gt($registro->expira_en)) {
             return response()->json(['error' => 'Código expirado o inválido'], 400);
         }
 
-        if ($registro->codigo !== $request->codigo) {
-            return response()->json(['error' => 'Código incorrecto'], 400);
-        }
-
-        $registro->update([
-            'codigo' => null,
-            'expira_en' => null,
-            'habilitado' => true
-        ]);
+        // Eliminar el registro usado
+        $registro->delete();
 
         $usuario = User::with('role')->find($usuario->id);
 
@@ -83,12 +77,8 @@ class AutenticacionDosPasosController extends Controller
             return response()->json(['error' => 'No autenticado.'], 401);
         }
 
-        CodigoVerificacion::updateOrCreate(
-            ['usuario_id' => $usuario->id],
-            ['habilitado' => true]
-        );
-
-        return response()->json(['mensaje' => 'Autenticación de dos pasos habilitada']);
+        // Esto puede mantenerse si usas otro lugar para marcar usuarios con 2FA activo.
+        return response()->json(['mensaje' => 'Funcionalidad en desuso con sistema dinámico.']);
     }
 
     public function deshabilitarDosPasos(Request $request)
@@ -98,15 +88,8 @@ class AutenticacionDosPasosController extends Controller
             return response()->json(['error' => 'No autenticado.'], 401);
         }
 
-        $registro = CodigoVerificacion::where('usuario_id', $usuario->id)->first();
-
-        if ($registro) {
-            $registro->update([
-                'habilitado' => false,
-                'codigo' => null,
-                'expira_en' => null
-            ]);
-        }
+        // Borra cualquier código pendiente
+        CodigoVerificacion::where('usuario_id', $usuario->id)->delete();
 
         return response()->json(['mensaje' => 'Autenticación de dos pasos deshabilitada']);
     }
