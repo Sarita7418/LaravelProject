@@ -30,39 +30,38 @@ Route::middleware([
        Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
 
        // ✅ Endpoint que devuelve los datos del usuario logueado, incluyendo rol y permisos
-      Route::get('/user', function (Request $request) {
-    $user = $request->user()->load('role.permisos.url');
+       Route::get('/user', function (Request $request) {
+           $user = $request->user()->load('role.permisos.menuItem.url');
 
-    // En vez de pluck('descripcion'), pluck el nombre del ítem o la ruta
-    $permisos = $user->role->permisos->map(function ($permiso) {
-        return [
-            'item' => $permiso->item,
-            'ruta' => optional($permiso->url)->ruta,
-        ];
-    });
+           $permisos = $user->role->permisos->map(function ($permiso) {
+               return [
+                   'item' => optional($permiso->menuItem)->item,
+                   'ruta' => optional($permiso->menuItem?->url)->ruta,
+                   'componente' => optional($permiso->menuItem?->url)->componente,
+               ];
+           });
 
-    return [
-        'id' => $user->id,
-        'name' => $user->name,
-        'email' => $user->email,
-        'dos_pasos_habilitado' => $user->dos_pasos_habilitado,
-        'rol' => $user->role->descripcion,
-        'permisos' => $permisos,
-    ];
-})->middleware('auth:sanctum');
-
+           return [
+               'id' => $user->id,
+               'name' => $user->name,
+               'email' => $user->email,
+               'dos_pasos_habilitado' => $user->dos_pasos_habilitado,
+               'rol' => $user->role->descripcion,
+               'permisos' => $permisos,
+           ];
+       })->middleware('auth:sanctum');
 
        // ✅ NUEVO: Endpoint para obtener rutas reales (URL) accesibles para el usuario autenticado
        Route::get('/accesos', function (Request $request) {
            $user = $request->user();
 
-           $menuItems = $user->role->permisos()->with('url')->get();
+           $permisos = $user->role->permisos()->with('menuItem.url')->get();
 
-           $accesos = $menuItems->map(function ($item) {
+           $accesos = $permisos->map(function ($permiso) {
                return [
-                   'item' => $item->item,
-                   'nivel' => $item->nivel,
-                   'ruta' => optional($item->url)->ruta,
+                   'item' => optional($permiso->menuItem)->item,
+                   'nivel' => optional($permiso->menuItem)->nivel,
+                   'ruta' => optional($permiso->menuItem?->url)->ruta,
                ];
            });
 
@@ -72,21 +71,20 @@ Route::middleware([
            ]);
        })->middleware('auth:sanctum');
 
-// api.php
-Route::get('/menu-items', function (Request $request) {
-    $user = $request->user();
+       // ✅ Endpoint para construir menú jerárquico filtrado por permisos del rol
+       Route::get('/menu-items', function (Request $request) {
+           $user = $request->user();
 
-    // Cargar solo los ítems permitidos por el rol, desde raíz
-    $menuItemsPermitidos = $user->role->permisos()
-        ->whereNull('id_padre') // nivel 1
-        ->with(['hijosRecursive', 'url'])
-        ->get();
+           $menuItemsPermitidos = $user->role->permisos()
+               ->with('menuItem.hijosRecursive.url', 'menuItem.url')
+               ->get()
+               ->pluck('menuItem')
+               ->filter() // eliminar nulls por si hay permisos sin menuItem
+               ->whereNull('id_padre')
+               ->values();
 
-    return response()->json($menuItemsPermitidos);
-})->middleware('auth:sanctum');
-
-
-
+           return response()->json($menuItemsPermitidos);
+       })->middleware('auth:sanctum');
 
        Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');
 

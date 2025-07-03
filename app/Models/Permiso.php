@@ -15,8 +15,9 @@ class Permiso extends Model
         return $this->belongsTo(MenuItem::class, 'id_menu_item');
     }
 
-    public function rol()
-    {
-        return $this->belongsTo(Role::class, 'id_rol');
-    }
+    public function roles()
+{
+    return $this->belongsToMany(Role::class, 'permiso_rol', 'permiso_id', 'rol_id');
+}
+
 }

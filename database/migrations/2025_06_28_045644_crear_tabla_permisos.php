@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void {
         Schema::create('permisos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('id_menu_item')->constrained('menu_items')->onDelete('cascade');
-            $table->foreignId('id_rol')->constrained('roles')->onDelete('cascade');
-            $table->timestamps();
+    $table->id();
+    $table->unsignedBigInteger('id_menu_item');
+    $table->timestamps();
 
-            $table->unique(['id_menu_item', 'id_rol']); // No se repiten permisos duplicados
-        });
+    $table->foreign('id_menu_item')->references('id')->on('menu_items')->onDelete('cascade');
+});
+
     }
 
     public function down(): void {

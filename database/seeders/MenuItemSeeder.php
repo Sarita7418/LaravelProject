@@ -57,27 +57,5 @@ class MenuItemSeeder extends Seeder
             'updated_at' => Carbon::now()
         ]);
 
-        // Roles
-        $adminRole = Role::where('descripcion', 'admin')->first();
-        $userRole = Role::where('descripcion', 'user')->first();
-
-        if ($adminRole) {
-            $adminRole->permisos()->attach([
-                $dashboardMenu->id,
-                $adminMenu->id,
-                $usuariosMenu->id,
-                $rolesMenu->id,
-            ], [
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ]);
-        }
-
-        if ($userRole) {
-            $userRole->permisos()->attach([$dashboardMenu->id], [
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ]);
-        }
     }
 }

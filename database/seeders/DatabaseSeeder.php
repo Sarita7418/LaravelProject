@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
             UsersSeeder::class,
             UrlsSeeder::class,
             MenuItemSeeder::class,
+            PermisoSeeder::class,       
+            PermisoRolSeeder::class,    
         ]);
     }
 }
