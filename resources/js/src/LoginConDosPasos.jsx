@@ -42,7 +42,12 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
 
     } catch (err) {
       console.error('Error al iniciar sesión', err)
-      setError('Credenciales inválidas o error de red.')
+      
+      if (err.response && err.response.status === 403) {
+        setError(err.response.data.message || 'Tu cuenta está inactiva.')
+      } else {
+        setError('Credenciales inválidas o error de red.')
+      }
     }
   }
 
