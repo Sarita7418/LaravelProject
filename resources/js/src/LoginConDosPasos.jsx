@@ -25,34 +25,20 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     e.preventDefault()
 
     try {
-      // Paso 1: solicitar token CSRF
       await axios.get('/sanctum/csrf-cookie')
-
-      // Paso 2: login
       await axios.post('/api/login', { email, password }, { withCredentials: true })
 
-      // Paso 3: obtener usuario autenticado
       const res = await axios.get('/api/user')
       console.log('Respuesta completa del backend:', res.data)
 
       const permisos = res.data.permisos
       const rutas = extraerRutasDesdePermisos(permisos)
-      const dosPasosHabilitado = res.data.dos_pasos_habilitado
 
-
-      console.log('Permisos del usuario:', permisos)
-      console.log('Dos pasos habilitado:', dosPasosHabilitado)
-
-      if (dosPasosHabilitado) {
-        setUsuarioEmail(res.data.email)
-        setMostrarDosPasos(true)
-        if (setPendingTwoFactor) {
-          setPendingTwoFactor(true)
-        }
-      } else {
-        completarLogin(rutas) // ← esto sí es un array de strings: ['/admin', '/dashboard', etc]
+      setUsuarioEmail(res.data.email)
+      setMostrarDosPasos(true)
+      if (setPendingTwoFactor) {
+        setPendingTwoFactor(true)
       }
-
 
     } catch (err) {
       console.error('Error al iniciar sesión', err)
@@ -68,7 +54,6 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       setPendingTwoFactor(false)
     }
 
-    // Redireccionar
     if (rutas.includes('/admin')) {
       navigate('/admin')
     } else if (rutas.includes('/dashboard')) {
@@ -78,27 +63,21 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     }
   }
 
-
-
-
   const manejarVerificacionExitosa = async () => {
-  console.log('Verificación 2FA exitosa')
+    console.log('Verificación 2FA exitosa')
 
-  try {
-    const res = await axios.get('/api/user')
-    const permisos = res.data.permisos
-    const rutas = extraerRutasDesdePermisos(permisos)
+    try {
+      const res = await axios.get('/api/user')
+      const permisos = res.data.permisos
+      const rutas = extraerRutasDesdePermisos(permisos)
 
-    completarLogin(rutas)
-  } catch (error) {
-    console.error('Error al obtener usuario después del 2FA:', error)
-    setError('Error al cargar los datos del usuario.')
-    navigate('/login')
+      completarLogin(rutas)
+    } catch (error) {
+      console.error('Error al obtener usuario después del 2FA:', error)
+      setError('Error al cargar los datos del usuario.')
+      navigate('/login')
+    }
   }
-}
-
-
-
 
   const manejarCancelarDosPasos = async () => {
     setMostrarDosPasos(false)
