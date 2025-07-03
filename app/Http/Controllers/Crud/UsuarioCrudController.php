@@ -11,7 +11,8 @@ class UsuarioCrudController extends Controller
 {
     public function index()
     {
-        $usuarios = User::with('role')->get();
+        // Solo mostrar usuarios activos (estado = 1)
+        $usuarios = User::with('role')->where('estado', 1)->get();
         return response()->json($usuarios);
     }
 
@@ -19,7 +20,7 @@ class UsuarioCrudController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:usuarios,email', // Cambio aquí: usuarios en lugar de users
+            'email' => 'required|string|email|max:255|unique:usuarios,email',
             'password' => 'required|string|min:6',
             'id_rol' => 'required|exists:roles,id',
         ]);
@@ -29,6 +30,7 @@ class UsuarioCrudController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'id_rol' => $request->id_rol,
+            'estado' => 1, // Por defecto activo
         ]);
 
         $usuario->load('role');
@@ -47,16 +49,18 @@ class UsuarioCrudController extends Controller
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
-        $usuario->delete();
+        // En lugar de eliminar, cambiar estado a 0 (inactivo)
+        $usuario->estado = 0;
+        $usuario->save();
 
-        return response()->json(['message' => 'Usuario eliminado correctamente']);
+        return response()->json(['message' => 'Usuario desactivado correctamente']);
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:usuarios,email,' . $id, // Cambio aquí: usuarios en lugar de users
+            'email' => 'required|string|email|max:255|unique:usuarios,email,' . $id,
             'password' => 'nullable|string|min:6',
             'id_rol' => 'required|exists:roles,id',
         ]);
@@ -70,7 +74,7 @@ class UsuarioCrudController extends Controller
         $usuario->name = $request->name;
         $usuario->email = $request->email;
         $usuario->id_rol = $request->id_rol;
-                
+                         
         // Solo actualizar la contraseña si se proporciona
         if ($request->filled('password')) {
             $usuario->password = bcrypt($request->password);
@@ -85,9 +89,32 @@ class UsuarioCrudController extends Controller
         ]);
     }
 
+    // Método adicional para reactivar un usuario
+    public function reactivar($id)
+    {
+        $usuario = User::find($id);
+
+        if (!$usuario) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+
+        $usuario->estado = 1;
+        $usuario->save();
+
+        return response()->json(['message' => 'Usuario reactivado correctamente']);
+    }
+
+    // Método para ver usuarios inactivos
+    public function inactivos()
+    {
+        $usuarios = User::with('role')->where('estado', 0)->get();
+        return response()->json($usuarios);
+    }
+
     public function getRoles()
     {
-        $roles = Role::all();
+        // Solo obtener roles activos para la selección
+        $roles = Role::where('estado', 1)->get();
         return response()->json($roles);
     }
 }

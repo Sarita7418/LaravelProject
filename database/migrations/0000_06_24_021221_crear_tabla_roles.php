@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
             $table->string('descripcion')->unique(); // Ej: admin, user
+            $table->boolean('estado')->default(1); // 1 = activo, 0 = inactivo
             $table->timestamps();
         });
     }

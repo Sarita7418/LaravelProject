@@ -4,6 +4,7 @@ import './Usuarios.css'
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([])
+  const [usuariosInactivos, setUsuariosInactivos] = useState([])
   const [roles, setRoles] = useState([])
   const [formVisible, setFormVisible] = useState(false)
   const [name, setName] = useState('')
@@ -11,11 +12,13 @@ function Usuarios() {
   const [password, setPassword] = useState('')
   const [idRol, setIdRol] = useState('')
   const [loading, setLoading] = useState(false)
-  const [usuarioEditando, setUsuarioEditando] = useState(null) // ID del usuario a editar
+  const [usuarioEditando, setUsuarioEditando] = useState(null)
+  const [mostrarInactivos, setMostrarInactivos] = useState(false)
 
   useEffect(() => {
     axios.get('/sanctum/csrf-cookie').then(() => {
       fetchUsuarios()
+      fetchUsuariosInactivos()
       fetchRoles()
     })
   }, [])
@@ -29,6 +32,15 @@ function Usuarios() {
     }
   }
 
+  const fetchUsuariosInactivos = async () => {
+    try {
+      const res = await axios.get('/api/usuarios/inactivos')
+      setUsuariosInactivos(res.data)
+    } catch (error) {
+      console.error('Error al obtener usuarios inactivos:', error)
+    }
+  }
+
   const fetchRoles = async () => {
     try {
       const res = await axios.get('/api/usuarios/roles')
@@ -39,12 +51,25 @@ function Usuarios() {
   }
 
   const eliminarUsuario = async (id) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+    if (window.confirm('¿Estás seguro de que quieres desactivar este usuario?')) {
       try {
         await axios.delete(`/api/usuarios/${id}`)
         fetchUsuarios()
+        fetchUsuariosInactivos()
       } catch (error) {
-        console.error('Error al eliminar usuario:', error)
+        console.error('Error al desactivar usuario:', error)
+      }
+    }
+  }
+
+  const reactivarUsuario = async (id) => {
+    if (window.confirm('¿Estás seguro de que quieres reactivar este usuario?')) {
+      try {
+        await axios.put(`/api/usuarios/${id}/reactivar`)
+        fetchUsuarios()
+        fetchUsuariosInactivos()
+      } catch (error) {
+        console.error('Error al reactivar usuario:', error)
       }
     }
   }
@@ -141,39 +166,68 @@ function Usuarios() {
     <div className="usuarios-container">
       <h2 className="usuarios-title">Usuarios</h2>
 
+      <div className="toggle-container">
+        <button 
+          className={`toggle-btn ${!mostrarInactivos ? 'active' : ''}`}
+          onClick={() => setMostrarInactivos(false)}
+        >
+          Usuarios Activos ({usuarios.length})
+        </button>
+        <button 
+          className={`toggle-btn ${mostrarInactivos ? 'active' : ''}`}
+          onClick={() => setMostrarInactivos(true)}
+        >
+          Usuarios Inactivos ({usuariosInactivos.length})
+        </button>
+      </div>
+
       <table className="usuarios-table">
         <thead>
           <tr>
             <th>Nombre</th>
             <th>Email</th>
             <th>Rol</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {usuarios.map((usuario) => (
+          {(mostrarInactivos ? usuariosInactivos : usuarios).map((usuario) => (
             <tr key={usuario.id}>
               <td>{usuario.name}</td>
               <td>{usuario.email}</td>
               <td>{usuario.role?.descripcion || 'Sin rol'}</td>
               <td>
-                <button className="edit-btn" onClick={() => iniciarEdicion(usuario)}>
-                  Editar
-                </button>
-                <button className="delete-btn" onClick={() => eliminarUsuario(usuario.id)}>
-                  Eliminar
-                </button>
+                <span className={`status ${usuario.estado ? 'active' : 'inactive'}`}>
+                  {usuario.estado ? 'Activo' : 'Inactivo'}
+                </span>
+              </td>
+              <td>
+                {mostrarInactivos ? (
+                  <button className="reactivate-btn" onClick={() => reactivarUsuario(usuario.id)}>
+                    Reactivar
+                  </button>
+                ) : (
+                  <>
+                    <button className="edit-btn" onClick={() => iniciarEdicion(usuario)}>
+                      Editar
+                    </button>
+                    <button className="delete-btn" onClick={() => eliminarUsuario(usuario.id)}>
+                      Desactivar
+                    </button>
+                  </>
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {!formVisible ? (
+      {!mostrarInactivos && !formVisible ? (
         <button className="add-btn" onClick={() => setFormVisible(true)}>
           Añadir Usuario
         </button>
-      ) : (
+      ) : !mostrarInactivos ? (
         <div className="form-container">
           <label className="form-label">Nombre</label>
           <input
@@ -242,7 +296,7 @@ function Usuarios() {
             </button>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   )
 }
