@@ -94,11 +94,15 @@ Route::middleware([
     Route::post('/roles', [RolCrudController::class, 'store'])->middleware('auth:sanctum');
     Route::delete('/roles/{id}', [RolCrudController::class, 'destroy'])->middleware('auth:sanctum');
     Route::put('/roles/{id}', [RolCrudController::class, 'update'])->middleware('auth:sanctum');
+    Route::get('/roles/inactivos', [RolCrudController::class, 'inactivos'])->middleware('auth:sanctum');
+    Route::put('/roles/{id}/reactivar', [RolCrudController::class, 'reactivar'])->middleware('auth:sanctum');
 
     Route::get('/usuarios', [UsuarioCrudController::class, 'index'])->middleware('auth:sanctum');
     Route::post('/usuarios', [UsuarioCrudController::class, 'store'])->middleware('auth:sanctum');
     Route::delete('/usuarios/{id}', [UsuarioCrudController::class, 'destroy'])->middleware('auth:sanctum');
     Route::put('/usuarios/{id}', [UsuarioCrudController::class, 'update'])->middleware('auth:sanctum');
     Route::get('/usuarios/roles', [UsuarioCrudController::class, 'getRoles'])->middleware('auth:sanctum');
+    Route::get('/usuarios/inactivos', [UsuarioCrudController::class, 'inactivos'])->middleware('auth:sanctum');
+    Route::put('/usuarios/{id}/reactivar', [UsuarioCrudController::class, 'reactivar'])->middleware('auth:sanctum');
 
 });

@@ -4,14 +4,17 @@ import './Roles.css'
 
 function Roles() {
   const [roles, setRoles] = useState([])
+  const [rolesInactivos, setRolesInactivos] = useState([])
   const [formVisible, setFormVisible] = useState(false)
   const [descripcion, setDescripcion] = useState('')
   const [loading, setLoading] = useState(false)
-  const [rolEditando, setRolEditando] = useState(null) // ID del rol a editar
+  const [rolEditando, setRolEditando] = useState(null)
+  const [mostrarInactivos, setMostrarInactivos] = useState(false)
 
   useEffect(() => {
     axios.get('/sanctum/csrf-cookie').then(() => {
       fetchRoles()
+      fetchRolesInactivos()
     })
   }, [])
 
@@ -24,12 +27,36 @@ function Roles() {
     }
   }
 
-  const eliminarRol = async (id) => {
+  const fetchRolesInactivos = async () => {
     try {
-      await axios.delete(`/api/roles/${id}`)
-      fetchRoles()
+      const res = await axios.get('/api/roles/inactivos')
+      setRolesInactivos(res.data)
     } catch (error) {
-      console.error('Error al eliminar rol:', error)
+      console.error('Error al obtener roles inactivos:', error)
+    }
+  }
+
+  const eliminarRol = async (id) => {
+    if (window.confirm('¿Estás seguro de que quieres desactivar este rol?')) {
+      try {
+        await axios.delete(`/api/roles/${id}`)
+        fetchRoles()
+        fetchRolesInactivos()
+      } catch (error) {
+        console.error('Error al desactivar rol:', error)
+      }
+    }
+  }
+
+  const reactivarRol = async (id) => {
+    if (window.confirm('¿Estás seguro de que quieres reactivar este rol?')) {
+      try {
+        await axios.put(`/api/roles/${id}/reactivar`)
+        fetchRoles()
+        fetchRolesInactivos()
+      } catch (error) {
+        console.error('Error al reactivar rol:', error)
+      }
     }
   }
 
@@ -77,35 +104,66 @@ function Roles() {
     <div className="roles-container">
       <h2 className="roles-title">Roles</h2>
 
+      <div className="toggle-container">
+        <button 
+          className={`toggle-btn ${!mostrarInactivos ? 'active' : ''}`}
+          onClick={() => setMostrarInactivos(false)}
+        >
+          Roles Activos ({roles.length})
+        </button>
+        <button 
+          className={`toggle-btn ${mostrarInactivos ? 'active' : ''}`}
+          onClick={() => setMostrarInactivos(true)}
+        >
+          Roles Inactivos ({rolesInactivos.length})
+        </button>
+      </div>
+
       <table className="roles-table">
         <thead>
           <tr>
+            <th>ID</th>
             <th>Descripción</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {roles.map((rol) => (
+          {(mostrarInactivos ? rolesInactivos : roles).map((rol) => (
             <tr key={rol.id}>
+              <td>{rol.id}</td>
               <td>{rol.descripcion}</td>
               <td>
-                <button className="edit-btn" onClick={() => iniciarEdicion(rol)}>
-                  Editar
-                </button>
-                <button className="delete-btn" onClick={() => eliminarRol(rol.id)}>
-                  Eliminar
-                </button>
+                <span className={`status ${rol.estado ? 'active' : 'inactive'}`}>
+                  {rol.estado ? 'Activo' : 'Inactivo'}
+                </span>
+              </td>
+              <td>
+                {mostrarInactivos ? (
+                  <button className="reactivate-btn" onClick={() => reactivarRol(rol.id)}>
+                    Reactivar
+                  </button>
+                ) : (
+                  <>
+                    <button className="edit-btn" onClick={() => iniciarEdicion(rol)}>
+                      Editar
+                    </button>
+                    <button className="delete-btn" onClick={() => eliminarRol(rol.id)}>
+                      Desactivar
+                    </button>
+                  </>
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {!formVisible ? (
+      {!mostrarInactivos && !formVisible ? (
         <button className="add-btn" onClick={() => setFormVisible(true)}>
           Añadir Rol
         </button>
-      ) : (
+      ) : !mostrarInactivos ? (
         <div className="form-container">
           <label className="form-label">Descripción</label>
           <input
@@ -134,7 +192,7 @@ function Roles() {
             </button>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

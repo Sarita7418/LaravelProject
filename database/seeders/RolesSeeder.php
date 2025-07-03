@@ -14,12 +14,14 @@ class RolesSeeder extends Seeder
             [
                 'id' => 1,
                 'descripcion' => 'admin',
+                'estado' => 1, // activo
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
             [
                 'id' => 2,
                 'descripcion' => 'user',
+                'estado' => 1, // activo
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]
