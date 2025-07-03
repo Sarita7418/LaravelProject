@@ -14,9 +14,9 @@ class MenuItemSeeder extends Seeder
     {
         // Obtener URLs
         $urlDashboard = Url::where('ruta', '/dashboard')->first();
-        $urlAdmin = Url::where('ruta', '/dashboard/admin')->first();
-        $urlUsuarios = Url::where('ruta', '/dashboard/admin/usuarios')->first();
-        $urlRoles = Url::where('ruta', '/dashboard/admin/roles')->first();
+        $urlAdmin = Url::where('ruta', '/dashboard/administracion')->first();
+        $urlUsuarios = Url::where('ruta', '/dashboard/administracion/usuarios')->first();
+        $urlRoles = Url::where('ruta', '/dashboard/administracion/roles')->first();
 
         // Nivel 1
         $dashboardMenu = MenuItem::create([

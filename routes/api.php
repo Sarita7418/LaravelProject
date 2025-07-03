@@ -72,11 +72,21 @@ Route::middleware([
            ]);
        })->middleware('auth:sanctum');
 
-      // api.php
-Route::get('/menu-items', function () {
-    $menuItems = \App\Models\MenuItem::with(['hijos.url', 'url'])->whereNull('id_padre')->get();
-    return response()->json($menuItems);
+// api.php
+Route::get('/menu-items', function (Request $request) {
+    $user = $request->user();
+
+    // Cargar solo los ítems permitidos por el rol, desde raíz
+    $menuItemsPermitidos = $user->role->permisos()
+        ->whereNull('id_padre') // nivel 1
+        ->with(['hijosRecursive', 'url'])
+        ->get();
+
+    return response()->json($menuItemsPermitidos);
 })->middleware('auth:sanctum');
+
+
+
 
        Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');
 

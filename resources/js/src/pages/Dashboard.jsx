@@ -1,36 +1,34 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from '../axios'; // Usa tu instancia de Axios
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import axios from '../axios'
+import MenuJerarquico from '../components/MenuJerarquico' // <-- importa tu menú dinámico
 
-const UserDashboard = ({ setAuth, setRole }) => {
-  const navigate = useNavigate();
+const Dashboard = ({ setAuth, setRole }) => {
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
     try {
-      // Paso 1: CSRF cookie
-      await axios.get('/sanctum/csrf-cookie');
-
-      // Paso 2: Logout
-      await axios.post('/api/logout');
-
-      // Paso 3: Limpiar sesión
-      setAuth(false);
-      setRole(null);
-
-      // Paso 4: Redirigir a login
-      navigate('/login');
+      await axios.get('/sanctum/csrf-cookie')
+      await axios.post('/api/logout')
+      setAuth(false)
+      setRole(null)
+      navigate('/login')
     } catch (err) {
-      console.error('Error al cerrar sesión', err);
+      console.error('Error al cerrar sesión', err)
     }
-  };
+  }
 
-    return (
-      <div>
-        <h1>Bienvenido Usuario</h1>
-        <p>Esta es la vista del usuario normal.</p>
+  return (
+    <div style={{ display: 'flex', height: '100vh' }}>
+     
+
+      <div style={{ flex: 1, padding: '1rem' }}>
+        <h1>Bienvenido</h1>
+        <p>Este es tu panel principal. El contenido variará según tus permisos.</p>
         <button onClick={handleLogout}>Cerrar sesión</button>
       </div>
-    );
-};
+    </div>
+  )
+}
 
-export default UserDashboard;
+export default Dashboard

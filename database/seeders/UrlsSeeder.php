@@ -18,19 +18,19 @@ class UrlsSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ],
             [
-                'ruta' => '/dashboard/admin',
+                'ruta' => '/dashboard/administracion',
                 'componente' => 'Administracion',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
             [
-                'ruta' => '/dashboard/admin/usuarios',
+                'ruta' => '/dashboard/administracion/usuarios',
                 'componente' => 'Usuarios',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
             [
-                'ruta' => '/dashboard/admin/roles',
+                'ruta' => '/dashboard/administracion/roles',
                 'componente' => 'Roles',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
