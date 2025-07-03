@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->unsignedBigInteger('id_rol')->nullable();
+            $table->boolean('estado')->default(1); // 1 = activo, 0 = inactivo
             $table->timestamps();
 
             $table->foreign('id_rol')->references('id')->on('roles')->onDelete('set null');

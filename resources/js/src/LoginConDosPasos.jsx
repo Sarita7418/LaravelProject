@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from './axios'
 import AutenticacionDosPasos from './AutenticacionDosPasos'
@@ -10,6 +10,27 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   const [error, setError] = useState('')
   const [mostrarDosPasos, setMostrarDosPasos] = useState(false)
   const [usuarioEmail, setUsuarioEmail] = useState('')
+
+  // Limpiar estado al montar el componente
+  useEffect(() => {
+    const limpiarEstado = async () => {
+      setMostrarDosPasos(false)
+      setUsuarioEmail('')
+      setError('')
+      if (setPendingTwoFactor) {
+        setPendingTwoFactor(false)
+      }
+
+      try {
+        // Cerrar cualquier sesión pendiente
+        await axios.post('/api/logout')
+      } catch (error) {
+        // Ignorar errores de logout si no hay sesión
+      }
+    }
+
+    limpiarEstado()
+  }, [setPendingTwoFactor])
 
   const extraerRutasDesdePermisos = (permisos) => {
     if (!Array.isArray(permisos)) return []
@@ -42,7 +63,12 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
 
     } catch (err) {
       console.error('Error al iniciar sesión', err)
-      setError('Credenciales inválidas o error de red.')
+      
+      if (err.response && err.response.status === 403) {
+        setError(err.response.data.message || 'Tu cuenta está inactiva.')
+      } else {
+        setError('Credenciales inválidas o error de red.')
+      }
     }
   }
 
@@ -94,6 +120,19 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     }
   }
 
+  // Limpiar estado cuando cambia el email
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value)
+    if (mostrarDosPasos) {
+      setMostrarDosPasos(false)
+      setUsuarioEmail('')
+      setError('')
+      if (setPendingTwoFactor) {
+        setPendingTwoFactor(false)
+      }
+    }
+  }
+
   if (mostrarDosPasos) {
     return (
       <AutenticacionDosPasos
@@ -112,7 +151,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
           type="email"
           placeholder="Correo"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleEmailChange}
         /><br />
         <input
           type="password"
