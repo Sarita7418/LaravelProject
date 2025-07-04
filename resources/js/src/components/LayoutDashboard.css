@@ -5,12 +5,34 @@
 
 .sidebar {
   width: 240px;
-    background-color: #333;
+  background-color: #333;
   padding: 1rem;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .contenido {
   flex-grow: 1;
   padding: 2rem;
+}
+
+
+
+.boton-logout {
+  margin-top: 2rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #e53935;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.boton-logout:hover {
+  background-color: #c62828;
 }

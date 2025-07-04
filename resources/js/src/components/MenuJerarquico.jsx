@@ -22,6 +22,22 @@ const MenuJerarquico = () => {
       [id]: !prev[id]
     }))
   }
+  
+  const handleLogout = async () => {
+    try {
+      await axios.post('/api/logout');
+    } catch (err) {
+      console.warn('Logout falló, pero igual limpiamos sesión');
+    } finally {
+      setAuth(false);
+      setRole(null);
+      localStorage.clear();
+      navigate('/login', { replace: true });
+    }
+  };
+
+
+
 
   const renderMenu = (items) => (
     <ul className="submenu">
@@ -48,12 +64,16 @@ const MenuJerarquico = () => {
     </ul>
   )
 
-  // Mostrar solo los hijos de Dashboard (nivel 2)
   const hijosDeDashboard = menuItems[0]?.hijos_recursive || []
 
   return (
     <div className="sidebar-menu">
       {renderMenu(hijosDeDashboard)}
+
+      <button className="boton-logout" onClick={handleLogout}>
+        Cerrar sesión
+      </button>
+
     </div>
   )
 }
