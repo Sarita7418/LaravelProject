@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('urls', function (Blueprint $table) {
-            $table->id();
-            $table->string('ruta')->unique(); // Ej: /admin/usuarios, /api/users
-            $table->string('tipo')->default('frontend'); // frontend o backend (opcional)
-            $table->timestamps();
-        });
+       Schema::create('urls', function (Blueprint $table) {
+    $table->id();
+    $table->string('ruta')->unique(); // Ej: /admin/usuarios
+    $table->string('componente')->nullable(); // Ya no uses "->after()"
+    $table->string('tipo')->default('frontend'); // frontend o backend (opcional)
+    $table->timestamps();
+});
+
     }
 
     public function down(): void {

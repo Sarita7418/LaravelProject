@@ -15,68 +15,100 @@ use App\Http\Controllers\Admin\RolPermisoController;
 use App\Http\Controllers\Crud\RolCrudController;
 use App\Http\Controllers\Crud\UsuarioCrudController;
 
+use App\Models\MenuItem;
+
+use App\Models\Permiso;
+
+
 Route::middleware([
-    EnsureFrontendRequestsAreStateful::class,
-    AddQueuedCookiesToResponse::class,
-    StartSession::class,
-    SubstituteBindings::class,
-    ThrottleRequests::class,
-])->group(function () {
+   EnsureFrontendRequestsAreStateful::class,
+   AddQueuedCookiesToResponse::class,
+   StartSession::class,
+   SubstituteBindings::class,
+   ThrottleRequests::class,
+])
+   ->group(function () {
+       Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest');
+       Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
 
-    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest');
-    Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
+       // ✅ Endpoint que devuelve los datos del usuario logueado, incluyendo rol y permisos
+       Route::get('/user', function (Request $request) {
+           $user = $request->user()->load('role.permisos.menuItem.url');
 
-    Route::get('/user', function (Request $request) {
+           $permisos = $user->role->permisos->map(function ($permiso) {
+               return [
+                   'item' => optional($permiso->menuItem)->item,
+                   'ruta' => optional($permiso->menuItem?->url)->ruta,
+                   'componente' => optional($permiso->menuItem?->url)->componente,
+               ];
+           });
+
+           return [
+               'id' => $user->id,
+               'name' => $user->name,
+               'email' => $user->email,
+               'dos_pasos_habilitado' => $user->dos_pasos_habilitado,
+               'rol' => $user->role->descripcion,
+               'permisos' => $permisos,
+           ];
+       })->middleware('auth:sanctum');
+
+       // ✅ NUEVO: Endpoint para obtener rutas reales (URL) accesibles para el usuario autenticado
+       Route::get('/accesos', function (Request $request) {
+           $user = $request->user();
+
+           $permisos = $user->role->permisos()->with('menuItem.url')->get();
+
+           $accesos = $permisos->map(function ($permiso) {
+               return [
+                   'item' => optional($permiso->menuItem)->item,
+                   'nivel' => optional($permiso->menuItem)->nivel,
+                   'ruta' => optional($permiso->menuItem?->url)->ruta,
+               ];
+           });
+
+           return response()->json([
+               'rol' => $user->role->descripcion,
+               'accesos' => $accesos,
+           ]);
+       })->middleware('auth:sanctum');
+
+       // ✅ Endpoint para construir menú jerárquico filtrado por permisos del rol
+            Route::get('/menu-items', function (Request $request) {
+    try {
         $user = $request->user();
 
         if (!$user) {
-            return response()->json(['error' => 'No autenticado.'], 401);
+            return response()->json(['error' => 'Usuario no autenticado'], 401);
         }
 
-        $user->load('role.permisos.url');
+        if (!$user->role) {
+            return response()->json(['error' => 'Usuario sin rol'], 400);
+        }
 
-        $permisos = $user->role ? $user->role->permisos->map(function ($permiso) {
-            return [
-                'item' => $permiso->item,
-                'ruta' => optional($permiso->url)->ruta,
-            ];
-        }) : collect([]);
+        $permisosIds = DB::table('permiso_rol')
+            ->where('rol_id', $user->role->id)
+            ->pluck('permiso_id');
 
-        $codigo2fa = $user->codigoVerificacion()->where('habilitado', true)->first();
+        $permisos = Permiso::whereIn('id', $permisosIds)
+            ->whereHas('menuItem', fn ($q) => $q->whereNull('id_padre'))
+            ->with(['menuItem.hijosRecursive', 'menuItem.url'])
+            ->get();
 
+        $menuItemsPermitidos = $permisos->pluck('menuItem');
+
+        return response()->json($menuItemsPermitidos);
+    } catch (\Throwable $e) {
         return response()->json([
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'dos_pasos_habilitado' => $codigo2fa ? true : false,
-            'rol' => $user->role ? $user->role->descripcion : null,
-            'permisos' => $permisos,
-        ]);
-    })->middleware('auth:sanctum');
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ], 500);
+    }
+})->middleware('auth:sanctum');
 
-    Route::get('/accesos', function (Request $request) {
-        $user = $request->user();
 
-        $menuItems = $user->role->permisos()->with('url')->get();
 
-        $accesos = $menuItems->map(function ($item) {
-            return [
-                'item' => $item->item,
-                'nivel' => $item->nivel,
-                'ruta' => optional($item->url)->ruta,
-            ];
-        });
-
-        return response()->json([
-            'rol' => $user->role->descripcion,
-            'accesos' => $accesos,
-        ]);
-    })->middleware('auth:sanctum');
-
-    Route::get('/menu-items', function () {
-        $menuItems = \App\Models\MenuItem::with(['hijos.url', 'url'])->whereNull('id_padre')->get();
-        return response()->json($menuItems);
-    })->middleware('auth:sanctum');
 
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
 
