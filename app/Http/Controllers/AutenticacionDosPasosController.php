@@ -18,9 +18,10 @@ class AutenticacionDosPasosController extends Controller
             return response()->json(['error' => 'No autenticado.'], 401);
         }
 
+        CodigoVerificacion::where('usuario_id', $usuario->id)->delete();
+
         $codigo = rand(100000, 999999);
 
-        // Crear registro dinámicamente
         CodigoVerificacion::create([
             'usuario_id' => $usuario->id,
             'codigo' => $codigo,
@@ -58,7 +59,6 @@ class AutenticacionDosPasosController extends Controller
             return response()->json(['error' => 'Código expirado o inválido'], 400);
         }
 
-        // Eliminar el registro usado
         $registro->delete();
 
         $usuario = User::with('role')->find($usuario->id);
@@ -77,7 +77,6 @@ class AutenticacionDosPasosController extends Controller
             return response()->json(['error' => 'No autenticado.'], 401);
         }
 
-        // Esto puede mantenerse si usas otro lugar para marcar usuarios con 2FA activo.
         return response()->json(['mensaje' => 'Funcionalidad en desuso con sistema dinámico.']);
     }
 
@@ -88,7 +87,6 @@ class AutenticacionDosPasosController extends Controller
             return response()->json(['error' => 'No autenticado.'], 401);
         }
 
-        // Borra cualquier código pendiente
         CodigoVerificacion::where('usuario_id', $usuario->id)->delete();
 
         return response()->json(['mensaje' => 'Autenticación de dos pasos deshabilitada']);
