@@ -18,6 +18,9 @@ use App\Http\Controllers\AutenticacionDosPasosController;
 use App\Http\Controllers\Admin\RolPermisoController;
 use App\Models\MenuItem;
 
+use App\Models\Permiso;
+
+
 Route::middleware([
    EnsureFrontendRequestsAreStateful::class,
    AddQueuedCookiesToResponse::class,
@@ -72,19 +75,41 @@ Route::middleware([
        })->middleware('auth:sanctum');
 
        // ✅ Endpoint para construir menú jerárquico filtrado por permisos del rol
-       Route::get('/menu-items', function (Request $request) {
-           $user = $request->user();
+            Route::get('/menu-items', function (Request $request) {
+    try {
+        $user = $request->user();
 
-           $menuItemsPermitidos = $user->role->permisos()
-               ->with('menuItem.hijosRecursive.url', 'menuItem.url')
-               ->get()
-               ->pluck('menuItem')
-               ->filter() // eliminar nulls por si hay permisos sin menuItem
-               ->whereNull('id_padre')
-               ->values();
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado'], 401);
+        }
 
-           return response()->json($menuItemsPermitidos);
-       })->middleware('auth:sanctum');
+        if (!$user->role) {
+            return response()->json(['error' => 'Usuario sin rol'], 400);
+        }
+
+        $permisosIds = DB::table('permiso_rol')
+            ->where('rol_id', $user->role->id)
+            ->pluck('permiso_id');
+
+        $permisos = Permiso::whereIn('id', $permisosIds)
+            ->whereHas('menuItem', fn ($q) => $q->whereNull('id_padre'))
+            ->with(['menuItem.hijosRecursive', 'menuItem.url'])
+            ->get();
+
+        $menuItemsPermitidos = $permisos->pluck('menuItem');
+
+        return response()->json($menuItemsPermitidos);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ], 500);
+    }
+})->middleware('auth:sanctum');
+
+
+
 
        Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth');
 

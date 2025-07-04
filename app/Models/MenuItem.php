@@ -10,11 +10,11 @@ class MenuItem extends Model
 
     protected $fillable = ['id_padre', 'nivel', 'item', 'id_url'];
 
-    // Relación recursiva con hijos + sus propios hijos + URL
     public function hijos()
     {
-        return $this->hasMany(MenuItem::class, 'id_padre')->with(['hijos', 'url']);
+        return $this->hasMany(MenuItem::class, 'id_padre');
     }
+
 
     public function padre()
     {
@@ -37,13 +37,18 @@ class MenuItem extends Model
     }
 
     // Hijos filtrados según el rol autenticado
-public function hijosRecursive()
-{
-    return $this->hasMany(MenuItem::class, 'id_padre')
-        ->whereHas('permisos', function ($q) {
-            $q->where('id_rol', auth()->user()->role->id);
-        })
-        ->with(['hijosRecursive', 'url']);
-}
+
+    public function hijosRecursive()
+    {
+        return $this->hasMany(MenuItem::class, 'id_padre')
+                ->whereHas('permisos', function ($q) {
+                if ($user = auth()->user()) {
+                    $q->whereHas('roles', function ($query) use ($user) {
+                    $query->where('roles.id', $user->role->id);
+                    });
+                }
+            })
+            ->with(['hijosRecursive', 'url']);
+    }
 
 }
