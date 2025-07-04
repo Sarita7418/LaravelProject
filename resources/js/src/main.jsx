@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
 import Login from './Login.jsx'
-import Dashboard from './Dashboard.jsx'
+import Dashboard from './pages/Dashboard.jsx'
 import Router from './Router' // <-- este maneja todas las rutas
 
 

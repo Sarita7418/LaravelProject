@@ -20,12 +20,11 @@ class Role extends Model
         return $this->hasMany(User::class);
     }
 
-    public function permisos(): BelongsToMany
-    {
-        return $this->belongsToMany(MenuItem::class, 'permisos', 'id_rol', 'id_menu_item');
-    }
-
-    // Scope para obtener solo roles activos
+   public function permisos()
+   {
+    return $this->belongsToMany(Permiso::class, 'permiso_rol', 'rol_id', 'permiso_id');
+   }
+   // Scope para obtener solo roles activos
     public function scopeActivos($query)
     {
         return $query->where('estado', 1);
@@ -36,4 +35,5 @@ class Role extends Model
     {
         return $query->where('estado', 0);
     }
+
 }
