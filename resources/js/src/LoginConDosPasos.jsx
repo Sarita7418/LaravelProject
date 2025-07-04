@@ -11,7 +11,6 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   const [mostrarDosPasos, setMostrarDosPasos] = useState(false)
   const [usuarioEmail, setUsuarioEmail] = useState('')
 
-  // Limpiar estado al montar el componente
   useEffect(() => {
     const limpiarEstado = async () => {
       setMostrarDosPasos(false)
@@ -22,10 +21,8 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       }
 
       try {
-        // Cerrar cualquier sesión pendiente
         await axios.post('/api/logout')
       } catch (error) {
-        // Ignorar errores de logout si no hay sesión
       }
     }
 
@@ -120,7 +117,6 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     }
   }
 
-  // Limpiar estado cuando cambia el email
   const handleEmailChange = (e) => {
     setEmail(e.target.value)
     if (mostrarDosPasos) {

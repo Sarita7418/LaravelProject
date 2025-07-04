@@ -6,7 +6,7 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
   const [error, setError] = useState('')
   const [mensaje, setMensaje] = useState('')
   const [correoOculto, setCorreoOculto] = useState('')
-  const [tiempoRestante, setTiempoRestante] = useState(600) // 10 minutos
+  const [tiempoRestante, setTiempoRestante] = useState(600) 
   const [enviandoCodigo, setEnviandoCodigo] = useState(false)
   const [verificandoCodigo, setVerificandoCodigo] = useState(false)
 
@@ -24,7 +24,7 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
       setCorreoOculto(response.data.correo_parcial)
       setMensaje('Código enviado a tu correo electrónico')
       setError('')
-      setTiempoRestante(600) // Reiniciar timer
+      setTiempoRestante(600) 
     } catch (err) {
       console.error('Error al enviar código:', err)
       setError('Error al enviar el código. Inténtalo nuevamente.')
@@ -44,11 +44,10 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
       const response = await axios.post('/api/dos-pasos/verificar-codigo', { codigo })
       setMensaje('Código verificado correctamente')
       setError('')
-      
+
       setTimeout(() => {
         onVerificacionExitosa(response.data.usuario, response.data.rol)
       }, 1000)
-      
     } catch (err) {
       console.error('Error al verificar código:', err)
       if (err.response?.data?.error) {
@@ -58,6 +57,16 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
       }
     } finally {
       setVerificandoCodigo(false)
+    }
+  }
+
+  const cancelarProceso = async () => {
+    try {
+      await axios.post('/api/dos-pasos/deshabilitar') 
+    } catch (err) {
+      console.warn('Error al cancelar el código:', err)
+    } finally {
+      onCancelar() 
     }
   }
 
@@ -78,7 +87,7 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
   return (
     <div>
       <h2>Verificación en Dos Pasos</h2>
-      
+
       <div>
         <p>📧 Enviaremos el código a:</p>
         <p>{correoOculto || correoUsuario}</p>
@@ -123,10 +132,10 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
         </>
       )}
 
-      <button onClick={onCancelar}>Cancelar</button>
+      <button onClick={cancelarProceso}>Cancelar</button>
 
-      {error && <div>{error}</div>}
-      {mensaje && !error && <div>{mensaje}</div>}
+      {error && <div style={{ color: 'red' }}>{error}</div>}
+      {mensaje && !error && <div style={{ color: 'green' }}>{mensaje}</div>}
     </div>
   )
 }
