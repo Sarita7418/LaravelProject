@@ -7,12 +7,16 @@ import App from './App.jsx'
 import Login from './Login.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Router from './Router' // <-- este maneja todas las rutas
+import { AuthProvider } from './context/AuthContext'; // crea este archivo
+
 
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+ <StrictMode>
+  <AuthProvider>
     <BrowserRouter>
       <Router />
     </BrowserRouter>
-  </StrictMode>,
+  </AuthProvider>
+</StrictMode>
 )

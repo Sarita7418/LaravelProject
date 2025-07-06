@@ -25,17 +25,30 @@ export default function Router() {
   }
 
   useEffect(() => {
-    axios.get('/api/user', { withCredentials: true })
-      .then(res => {
-        setIsAuthenticated(true)
-        setPermisos(res.data.permisos)
-      })
-      .catch(() => {
-        setIsAuthenticated(false)
-        setPermisos([])
-      })
-      .finally(() => setLoading(false))
+    const verificarSesion = () => {
+      axios.get('/api/user', { withCredentials: true })
+        .then(res => {
+          setIsAuthenticated(true)
+          setPermisos(res.data.permisos)
+        })
+        .catch(() => {
+          setIsAuthenticated(false)
+          setPermisos([])
+        })
+        .finally(() => setLoading(false))
+    }
+
+    verificarSesion(); // al montar
+
+    const handlePopState = () => {
+      verificarSesion(); // al retroceder con el navegador
+    };
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
   }, [])
+
+
 
   if (loading) return <div>Cargando...</div>
 

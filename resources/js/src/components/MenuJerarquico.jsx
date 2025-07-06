@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from '../axios'
 
+import { useAuth } from '../context/AuthContext'; // ajusta la ruta
+
+
 const MenuJerarquico = () => {
   const [menuItems, setMenuItems] = useState([])
   const [abiertos, setAbiertos] = useState({})
   const navigate = useNavigate()
+  const { setAuth, setRole } = useAuth(); // 👈 ahora sí lo puedes usar
+
 
   useEffect(() => {
     axios.get('/api/menu-items')
@@ -22,10 +27,10 @@ const MenuJerarquico = () => {
       [id]: !prev[id]
     }))
   }
-  
+
   const handleLogout = async () => {
     try {
-      await axios.post('/api/logout');
+      await axios.post('/api/logout', null, { withCredentials: true });
     } catch (err) {
       console.warn('Logout falló, pero igual limpiamos sesión');
     } finally {
