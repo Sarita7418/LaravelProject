@@ -15,25 +15,43 @@ class Role extends Model
         'estado' => 'boolean',
     ];
 
+    // Relación con usuarios
     public function users()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class, 'id_rol');
     }
 
-   public function permisos()
-   {
-    return $this->belongsToMany(Permiso::class, 'permiso_rol', 'rol_id', 'permiso_id');
-   }
-   // Scope para obtener solo roles activos
+    // Relación con items de menú (accesos de navegación)
+    public function menuItems(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            MenuItem::class,
+            'menu_item_rol',
+            'id_rol',
+            'id_menu_item'
+        );
+    }
+
+    // Relación con acciones (permisos de acción)
+    public function acciones(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Accion::class,
+            'accion_rol',
+            'id_rol',
+            'id_accion'
+        );
+    }
+
+    // Scope para roles activos
     public function scopeActivos($query)
     {
         return $query->where('estado', 1);
     }
 
-    // Scope para obtener solo roles inactivos
+    // Scope para roles inactivos
     public function scopeInactivos($query)
     {
         return $query->where('estado', 0);
     }
-
 }

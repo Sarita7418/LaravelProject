@@ -3,52 +3,42 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MenuItem extends Model
 {
     protected $table = 'menu_items';
 
-    protected $fillable = ['id_padre', 'nivel', 'item', 'id_url'];
+    protected $fillable = [
+        'item',
+        'ruta',
+        'id_padre',
+        'nivel',
+        'orden',
+    ];
 
-    public function hijos()
+    // Relación con roles (quién puede acceder a este ítem de menú)
+    public function roles(): BelongsToMany
     {
-        return $this->hasMany(MenuItem::class, 'id_padre');
+        return $this->belongsToMany(
+            Role::class,
+            'menu_item_rol',
+            'id_menu_item',
+            'id_rol'
+        );
     }
 
-
-    public function padre()
+    // Menú padre (si es submenú)
+    public function padre(): BelongsTo
     {
         return $this->belongsTo(MenuItem::class, 'id_padre');
     }
 
-    public function url()
+    // Submenús o hijos
+    public function hijos(): HasMany
     {
-        return $this->belongsTo(Url::class, 'id_url');
+        return $this->hasMany(MenuItem::class, 'id_padre');
     }
-
-    public function permisos()
-    {
-        return $this->hasMany(Permiso::class, 'id_menu_item');
-    }
-
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'permisos', 'id_menu_item', 'id_rol');
-    }
-
-    // Hijos filtrados según el rol autenticado
-
-    public function hijosRecursive()
-    {
-        return $this->hasMany(MenuItem::class, 'id_padre')
-                ->whereHas('permisos', function ($q) {
-                if ($user = auth()->user()) {
-                    $q->whereHas('roles', function ($query) use ($user) {
-                    $query->where('roles.id', $user->role->id);
-                    });
-                }
-            })
-            ->with(['hijosRecursive', 'url']);
-    }
-
 }
