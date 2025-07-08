@@ -65,15 +65,15 @@ class NavegacionController extends Controller
         return response()->json($menu);
     }
 
-    // GET /api/acciones/{idRol}
-    public function obtenerAcciones($idRol)
-    {
-        $rol = Role::findOrFail($idRol);
+    public function obtenerAccionesPorUsuario($idUsuario)
+{
+    $usuario = \App\Models\User::with('role.acciones')->findOrFail($idUsuario);
 
-        $acciones = $rol->acciones()
-            ->select('nombre')
-            ->pluck('nombre');
+    // Obtener acciones del rol del usuario
+    $acciones = $usuario->role && $usuario->role->acciones
+        ? $usuario->role->acciones->pluck('nombre')
+        : [];
 
-        return response()->json($acciones);
-    }
+    return response()->json($acciones);
+}
 }
