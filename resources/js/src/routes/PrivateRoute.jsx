@@ -1,17 +1,13 @@
 import { Navigate, useLocation } from 'react-router-dom'
 
-export default function PrivateRoute({ isAuthenticated, userPermisos, allowedPermisos, children }) {
+export default function PrivateRoute({ isAuthenticated, userPermisos, children }) {
   const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" />
   }
 
-  console.log("userPermisos:", userPermisos)
-  console.log("allowedPermisos:", allowedPermisos)
-
-  // userPermisos ya es un array de rutas string: ['/admin', '/dashboard']
-  const tienePermiso = allowedPermisos.some(permiso => userPermisos.includes(permiso));
+  const tienePermiso = userPermisos.includes(location.pathname);
 
   if (!tienePermiso) {
     console.warn(`Ruta "${location.pathname}" no autorizada para el usuario.`);
@@ -20,3 +16,4 @@ export default function PrivateRoute({ isAuthenticated, userPermisos, allowedPer
 
   return children;
 }
+

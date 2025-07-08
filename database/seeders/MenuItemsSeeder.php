@@ -9,29 +9,29 @@ class MenuItemsSeeder extends Seeder
 {
     public function run(): void
     {
-        // Crear menú padre
+        // Menú raíz: Dashboard (requerido para acceso general)
         $admin = MenuItem::create([
             'item' => 'Administración',
-            'ruta' => '#', // No tiene ruta porque es contenedor
+            'ruta' => '/dashboard',
             'nivel' => 1,
-            'orden' => 1,
+            'orden' => 0,
         ]);
 
         // Submenú: Usuarios
         MenuItem::create([
             'item' => 'Usuarios',
-            'ruta' => '/usuarios',
+            'ruta' => '/dashboard/usuarios',
             'id_padre' => $admin->id,
-            'nivel' => 2,
+            'nivel' => 3,
             'orden' => 1,
         ]);
 
         // Submenú: Roles
         MenuItem::create([
             'item' => 'Roles',
-            'ruta' => '/roles',
+            'ruta' => '/dashboard/roles',
             'id_padre' => $admin->id,
-            'nivel' => 2,
+            'nivel' => 3,
             'orden' => 2,
         ]);
     }

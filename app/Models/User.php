@@ -36,23 +36,18 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class, 'id_rol');
     }
 
-    public function permisos()
-    {
-        return $this->role->permisos();
-    }
-
     public function codigoVerificacion()
     {
         return $this->hasOne(CodigoVerificacion::class, 'usuario_id');
     }
 
-   
+
     public function scopeActivos($query)
     {
         return $query->where('estado', 1);
     }
 
-    
+
     public function scopeInactivos($query)
     {
         return $query->where('estado', 0);
