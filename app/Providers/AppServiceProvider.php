@@ -29,10 +29,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //Pista de auditoria
         CodigoVerificacion::observe(PistaAuditoriaObserver::class);
-        MenuItem::observe(PistaAuditoriaObserver::class);
-        Permiso::observe(PistaAuditoriaObserver::class);
         Role::observe(PistaAuditoriaObserver::class);
-        Url::observe(PistaAuditoriaObserver::class);
         User::observe(PistaAuditoriaObserver::class);
 
         //Añadir mas modelos a desarrollar y observar para auditar

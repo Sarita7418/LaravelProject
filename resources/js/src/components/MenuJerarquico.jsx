@@ -2,24 +2,19 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from '../lib/axios'
 
-import { useAuth } from '../context/AuthContext'; // ajusta la ruta
-
-
-const MenuJerarquico = () => {
+const MenuJerarquico = ({ idRol = 1 }) => {
   const [menuItems, setMenuItems] = useState([])
   const [abiertos, setAbiertos] = useState({})
   const navigate = useNavigate()
-  const { setAuth, setRole } = useAuth(); // 👈 ahora sí lo puedes usar
-
 
   useEffect(() => {
-    axios.get('/api/menu-items')
+    axios.get(`/api/menu/${idRol}`)
       .then(res => {
-        console.log('✅ Menú recibido:', res.data)
-        setMenuItems(res.data)
+        const ordenados = res.data.sort((a, b) => a.orden - b.orden)
+        setMenuItems(ordenados)
       })
-      .catch(err => console.error('❌ Error cargando menú:', err))
-  }, [])
+      .catch(err => console.error('Error cargando menú:', err))
+  }, [idRol])
 
   const toggleSubmenu = (id) => {
     setAbiertos(prev => ({
@@ -28,57 +23,48 @@ const MenuJerarquico = () => {
     }))
   }
 
-  const handleLogout = async () => {
-    try {
-      await axios.post('/api/logout', null, { withCredentials: true });
-    } catch (err) {
-      console.warn('Logout falló, pero igual limpiamos sesión');
-    } finally {
-      setAuth(false);
-      setRole(null);
-      localStorage.clear();
-      navigate('/login', { replace: true });
-    }
-  };
+  // Función para obtener hijos de un ítem
+  const obtenerHijos = (padreId) =>
+    menuItems.filter(item => item.id_padre === padreId)
 
+  const renderMenu = (padreId = null) => {
+    const items = menuItems.filter(item => item.id_padre === padreId)
 
+    return (
+      <ul className="submenu">
+        {items.map(item => {
+          const hijos = obtenerHijos(item.id)
+          const tieneHijos = hijos.length > 0
 
+          return (
+            <li key={item.id}>
+              <div
+                className="menu-boton"
+                onClick={() => {
+                  if (tieneHijos) {
+                    toggleSubmenu(item.id)
+                  } else if (item.ruta && item.ruta !== '#') {
+                    navigate(item.ruta)
+                  }
+                }}
+              >
+                {tieneHijos && (
+                  <span>{abiertos[item.id] ? '▼' : '▶'}</span>
+                )}
+                <span>{item.item}</span>
+              </div>
 
-  const renderMenu = (items) => (
-    <ul className="submenu">
-      {items.map(item => (
-        <li key={item.id}>
-          <div
-            className="menu-boton"
-            onClick={() => {
-              if (item.hijos_recursive && item.hijos_recursive.length > 0) {
-                toggleSubmenu(item.id)
-              } else if (item.url?.ruta) {
-                navigate(item.url.ruta)
-              }
-            }}
-          >
-            {item.hijos_recursive && item.hijos_recursive.length > 0 && (
-              <span>{abiertos[item.id] ? '▼' : '▶'}</span>
-            )}
-            <span>{item.item}</span>
-          </div>
-          {item.hijos_recursive && item.hijos_recursive.length > 0 && abiertos[item.id] && renderMenu(item.hijos_recursive)}
-        </li>
-      ))}
-    </ul>
-  )
-
-  const hijosDeDashboard = menuItems[0]?.hijos_recursive || []
+              {tieneHijos && abiertos[item.id] && renderMenu(item.id)}
+            </li>
+          )
+        })}
+      </ul>
+    )
+  }
 
   return (
     <div className="sidebar-menu">
-      {renderMenu(hijosDeDashboard)}
-
-      <button className="boton-logout" onClick={handleLogout}>
-        Cerrar sesión
-      </button>
-
+      {renderMenu()}
     </div>
   )
 }
