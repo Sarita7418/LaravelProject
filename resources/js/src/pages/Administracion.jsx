@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate, Outlet } from 'react-router-dom'
-import axios from '../axios'
+import axios from '../lib/axios'
 import MenuJerarquico from '../components/MenuJerarquico'
 import './Administracion.css'
 

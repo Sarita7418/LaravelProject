@@ -1,16 +1,24 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+<<<<<<< HEAD:resources/js/src/Router.jsx
 import Login from './LoginConDosPasos'
 import Dashboard from './pages/Dashboard'
 import Administracion from './pages/Administracion'
 import Usuarios from './components/Usuarios'
 import Roles from './components/Roles'
 import Personas from './components/Personas'
+=======
+import Login from '../components/LoginConDosPasos'
+import Dashboard from '../pages/Dashboard'
+import Administracion from '../pages/Administracion'
+import Usuarios from '../components/Usuarios'
+import Roles from '../components/Roles'
+>>>>>>> 7481a7fd249b2c29d423fdebe53db9eca0f38852:resources/js/src/routes/Router.jsx
 
 import PrivateRoute from './PrivateRoute'
 import { useEffect, useState } from 'react'
-import axios from './axios'
+import axios from '../lib/axios'
 
-import LayoutDashboard from './components/LayoutDashboard'
+import LayoutDashboard from '../components/LayoutDashboard'
 
 export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)

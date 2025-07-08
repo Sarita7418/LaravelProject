@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from './axios'
+import axios from '../lib/axios'
 
 export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsuario, onCancelar }) {
   const [codigo, setCodigo] = useState('')
