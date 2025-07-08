@@ -10,7 +10,6 @@ import Router from './Router' // <-- este maneja todas las rutas
 import { AuthProvider } from './context/AuthContext'; // crea este archivo
 
 
-
 createRoot(document.getElementById('root')).render(
  <StrictMode>
   <AuthProvider>
