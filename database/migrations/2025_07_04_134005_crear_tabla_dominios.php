@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('dominios', function (Blueprint $table) {
             $table->id();
-            $table->text('descripcion');
+            $table->string('descripcion', 150);
             $table->timestamps();
         });
     }
