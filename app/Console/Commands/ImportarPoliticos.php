@@ -14,7 +14,7 @@ class ImportarPoliticos extends Command
 
     public function handle()
     {
-        $ruta = storage_path('app/imports/POLITICO.xlsx');
+        $ruta = storage_path('imports/POLITICO.xlsx');
         
         if (!file_exists($ruta)) {
             $this->error(" Archivo no encontrado");
