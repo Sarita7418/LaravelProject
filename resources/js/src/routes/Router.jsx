@@ -1,17 +1,14 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-
-import Login from '../components/LoginConDosPasos'
-import Dashboard from '../pages/Dashboard'
-import Administracion from '../pages/Administracion'
-import Usuarios from '../components/Usuarios'
-import Roles from '../components/Roles'
-import Personas from '../components/Personas'
-
-import PrivateRoute from './PrivateRoute'
 import { useEffect, useState } from 'react'
 import axios from '../lib/axios'
 
+import Login from '../components/LoginConDosPasos'
+import Dashboard from '../pages/Dashboard'
+import Usuarios from '../components/Usuarios'
+import Roles from '../components/Roles'
+import Personas from '../components/Personas'
 import LayoutDashboard from '../components/LayoutDashboard'
+import PrivateRoute from './PrivateRoute'
 
 export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -19,39 +16,18 @@ export default function Router() {
   const [permisos, setPermisos] = useState([])
   const [pendingTwoFactor, setPendingTwoFactor] = useState(false)
 
-  const componentesDisponibles = {
-    Dashboard: Dashboard,
-    Administracion: Administracion,
-    Usuarios: Usuarios,
-    Roles: Roles,
-    Personas: Personas
-  }
-
   useEffect(() => {
-    const verificarSesion = () => {
-      axios.get('/api/user', { withCredentials: true })
-        .then(res => {
-          setIsAuthenticated(true)
-          setPermisos(res.data.permisos)
-        })
-        .catch(() => {
-          setIsAuthenticated(false)
-          setPermisos([])
-        })
-        .finally(() => setLoading(false))
-    }
-
-    verificarSesion(); // al montar
-
-    const handlePopState = () => {
-      verificarSesion(); // al retroceder con el navegador
-    };
-
-    window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
+    axios.get('/api/user', { withCredentials: true })
+      .then(res => {
+        setIsAuthenticated(true)
+        setPermisos(res.data.permisos.map(p => p.ruta))
+      })
+      .catch(() => {
+        setIsAuthenticated(false)
+        setPermisos([])
+      })
+      .finally(() => setLoading(false))
   }, [])
-
-
 
   if (loading) return <div>Cargando...</div>
 
@@ -67,40 +43,52 @@ export default function Router() {
         />
       } />
 
-      {/* ✅ Rutas protegidas bajo /dashboard con Layout persistente */}
       <Route path="/dashboard" element={
         <PrivateRoute
           isAuthenticated={isAuthenticated}
-          userPermisos={permisos.map(p => typeof p === 'string' ? p : p.ruta)}
-          allowedPermisos={['/dashboard']}
+          userPermisos={permisos}
+          allowedPermisos={["/dashboard"]}
         >
           <LayoutDashboard />
         </PrivateRoute>
       }>
-        {permisos.map(p => {
-          const ruta = p.ruta || p
-          const nombreComponente = p.componente || ruta.split('/').pop()?.charAt(0).toUpperCase() + ruta.split('/').pop()?.slice(1)
-          const Componente = componentesDisponibles[nombreComponente]
+        {permisos.includes("/dashboard/usuarios") && (
+          <Route path="usuarios" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/usuarios"]}
+            >
+              <Usuarios />
+            </PrivateRoute>
+          } />
+        )}
 
-          // ⚠️ subrutas relativas, por ejemplo 'administracion/usuarios'
-          const subruta = ruta.replace('/dashboard/', '')
+        {permisos.includes("/dashboard/roles") && (
+          <Route path="roles" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/roles"]}
+            >
+              <Roles />
+            </PrivateRoute>
+          } />
+        )}
+        {permisos.includes("/dashboard/personas") && (
+          <Route path="personas" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/personas"]}
+            >
+              <Personas />
+            </PrivateRoute>
+          } />
+        )}
 
-          return Componente ? (
-            <Route
-              key={ruta}
-              path={subruta}
-              element={
-                <PrivateRoute
-                  isAuthenticated={isAuthenticated}
-                  userPermisos={permisos.map(p => typeof p === 'string' ? p : p.ruta)}
-                  allowedPermisos={[ruta]}
-                >
-                  <Componente />
-                </PrivateRoute>
-              }
-            />
-          ) : null
-        })}
+        {/* Agregar aquí nuevas rutas manualmente si se crean más componentes */}
+
       </Route>
 
       <Route path="/unauthorized" element={<h1>No autorizado</h1>} />

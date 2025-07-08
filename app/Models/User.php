@@ -32,22 +32,15 @@ class User extends Authenticatable
         'estado' => 'boolean',
     ];
 
-    // Relaciones existentes
     public function role()
     {
         return $this->belongsTo(Role::class, 'id_rol');
-    }
-
-    public function permisos()
-    {
-        return $this->role->permisos();
     }
 
     public function codigoVerificacion()
     {
         return $this->hasOne(CodigoVerificacion::class, 'usuario_id');
     }
-
     // Nuevas relaciones para protocolos
     public function protocolosCreados()
     {
@@ -59,11 +52,11 @@ class User extends Authenticatable
         return $this->hasMany(ComentariosRevision::class, 'id_usuario');
     }
 
-    // Scopes existentes
     public function scopeActivos($query)
     {
         return $query->where('estado', 1);
     }
+
 
     public function scopeInactivos($query)
     {
