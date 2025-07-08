@@ -34,5 +34,13 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 2,
         ]);
+        
+         MenuItem::create([
+            'item' => 'Personas',
+            'ruta' => '/dashboard/personas',
+            'id_padre' => $admin->id,
+            'nivel' => 3,
+            'orden' => 3,
+        ]);
     }
 }
