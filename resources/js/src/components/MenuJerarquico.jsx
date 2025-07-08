@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from '../lib/axios'
 
+import { useAuth } from '../context/AuthContext'; // ajusta la ruta
+
+
 const MenuJerarquico = () => {
   const [menuItems, setMenuItems] = useState([])
   const [abiertos, setAbiertos] = useState({})
   const navigate = useNavigate()
+  const { setAuth, setRole } = useAuth(); // 👈 ahora sí lo puedes usar
+
 
   useEffect(() => {
     axios.get('/api/menu-items')
@@ -22,6 +27,22 @@ const MenuJerarquico = () => {
       [id]: !prev[id]
     }))
   }
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('/api/logout', null, { withCredentials: true });
+    } catch (err) {
+      console.warn('Logout falló, pero igual limpiamos sesión');
+    } finally {
+      setAuth(false);
+      setRole(null);
+      localStorage.clear();
+      navigate('/login', { replace: true });
+    }
+  };
+
+
+
 
   const renderMenu = (items) => (
     <ul className="submenu">
@@ -48,12 +69,16 @@ const MenuJerarquico = () => {
     </ul>
   )
 
-  // Mostrar solo los hijos de Dashboard (nivel 2)
   const hijosDeDashboard = menuItems[0]?.hijos_recursive || []
 
   return (
     <div className="sidebar-menu">
       {renderMenu(hijosDeDashboard)}
+
+      <button className="boton-logout" onClick={handleLogout}>
+        Cerrar sesión
+      </button>
+
     </div>
   )
 }

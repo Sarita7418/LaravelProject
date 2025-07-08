@@ -1,9 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+
 import Login from '../components/LoginConDosPasos'
 import Dashboard from '../pages/Dashboard'
 import Administracion from '../pages/Administracion'
 import Usuarios from '../components/Usuarios'
 import Roles from '../components/Roles'
+import Personas from '../components/Personas'
 
 import PrivateRoute from './PrivateRoute'
 import { useEffect, useState } from 'react'
@@ -21,21 +23,35 @@ export default function Router() {
     Dashboard: Dashboard,
     Administracion: Administracion,
     Usuarios: Usuarios,
-    Roles: Roles
+    Roles: Roles,
+    Personas: Personas
   }
 
   useEffect(() => {
-    axios.get('/api/user', { withCredentials: true })
-      .then(res => {
-        setIsAuthenticated(true)
-        setPermisos(res.data.permisos)
-      })
-      .catch(() => {
-        setIsAuthenticated(false)
-        setPermisos([])
-      })
-      .finally(() => setLoading(false))
+    const verificarSesion = () => {
+      axios.get('/api/user', { withCredentials: true })
+        .then(res => {
+          setIsAuthenticated(true)
+          setPermisos(res.data.permisos)
+        })
+        .catch(() => {
+          setIsAuthenticated(false)
+          setPermisos([])
+        })
+        .finally(() => setLoading(false))
+    }
+
+    verificarSesion(); // al montar
+
+    const handlePopState = () => {
+      verificarSesion(); // al retroceder con el navegador
+    };
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
   }, [])
+
+
 
   if (loading) return <div>Cargando...</div>
 
