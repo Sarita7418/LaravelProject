@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('usuario_id');
             $table->string('codigo')->nullable();
-            $table->timestamp('expira_en')->nullable();
+            $table->dateTime('expira_en')->nullable();
             $table->boolean('habilitado')->default(false);
             $table->timestamps();
 
