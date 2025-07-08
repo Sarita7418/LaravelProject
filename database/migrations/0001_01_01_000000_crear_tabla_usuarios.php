@@ -10,6 +10,9 @@ return new class extends Migration
     {
         Schema::create('usuarios', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_persona')->nullable();
+            $table->foreign('id_persona')->references('id')->on('personas')->onDelete('set null');
+
             $table->string('name');
             $table->string('email')->unique();
             //$table->timestamp('email_verified_at')->nullable();

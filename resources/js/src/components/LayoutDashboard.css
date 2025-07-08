@@ -1,16 +1,41 @@
 .layout-dashboard {
   display: flex;
   height: 100vh;
+  overflow: hidden; /* Evita scroll general */
 }
 
 .sidebar {
   width: 240px;
-    background-color: #333;
+  background-color: #333;
   padding: 1rem;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Fijar al alto de la pantalla */
+  flex-shrink: 0; /* Evita que se reduzca si hay overflow en el contenido */
 }
 
 .contenido {
   flex-grow: 1;
   padding: 2rem;
+  overflow-y: auto; /* Scroll vertical SOLO aquí */
+  height: 100vh; /* Igual altura que sidebar */
+}
+
+
+.boton-logout {
+  margin-top: 2rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #e53935;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.boton-logout:hover {
+  background-color: #c62828;
 }
