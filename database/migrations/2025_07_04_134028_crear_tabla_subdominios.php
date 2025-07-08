@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('subdominios', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_dominio');
-            $table->text('descripcion');
+            $table->string('descripcion', 150);
             $table->timestamps();
         
             $table->foreign('id_dominio')->references('id')->on('dominios')->onDelete('cascade');

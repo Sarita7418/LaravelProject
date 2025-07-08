@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('documentos_adjuntos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_protocolos');
+            $table->unsignedBigInteger('id_protocolo');
             $table->string('nombre_archivo', 255);
-            $table->string('ruta_archivo', 500);
+            $table->string('ruta_archivo', 300);
             $table->string('tipo_documento', 50);
             $table->timestamps();
         
-            $table->foreign('id_protocolos')->references('id')->on('protocolos')->onDelete('cascade');
+            $table->foreign('id_protocolo')->references('id')->on('protocolos')->onDelete('cascade');
         });
     }
 

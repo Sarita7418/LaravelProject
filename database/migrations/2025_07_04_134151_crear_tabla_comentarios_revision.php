@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('comentarios_revision', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_protocolos');
-            $table->unsignedBigInteger('id_usuario');
-            $table->text('comentario');
-            $table->date('fecha');
+            $table->unsignedBigInteger('id_version_protocolo');
+            $table->unsignedBigInteger('id_usuario_revisor');
+            $table->string('comentario', 500);
+            $table->dateTime('fecha');
             $table->timestamps();
         
-            $table->foreign('id_protocolos')->references('id')->on('protocolos')->onDelete('cascade');
-            $table->foreign('id_usuario')->references('id')->on('usuarios')->onDelete('cascade');
+            $table->foreign('id_version_protocolo')->references('id')->on('protocolos')->onDelete('cascade');
+            $table->foreign('id_usuario_revisor')->references('id')->on('usuarios')->onDelete('cascade');
         });
     }
 

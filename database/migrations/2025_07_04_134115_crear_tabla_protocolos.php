@@ -16,13 +16,13 @@ return new class extends Migration
             $table->unsignedBigInteger('id_usuario_creador');
             $table->unsignedBigInteger('id_especialidad');
             $table->unsignedBigInteger('id_estado');
+            $table->unsignedBigInteger('id_area_impacto');
             $table->string('titulo', 200);
             $table->text('resumen');
             $table->text('objetivo_general');
             $table->text('metodologia');
             $table->text('justificacion');
             $table->date('fecha_creacion');
-            $table->unsignedBigInteger('id_area_impacto');
             $table->timestamps();
         
             $table->foreign('id_usuario_creador')->references('id')->on('usuarios')->onDelete('cascade');
