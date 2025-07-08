@@ -35,6 +35,12 @@ class UrlsSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
+            [
+                'ruta' => '/dashboard/administracion/personas',
+                'componente' => 'Personas',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
         ]);
     }
 }

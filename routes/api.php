@@ -15,6 +15,9 @@ use App\Http\Controllers\Admin\RolPermisoController;
 use App\Http\Controllers\Crud\RolCrudController;
 use App\Http\Controllers\Crud\UsuarioCrudController;
 
+use App\Http\Controllers\Crud\PersonaCrudController;
+
+
 use App\Models\MenuItem;
 
 use App\Models\Permiso;
@@ -128,6 +131,14 @@ Route::middleware([
     Route::put('/roles/{id}', [RolCrudController::class, 'update'])->middleware('auth:sanctum');
     Route::get('/roles/inactivos', [RolCrudController::class, 'inactivos'])->middleware('auth:sanctum');
     Route::put('/roles/{id}/reactivar', [RolCrudController::class, 'reactivar'])->middleware('auth:sanctum');
+
+    Route::get('/personas', [PersonaCrudController::class, 'index'])->middleware('auth:sanctum');
+    Route::post('/personas', [PersonaCrudController::class, 'store'])->middleware('auth:sanctum');
+    Route::put('/personas/{id}', [PersonaCrudController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/personas/{id}', [PersonaCrudController::class, 'destroy'])->middleware('auth:sanctum');
+    Route::get('/personas/inactivos', [PersonaCrudController::class, 'inactivos'])->middleware('auth:sanctum');
+    Route::put('/personas/{id}/reactivar', [PersonaCrudController::class, 'reactivar'])->middleware('auth:sanctum');
+
 
     Route::get('/usuarios', [UsuarioCrudController::class, 'index'])->middleware('auth:sanctum');
     Route::post('/usuarios', [UsuarioCrudController::class, 'store'])->middleware('auth:sanctum');

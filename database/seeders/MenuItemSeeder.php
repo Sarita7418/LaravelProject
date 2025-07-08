@@ -17,6 +17,8 @@ class MenuItemSeeder extends Seeder
         $urlAdmin = Url::where('ruta', '/dashboard/administracion')->first();
         $urlUsuarios = Url::where('ruta', '/dashboard/administracion/usuarios')->first();
         $urlRoles = Url::where('ruta', '/dashboard/administracion/roles')->first();
+        $urlPersonas = Url::where('ruta', '/dashboard/administracion/personas')->first();
+
 
         // Nivel 1
         $dashboardMenu = MenuItem::create([
@@ -53,6 +55,15 @@ class MenuItemSeeder extends Seeder
             'nivel' => 3,
             'item' => 'Roles',
             'id_url' => optional($urlRoles)->id,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+        ]);
+
+         $PersonasMenu = MenuItem::create([
+            'id_padre' => $adminMenu->id,
+            'nivel' => 3,
+            'item' => 'Personas',
+            'id_url' => optional($urlPersonas)->id,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ]);

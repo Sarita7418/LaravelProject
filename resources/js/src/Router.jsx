@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard'
 import Administracion from './pages/Administracion'
 import Usuarios from './components/Usuarios'
 import Roles from './components/Roles'
+import Personas from './components/Personas'
 
 import PrivateRoute from './PrivateRoute'
 import { useEffect, useState } from 'react'
@@ -21,7 +22,8 @@ export default function Router() {
     Dashboard: Dashboard,
     Administracion: Administracion,
     Usuarios: Usuarios,
-    Roles: Roles
+    Roles: Roles,
+    Personas: Personas
   }
 
   useEffect(() => {
