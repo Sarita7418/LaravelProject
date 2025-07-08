@@ -16,7 +16,9 @@ function Personas() {
         apellido_materno: '',
         ci: '',
         telefono: '',
-        fecha_nacimiento: ''
+        fecha_nacimiento: '',
+        email: '',
+        password: ''
     })
 
     useEffect(() => {
@@ -220,7 +222,12 @@ function Personas() {
                     <label className="form-label">Teléfono</label>
                     <input className="form-input" name="telefono" value={formData.telefono} onChange={handleInputChange} />
                     <label className="form-label">Fecha de nacimiento</label>
-                    <input className="form-input" type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleInputChange}/>
+                    <input className="form-input" type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleInputChange} />
+
+                    <label className="form-label">Correo</label>
+                    <input className="form-input" type="email" name="email" value={formData.email} onChange={handleInputChange} />                    
+                    <label className="form-label">Contraseña</label>
+                    <input className="form-input" type="password" name="password" value={formData.password} onChange={handleInputChange} />
 
 
                     <div className="form-actions">

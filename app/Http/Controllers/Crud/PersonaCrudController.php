@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Persona;
 use Illuminate\Database\QueryException;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class PersonaCrudController extends Controller
 {
@@ -17,22 +20,47 @@ class PersonaCrudController extends Controller
         return response()->json($personas);
     }
 
+   
     public function store(Request $request)
     {
-        $persona = Persona::create([
-            'nombres' => $request->nombres,
-            'apellido_paterno' => $request->apellido_paterno,
-            'apellido_materno' => $request->apellido_materno,
-            'ci' => $request->ci,
-            'telefono' => $request->telefono,
-            'fecha_nacimiento' => $request->fecha_nacimiento, 
-            'estado' => 1,
-        ]);
+        try {
+            \DB::beginTransaction();
 
-        return response()->json([
-            'message' => 'Persona creada exitosamente',
-            'persona' => $persona
-        ], 201);
+            // Crear persona
+            $persona = Persona::create([
+                'nombres' => $request->nombres,
+                'apellido_paterno' => $request->apellido_paterno,
+                'apellido_materno' => $request->apellido_materno,
+                'ci' => $request->ci,
+                'telefono' => $request->telefono,
+                'fecha_nacimiento' => $request->fecha_nacimiento, 
+                'estado' => 1,
+            ]);
+
+            // Crear usuario asociado
+            $usuario = User::create([
+                'id_persona' => $persona->id,
+                'name' => $persona->nombres . ' ' . $persona->apellido_paterno,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'id_rol' => 2, // rol user por defecto
+                'estado' => 1,
+            ]);
+
+            \DB::commit();
+
+            return response()->json([
+                'message' => 'Persona y usuario creados exitosamente',
+                'persona' => $persona,
+                'usuario' => $usuario
+            ], 201);
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'message' => 'Error al crear persona y usuario',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 
