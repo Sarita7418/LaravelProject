@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             MenuItemsSeeder::class,
             AccionRolSeeder::class,
             MenuItemRolSeeder::class,
+            DominiosSeeder::class,         
+            SubdominiosSeeder::class, 
         ]);
     }
 }
