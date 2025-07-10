@@ -31,21 +31,14 @@ function Protocolos() {
     try {
       const res = await axios.get('/api/protocolos')
       setProtocolos(res.data)
-      console.log('Protocolos cargados:', res.data)
-    } catch (error) {
-      console.error('Error al obtener protocolos:', error)
-      console.error('Detalles del error:', error.response?.data)
-    }
+    } catch (error) {}
   }
 
   const fetchCatalogos = async () => {
     try {
       const res = await axios.get('/api/protocolos/catalogos')
       setCatalogos(res.data)
-      console.log('Catálogos cargados:', res.data)
-    } catch (error) {
-      console.error('Error al obtener catálogos:', error)
-    }
+    } catch (error) {}
   }
 
   const cambiarEstadoProtocolo = async (id, activar) => {
@@ -55,13 +48,9 @@ function Protocolos() {
       } else {
         await axios.put(`/api/protocolos/${id}/archivar`)
       }
-      
-      // Refrescar la lista completa para obtener los datos actualizados
       await fetchProtocolos()
-      
       alert(`Protocolo ${activar ? 'reactivado' : 'archivado'} correctamente`)
     } catch (error) {
-      console.error('Error al cambiar estado:', error)
       alert('Error al cambiar estado')
     }
   }
@@ -69,7 +58,7 @@ function Protocolos() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    
+
     try {
       const payload = {
         titulo,
@@ -85,7 +74,6 @@ function Protocolos() {
         id_usuario_creador: catalogos?.usuario_autenticado?.id
       }
 
-      // Limpiar campos vacíos
       Object.keys(payload).forEach(key => {
         if (payload[key] === '' || payload[key] === null) {
           delete payload[key]
@@ -97,12 +85,11 @@ function Protocolos() {
       } else {
         await axios.post('/api/protocolos', payload)
       }
-      
+
       resetFormulario()
       fetchProtocolos()
       alert(`Protocolo ${protocoloEditando ? 'actualizado' : 'creado'} correctamente`)
     } catch (error) {
-      console.error('Error:', error)
       if (error.response?.data?.errors) {
         const errores = Object.values(error.response.data.errors).flat()
         alert('Errores de validación:\n' + errores.join('\n'))
@@ -151,16 +138,12 @@ function Protocolos() {
       switch (vistaActual) {
         case 'activos':
           return estado === 'activo'
-
         case 'enRevision':
           return estado === 'en revision' || estado === 'en revisión'
-
         case 'validados':
           return estado === 'validado'
-
         case 'archivados':
           return estado === 'archivado'
-
         default:
           return false
       }
@@ -176,16 +159,12 @@ function Protocolos() {
       switch (tipo) {
         case 'activos':
           return estado === 'activo'
-
         case 'enRevision':
           return estado === 'en revision' || estado === 'en revisión'
-
         case 'validados':
           return estado === 'validado'
-
         case 'archivados':
           return estado === 'archivado'
-
         default:
           return false
       }
@@ -193,7 +172,7 @@ function Protocolos() {
   }
 
   const protocolosFiltrados = getProtocolosFiltrados()
-  
+
   return (
     <div className="protocolos-container">
       <h2 className="protocolos-title">Protocolos</h2>
@@ -378,11 +357,11 @@ function Protocolos() {
             className="form-input"
             required
           >
-          <option value="">Seleccione...</option>
-          {catalogos?.areasImpacto?.map(a => (
-            <option key={a.id} value={a.id}>{a.descripcion}</option>
-          ))}
-          <option value="nueva">Nueva área...</option>
+            <option value="">Seleccione...</option>
+            {catalogos?.areasImpacto?.map(a => (
+              <option key={a.id} value={a.id}>{a.descripcion}</option>
+            ))}
+            <option value="nueva">Nueva área...</option>
           </select>
           {idAreaImpacto === 'nueva' && (
             <input

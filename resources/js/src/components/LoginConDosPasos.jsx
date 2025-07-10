@@ -47,7 +47,6 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       await axios.post('/api/login', { email, password }, { withCredentials: true })
 
       const res = await axios.get('/api/user')
-      console.log('Respuesta completa del backend:', res.data)
 
       const permisos = res.data.permisos
       const rutas = extraerRutasDesdePermisos(permisos)
