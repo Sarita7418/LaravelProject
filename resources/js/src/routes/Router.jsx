@@ -2,8 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from '../lib/axios'
 
-import Login from '../components/LoginConDosPasos'
-import Dashboard from '../pages/Dashboard'
+import LoginConDosPasos from '../components/LoginConDosPasos'
 import Usuarios from '../components/Usuarios'
 import Roles from '../components/Roles'
 import Personas from '../components/Personas'
@@ -34,10 +33,10 @@ export default function Router() {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/" element={<Navigate to="/login"/>} />
 
       <Route path="/login" element={
-        <Login
+        <LoginConDosPasos
           setAuth={setIsAuthenticated}
           setPermisos={setPermisos}
           setPendingTwoFactor={setPendingTwoFactor}

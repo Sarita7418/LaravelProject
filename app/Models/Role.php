@@ -32,17 +32,6 @@ class Role extends Model
         );
     }
 
-    // Relación con acciones (permisos de acción)
-    public function acciones(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            Accion::class,
-            'accion_rol',
-            'id_rol',
-            'id_accion'
-        );
-    }
-
     // Scope para roles activos
     public function scopeActivos($query)
     {

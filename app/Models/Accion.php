@@ -14,14 +14,14 @@ class Accion extends Model
         'descripcion',
     ];
 
-    // Relación con roles (quiénes tienen acceso a esta acción)
-    public function roles(): BelongsToMany
+    // Relación muchos a muchos con MenuItem
+    public function menuItems(): BelongsToMany
     {
         return $this->belongsToMany(
-            Role::class,
-            'accion_rol',
+            MenuItem::class,
+            'accion_menu_item',
             'id_accion',
-            'id_rol'
+            'id_menu_item'
         );
     }
 }
