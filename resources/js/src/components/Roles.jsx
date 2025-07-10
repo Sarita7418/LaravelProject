@@ -429,7 +429,6 @@ function Roles() {
         </div>
       ) : null}
 
-      {/* Modal de confirmación */}
       {modalVisible && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -450,8 +449,6 @@ function Roles() {
           </div>
         </div>
       )}
-
-      {/* Modal de éxito */}
       {successModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -465,8 +462,6 @@ function Roles() {
           </div>
         </div>
       )}
-
-      {/* Panel de permisos */}
       {renderPanelPermisos()}
     </div>
   )
