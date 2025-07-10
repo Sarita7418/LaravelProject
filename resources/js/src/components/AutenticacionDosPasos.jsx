@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import axios from '../lib/axios'
+import './AutenticacionDosPasos.css'
 
 export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsuario, onCancelar }) {
-  const [codigo, setCodigo] = useState('')
+  const [codigo, setCodigo] = useState(['', '', '', '', '', ''])
   const [error, setError] = useState('')
   const [mensaje, setMensaje] = useState('')
   const [correoOculto, setCorreoOculto] = useState('')
-  const [tiempoRestante, setTiempoRestante] = useState(600) 
+  const [tiempoRestante, setTiempoRestante] = useState(600)
   const [enviandoCodigo, setEnviandoCodigo] = useState(false)
   const [verificandoCodigo, setVerificandoCodigo] = useState(false)
+  const inputsRef = useRef([])
 
   useEffect(() => {
     if (tiempoRestante > 0) {
@@ -24,7 +26,7 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
       setCorreoOculto(response.data.correo_parcial)
       setMensaje('Código enviado a tu correo electrónico')
       setError('')
-      setTiempoRestante(600) 
+      setTiempoRestante(600)
     } catch (err) {
       console.error('Error al enviar código:', err)
       setError('Error al enviar el código. Inténtalo nuevamente.')
@@ -34,14 +36,15 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
   }
 
   const verificarCodigo = async () => {
-    if (codigo.length !== 6) {
+    const codigoCompleto = codigo.join('')
+    if (codigoCompleto.length !== 6) {
       setError('El código debe tener 6 dígitos')
       return
     }
 
     setVerificandoCodigo(true)
     try {
-      const response = await axios.post('/api/dos-pasos/verificar-codigo', { codigo })
+      const response = await axios.post('/api/dos-pasos/verificar-codigo', { codigo: codigoCompleto })
       setMensaje('Código verificado correctamente')
       setError('')
 
@@ -50,11 +53,7 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
       }, 1000)
     } catch (err) {
       console.error('Error al verificar código:', err)
-      if (err.response?.data?.error) {
-        setError(err.response.data.error)
-      } else {
-        setError('Error al verificar el código')
-      }
+      setError(err.response?.data?.error || 'Error al verificar el código')
     } finally {
       setVerificandoCodigo(false)
     }
@@ -62,11 +61,11 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
 
   const cancelarProceso = async () => {
     try {
-      await axios.post('/api/dos-pasos/deshabilitar') 
+      await axios.post('/api/dos-pasos/deshabilitar')
     } catch (err) {
       console.warn('Error al cancelar el código:', err)
     } finally {
-      onCancelar() 
+      onCancelar()
     }
   }
 
@@ -76,11 +75,22 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
     return `${minutos}:${segs.toString().padStart(2, '0')}`
   }
 
-  const manejarCambioCodigo = (e) => {
-    const valor = e.target.value.replace(/\D/g, '')
-    if (valor.length <= 6) {
-      setCodigo(valor)
-      setError('')
+  const manejarCambio = (index, valor) => {
+    if (!/^\d?$/.test(valor)) return
+
+    const nuevoCodigo = [...codigo]
+    nuevoCodigo[index] = valor
+    setCodigo(nuevoCodigo)
+    setError('')
+
+    if (valor && index < 5) {
+      inputsRef.current[index + 1]?.focus()
+    }
+  }
+
+  const manejarRetroceso = (e, index) => {
+    if (e.key === 'Backspace' && !codigo[index] && index > 0) {
+      inputsRef.current[index - 1]?.focus()
     }
   }
 
@@ -101,21 +111,24 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
 
       {correoOculto && (
         <>
-          <div>
-            <label>Código de 6 dígitos:</label>
-            <input
-              type="text"
-              value={codigo}
-              onChange={manejarCambioCodigo}
-              placeholder="123456"
-              maxLength="6"
-              disabled={verificandoCodigo}
-            />
+          <div className="codigo-inputs">
+            {codigo.map((valor, index) => (
+              <input
+                key={index}
+                type="text"
+                maxLength="1"
+                value={valor}
+                ref={el => inputsRef.current[index] = el}
+                onChange={e => manejarCambio(index, e.target.value)}
+                onKeyDown={e => manejarRetroceso(e, index)}
+                disabled={verificandoCodigo}
+              />
+            ))}
           </div>
 
-          <button 
+          <button
             onClick={verificarCodigo}
-            disabled={codigo.length !== 6 || verificandoCodigo}
+            disabled={codigo.join('').length !== 6 || verificandoCodigo}
           >
             {verificandoCodigo ? 'Verificando...' : 'Verificar Código'}
           </button>

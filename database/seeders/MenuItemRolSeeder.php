@@ -11,11 +11,13 @@ class MenuItemRolSeeder extends Seeder
     public function run(): void
     {
         $administracion = MenuItem::where('ruta', '/dashboard')->first();
-        $usuarios = MenuItem::where('ruta', '/dashboard/usuarios')->first();
-        $roles = MenuItem::where('ruta', '/dashboard/roles')->first();
+        $usuarios       = MenuItem::where('ruta', '/dashboard/usuarios')->first();
+        $roles          = MenuItem::where('ruta', '/dashboard/roles')->first();
+        $personas       = MenuItem::where('ruta', '/dashboard/personas')->first();
+        $protocolos     = MenuItem::where('ruta', '/dashboard/protocolos')->first();
 
         // ADMIN (ID 1) accede a todo
-        foreach ([$administracion, $usuarios, $roles] as $menuItem) {
+        foreach ([$administracion, $usuarios, $roles, $personas, $protocolos] as $menuItem) {
             if ($menuItem) {
                 MenuItemRol::create([
                     'id_rol' => 1,
