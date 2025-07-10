@@ -74,6 +74,6 @@ Route::middleware([
 
 
     // Navegación
-    Route::get('/menu/{idRol}', [NavegacionController::class, 'obtenerMenu'])->middleware('auth:sanctum');
-    Route::get('/acciones/{idRol}', [NavegacionController::class, 'obtenerAcciones'])->middleware('auth:sanctum');
+    Route::get('/menu/{id_usuario}', [NavegacionController::class, 'obtenerMenu'])->middleware('auth:sanctum');
+    Route::get('/acciones/{id_usuario}', [NavegacionController::class, 'obtenerAcciones'])->middleware('auth:sanctum');
 });

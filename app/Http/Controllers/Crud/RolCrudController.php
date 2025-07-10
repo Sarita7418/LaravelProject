@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Crud;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Role;
+use App\Models\MenuItem;
 
 class RolCrudController extends Controller
 {
@@ -89,4 +90,8 @@ class RolCrudController extends Controller
         $roles = Role::where('estado', 0)->get();
         return response()->json($roles);
     }
+
+    
+
+
 }
