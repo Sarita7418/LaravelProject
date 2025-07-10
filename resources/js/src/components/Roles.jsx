@@ -16,12 +16,14 @@ function Roles() {
   const [modalRolId, setModalRolId] = useState(null)
   const [successModal, setSuccessModal] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
+
   useEffect(() => {
     axios.get('/sanctum/csrf-cookie').then(() => {
       fetchRoles()
       fetchRolesInactivos()
     })
   }, [])
+
   const validateDescripcion = (value) => {
     const newErrors = {}
     
