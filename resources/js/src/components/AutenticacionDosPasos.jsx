@@ -28,7 +28,6 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
       setError('')
       setTiempoRestante(600)
     } catch (err) {
-      console.error('Error al enviar código:', err)
       setError('Error al enviar el código. Inténtalo nuevamente.')
     } finally {
       setEnviandoCodigo(false)
@@ -47,12 +46,10 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
       const response = await axios.post('/api/dos-pasos/verificar-codigo', { codigo: codigoCompleto })
       setMensaje('Código verificado correctamente')
       setError('')
-
       setTimeout(() => {
         onVerificacionExitosa(response.data.usuario, response.data.rol)
       }, 1000)
     } catch (err) {
-      console.error('Error al verificar código:', err)
       setError(err.response?.data?.error || 'Error al verificar el código')
     } finally {
       setVerificandoCodigo(false)
@@ -62,8 +59,8 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
   const cancelarProceso = async () => {
     try {
       await axios.post('/api/dos-pasos/deshabilitar')
-    } catch (err) {
-      console.warn('Error al cancelar el código:', err)
+    } catch (_) {
+      // No mostrar nada en consola
     } finally {
       onCancelar()
     }
