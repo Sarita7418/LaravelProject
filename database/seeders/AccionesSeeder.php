@@ -21,6 +21,10 @@ class AccionesSeeder extends Seeder
             ['nombre' => 'crear_personas', 'descripcion' => 'Permite crear personas'],
             ['nombre' => 'editar_personas', 'descripcion' => 'Permite editar personas'],
             ['nombre' => 'activar_personas', 'descripcion' => 'Permite activar o desactivar personas'],
+
+            ['nombre' => 'crear_protocolos', 'descripcion' => 'Permite crear protocolos'],
+            ['nombre' => 'editar_protocolos', 'descripcion' => 'Permite editar protocolos'],
+            ['nombre' => 'activar_protocolos', 'descripcion' => 'Permite activar o desactivar protocolos'],
         ];
 
         foreach ($acciones as $accionData) {

@@ -1,0 +1,179 @@
+.protocolos-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  color: #fff;
+}
+
+.protocolos-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.toggle-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  border: 2px solid #3b82f6;
+  background: #2a2a2a;
+  color: #3b82f6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.toggle-btn:hover {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.protocolos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.protocolos-table th,
+.protocolos-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+.protocolos-table th {
+  background-color: #2b2b2b;
+  font-weight: bold;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status.active {
+  background: #065f46;
+  color: #10b981;
+  border: 1px solid #10b981;
+}
+
+.status.inactive {
+  background: #7f1d1d;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+}
+
+.delete-btn,
+.add-btn,
+.create-btn,
+.cancel-btn {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  margin-right: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #a11c1c;
+}
+
+.add-btn {
+  background-color: #15803d;
+  margin-top: 10px;
+}
+
+.add-btn:hover {
+  background-color: #166534;
+}
+
+.create-btn {
+  background-color: #2563eb;
+}
+
+.create-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.cancel-btn {
+  background-color: #6b7280;
+}
+
+.cancel-btn:hover {
+  background-color: #4b5563;
+}
+
+.reactivate-btn {
+  background: #15803d;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  margin-right: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.reactivate-btn:hover {
+  background: #166534;
+}
+
+.form-container {
+  margin-top: 30px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  padding: 8px;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #444;
+  margin-bottom: 16px;
+  background-color: #2a2a2a;
+  color: white;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  margin-right: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.edit-btn:hover {
+  background-color: #2563eb;
+}
+

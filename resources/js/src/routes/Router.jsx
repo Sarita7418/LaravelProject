@@ -7,6 +7,7 @@ import Dashboard from '../pages/Dashboard'
 import Usuarios from '../components/Usuarios'
 import Roles from '../components/Roles'
 import Personas from '../components/Personas'
+import Protocolos from '../components/Protocolos'
 import LayoutDashboard from '../components/LayoutDashboard'
 import PrivateRoute from './PrivateRoute'
 
@@ -86,6 +87,18 @@ export default function Router() {
             </PrivateRoute>
           } />
         )}
+        {permisos.includes("/dashboard/protocolos") && (
+          <Route path="protocolos" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/protocolos"]}
+            >
+              <Protocolos />
+            </PrivateRoute>
+          } />
+        )}
+
 
         {/* Agregar aquí nuevas rutas manualmente si se crean más componentes */}
 
