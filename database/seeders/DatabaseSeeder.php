@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
             UsersSeeder::class,  
             AccionesSeeder::class,
             MenuItemsSeeder::class,
-            AccionRolSeeder::class,
+            AccionMenuItemSeeder::class,
             MenuItemRolSeeder::class,
             DominiosSeeder::class,
             EspecialidadSeeder::class,

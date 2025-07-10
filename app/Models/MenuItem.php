@@ -30,6 +30,17 @@ class MenuItem extends Model
         );
     }
 
+    // Relación muchos a muchos con acciones
+    public function acciones(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Accion::class,
+            'accion_menu_item',
+            'menu_item_id',
+            'accion_id'
+        );
+    }
+
     // Menú padre (si es submenú)
     public function padre(): BelongsTo
     {
