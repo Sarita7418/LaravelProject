@@ -34,7 +34,6 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 2,
         ]);
-
         // Submenú: Personas
         MenuItem::create([
             'item' => 'Personas',
