@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Subdominio;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,6 +19,9 @@ class DatabaseSeeder extends Seeder
             MenuItemsSeeder::class,
             AccionRolSeeder::class,
             MenuItemRolSeeder::class,
+            DominiosSeeder::class,
+            EspecialidadSeeder::class,
+            SubdominiosSeeder::class
         ]);
     }
 }

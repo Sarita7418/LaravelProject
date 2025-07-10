@@ -34,5 +34,23 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 2,
         ]);
+
+        // Submenú: Personas
+        MenuItem::create([
+            'item' => 'Personas',
+            'ruta' => '/dashboard/personas',
+            'id_padre' => $admin->id,
+            'nivel' => 3,
+            'orden' => 3,
+        ]);
+
+        // Submenú: Protocolos
+        MenuItem::create([
+            'item' => 'Protocolos',
+            'ruta' => '/dashboard/protocolos',
+            'id_padre' => $admin->id,
+            'nivel' => 3,
+            'orden' => 4,
+        ]);
     }
 }

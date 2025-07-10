@@ -1,0 +1,15 @@
+.codigo-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.codigo-inputs input {
+  width: 40px;
+  height: 50px;
+  font-size: 24px;
+  text-align: center;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+}
