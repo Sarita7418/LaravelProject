@@ -23,7 +23,7 @@ Route::middleware([
     SubstituteBindings::class,
     ThrottleRequests::class,
 ])->group(function () {
-    
+
 
     // Autenticación y permisos
     Route::get('/user', [NavegacionController::class, 'obtenerUsuarioConPermisos'])->middleware('auth:sanctum');
@@ -44,6 +44,12 @@ Route::middleware([
     Route::put('/roles/{id}', [RolCrudController::class, 'update'])->middleware('auth:sanctum');
     Route::get('/roles/inactivos', [RolCrudController::class, 'inactivos'])->middleware('auth:sanctum');
     Route::put('/roles/{id}/reactivar', [RolCrudController::class, 'reactivar'])->middleware('auth:sanctum');
+
+    Route::get('/roles/menus-acciones', [RolCrudController::class, 'todosLosMenusYAcciones'])->middleware('auth:sanctum');
+    Route::get('/roles/{idRol}/menus', [RolCrudController::class, 'menusDeRol'])->middleware('auth:sanctum');
+    Route::get('/roles/{idRol}/acciones', [RolCrudController::class, 'accionesDeRol'])->middleware('auth:sanctum');
+    Route::put('/roles/{idRol}/menus', [RolCrudController::class, 'actualizarMenusDeRol'])->middleware('auth:sanctum');
+    Route::put('/roles/{idRol}/acciones', [RolCrudController::class, 'actualizarAccionesDeRol'])->middleware('auth:sanctum');
 
     // Personas
     Route::get('/personas', [PersonaCrudController::class, 'index'])->middleware('auth:sanctum');
