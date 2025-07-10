@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import axios from '../lib/axios'
 
 import LoginConDosPasos from '../components/LoginConDosPasos'
+import CambiarContrasena from '../components/CambiarContrasena'
 import Usuarios from '../components/Usuarios'
 import Roles from '../components/Roles'
 import Personas from '../components/Personas'
@@ -42,6 +43,7 @@ export default function Router() {
           setPendingTwoFactor={setPendingTwoFactor}
         />
       } />
+      <Route path="/cambiar-contrasena" element={<CambiarContrasena />} />
 
       <Route path="/dashboard" element={
         <PrivateRoute
