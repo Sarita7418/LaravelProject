@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
             MenuItemRolSeeder::class,
             DominiosSeeder::class,
             EspecialidadSeeder::class,
-            SubdominiosSeeder::class
+            SubdominiosSeeder::class,
+            AccionMenuItemRolSeeder::class
         ]);
     }
 }

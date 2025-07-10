@@ -5,34 +5,30 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Accion;
 use App\Models\MenuItem;
+use Illuminate\Support\Facades\DB;
 
 class AccionMenuItemSeeder extends Seeder
 {
     public function run(): void
     {
-        // Obtén todas las acciones
-        $crear   = Accion::where('nombre', 'crear')->first();
-        $editar  = Accion::where('nombre', 'editar')->first();
-        $activar = Accion::where('nombre', 'activar')->first();
+        // Busca los menús por su ruta (ajusta si usas otro campo)
+        $usuarios = MenuItem::where('ruta', '/dashboard/usuarios')->first();
+        $roles    = MenuItem::where('ruta', '/dashboard/roles')->first();
 
-        // Obtén los menú items principales
-        $usuarios   = MenuItem::where('item', 'Usuarios')->first();
-        $roles      = MenuItem::where('item', 'Roles')->first();
-        $protocolos = MenuItem::where('item', 'Protocolos')->first();
+        // Acciones a vincular
+        $acciones = Accion::whereIn('nombre', [
+            'crear', 'editar', 'activar'
+        ])->get();
 
-        // Asociar acciones a Usuarios (admin: todas, user: solo crear y editar)
-        if ($usuarios) {
-            $usuarios->acciones()->sync([$crear->id, $editar->id, $activar->id]); // Admin tendrá acceso a todo por relación de rol a menú
-        }
-
-        // Asociar acciones a Roles (solo admin)
-        if ($roles) {
-            $roles->acciones()->sync([$crear->id, $editar->id, $activar->id]);
-        }
-
-        // Asociar acciones a Protocolos (admin: todas, user: solo crear y editar)
-        if ($protocolos) {
-            $protocolos->acciones()->sync([$crear->id, $editar->id, $activar->id]);
+        foreach ([$usuarios, $roles] as $menu) {
+            if (!$menu) continue;
+            foreach ($acciones as $accion) {
+                // Inserta en la tabla pivote
+                DB::table('accion_menu_item')->updateOrInsert([
+                    'id_menu_item' => $menu->id,
+                    'id_accion' => $accion->id
+                ]);
+            }
         }
     }
 }

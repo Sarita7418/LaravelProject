@@ -20,8 +20,8 @@ class Accion extends Model
         return $this->belongsToMany(
             MenuItem::class,
             'accion_menu_item',
-            'accion_id',
-            'menu_item_id'
+            'id_accion',
+            'id_menu_item'
         );
     }
 }

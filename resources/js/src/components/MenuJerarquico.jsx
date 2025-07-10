@@ -1,20 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from '../lib/axios'
+import './MenuJerarquico.css'
 
-const MenuJerarquico = ({ idRol = 1 }) => {
+const MenuJerarquico = () => {
   const [menuItems, setMenuItems] = useState([])
   const [abiertos, setAbiertos] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
-    axios.get(`/api/menu/${idRol}`)
+    // Paso 1: obtener el usuario autenticado
+    axios.get('/api/user', { withCredentials: true })
+      .then(res => {
+        const userId = res.data.id
+        // Paso 2: obtener el menú correspondiente a ese usuario
+        return axios.get(`/api/menu/${userId}`)
+      })
       .then(res => {
         const ordenados = res.data.sort((a, b) => a.orden - b.orden)
         setMenuItems(ordenados)
+        setError('')
       })
-      .catch(err => console.error('Error cargando menú:', err))
-  }, [idRol])
+      .catch(() => {
+        setMenuItems([])
+        setError('No se pudo cargar el menú')
+      })
+      .finally(() => setLoading(false))
+  }, [])
 
   const toggleSubmenu = (id) => {
     setAbiertos(prev => ({
@@ -23,23 +37,24 @@ const MenuJerarquico = ({ idRol = 1 }) => {
     }))
   }
 
-  // Función para obtener hijos de un ítem
   const obtenerHijos = (padreId) =>
     menuItems.filter(item => item.id_padre === padreId)
 
   const renderMenu = (padreId = null) => {
     const items = menuItems.filter(item => item.id_padre === padreId)
-
+    if (items.length === 0) {
+      return null
+    }
     return (
-      <ul className="submenu">
+      <ul className="menujerar-submenu">
         {items.map(item => {
           const hijos = obtenerHijos(item.id)
           const tieneHijos = hijos.length > 0
 
           return (
-            <li key={item.id}>
+            <li key={item.id} className={`menujerar-li ${tieneHijos ? 'menujerar-padre' : 'menujerar-hijo'}`}>
               <div
-                className="menu-boton"
+                className={`menujerar-boton ${tieneHijos ? 'menujerar-boton-padre' : 'menujerar-boton-hijo'}`}
                 onClick={() => {
                   if (tieneHijos) {
                     toggleSubmenu(item.id)
@@ -48,13 +63,15 @@ const MenuJerarquico = ({ idRol = 1 }) => {
                   }
                 }}
               >
-                {tieneHijos && (
-                  <span>{abiertos[item.id] ? '▼' : '▶'}</span>
-                )}
-                <span>{item.item}</span>
+                <span className={`menujerar-texto ${tieneHijos ? 'menujerar-texto-padre' : ''}`}>
+                  {item.item}
+                </span>
               </div>
-
-              {tieneHijos && abiertos[item.id] && renderMenu(item.id)}
+              {tieneHijos && abiertos[item.id] && (
+                <div className="menujerar-hijos-seccion">
+                  {renderMenu(item.id)}
+                </div>
+              )}
             </li>
           )
         })}
@@ -62,10 +79,22 @@ const MenuJerarquico = ({ idRol = 1 }) => {
     )
   }
 
+  if (loading) {
+    return <div className="menujerar-vacio">Cargando menú...</div>
+  }
+
+  if (error) {
+    return <div className="menujerar-vacio">{error}</div>
+  }
+
+  if (!menuItems || menuItems.length === 0) {
+    return <div className="menujerar-vacio">No hay opciones de menú</div>
+  }
+
   return (
-    <div className="sidebar-menu">
+    <nav className="menujerar-sidebar">
       {renderMenu()}
-    </div>
+    </nav>
   )
 }
 

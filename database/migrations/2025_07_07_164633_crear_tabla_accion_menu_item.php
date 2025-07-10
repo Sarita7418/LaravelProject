@@ -11,17 +11,17 @@ return new class extends Migration
         Schema::create('accion_menu_item', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('accion_id')
+            $table->foreignId('id_accion')
                   ->constrained('acciones')
                   ->onDelete('cascade');
 
-            $table->foreignId('menu_item_id')
+            $table->foreignId('id_menu_item')
                   ->constrained('menu_items')
                   ->onDelete('cascade');
 
             $table->timestamps();
 
-            $table->unique(['accion_id', 'menu_item_id']); // Para evitar duplicados
+            $table->unique(['id_accion', 'id_menu_item']); // Para evitar duplicados
         });
     }
 

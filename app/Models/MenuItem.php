@@ -36,8 +36,8 @@ class MenuItem extends Model
         return $this->belongsToMany(
             Accion::class,
             'accion_menu_item',
-            'menu_item_id',
-            'accion_id'
+            'id_menu_item',
+            'id_accion'
         );
     }
 

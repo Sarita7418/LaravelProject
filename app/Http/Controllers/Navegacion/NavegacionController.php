@@ -44,8 +44,6 @@ class NavegacionController extends Controller
     }
 
 
-
-    // GET /api/menu/{idRol}
     public function obtenerMenu($idUsuario)
     {
         $user = \App\Models\User::with('role.menuItems')->findOrFail($idUsuario);
