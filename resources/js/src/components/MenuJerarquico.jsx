@@ -8,14 +8,17 @@ const MenuJerarquico = () => {
   const [abiertos, setAbiertos] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [usuario, setUsuario] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Paso 1: obtener el usuario autenticado
     axios.get('/api/user', { withCredentials: true })
       .then(res => {
+        setUsuario({
+          nombre: res.data.name,
+          rol: res.data.rol ?? 'Sin rol'
+        })
         const userId = res.data.id
-        // Paso 2: obtener el menú correspondiente a ese usuario
         return axios.get(`/api/menu/${userId}`)
       })
       .then(res => {
@@ -79,6 +82,17 @@ const MenuJerarquico = () => {
     )
   }
 
+  const handleLogout = async () => {
+    try {
+      await axios.post('/api/logout', null, { withCredentials: true })
+    } catch (err) {
+      console.warn('Logout falló, pero igual limpiamos sesión')
+    } finally {
+      localStorage.clear()
+      navigate('/login', { replace: true })
+    }
+  }
+
   if (loading) {
     return <div className="menujerar-vacio">Cargando menú...</div>
   }
@@ -93,7 +107,18 @@ const MenuJerarquico = () => {
 
   return (
     <nav className="menujerar-sidebar">
-      {renderMenu()}
+      <div>
+        {usuario && (
+          <div className="menujerar-usuario">
+            <div className="menujerar-nombre">{usuario.nombre}</div>
+            <div className="menujerar-rol">{usuario.rol}</div>
+          </div>
+        )}
+        {renderMenu()}
+      </div>
+      <button className="boton-logout" onClick={handleLogout}>
+        Cerrar sesión
+      </button>
     </nav>
   )
 }
