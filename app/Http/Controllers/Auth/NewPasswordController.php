@@ -3,51 +3,106 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
+use App\Models\CodigoVerificacion;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Hash;
+
 
 class NewPasswordController extends Controller
 {
-    /**
-     * Handle an incoming new password request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function store(Request $request): JsonResponse
+    public function enviarCodigoReset(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+        
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        // Eliminar códigos previos
+        CodigoVerificacion::where('usuario_id', $user->id)->delete();
+
+        $codigo = rand(100000, 999999);
+
+        CodigoVerificacion::create([
+            'usuario_id' => $user->id,
+            'codigo' => $codigo,
+            'expira_en' => Carbon::now()->addMinutes(10),
+            'habilitado' => true
+        ]);
+
+        Mail::raw("Tu código para restablecer contraseña es: {$codigo}", function ($message) use ($user) {
+            $message->to($user->email)
+                    ->subject('Código para restablecer contraseña');
+        });
+
+        return response()->json([
+            'message' => 'Código enviado al correo electrónico',
+            'correo_parcial' => $this->ocultarCorreo($user->email)
+        ]);
+    }
+
+    public function verificarCodigoReset(Request $request)
     {
         $request->validate([
-            'token' => ['required'],
-            'email' => ['required', 'email'],
+            'email' => 'required|email',
+            'codigo' => 'required|string|size:6'
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        $registro = CodigoVerificacion::where('usuario_id', $user->id)
+            ->where('codigo', $request->codigo)
+            ->first();
+
+        if (!$registro || Carbon::now()->gt($registro->expira_en)) {
+            return response()->json(['error' => 'Código expirado o inválido'], 400);
+        }
+
+        $registro->delete();
+
+        return response()->json(['message' => 'Código verificado correctamente']);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) use ($request) {
-                $user->forceFill([
-                    'password' => Hash::make($request->string('password')),
-                    'remember_token' => Str::random(60),
-                ])->save();
-
-                event(new PasswordReset($user));
-            }
-        );
-
-        if ($status != Password::PASSWORD_RESET) {
-            throw ValidationException::withMessages([
-                'email' => [__($status)],
-            ]);
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
         }
 
-        return response()->json(['status' => __($status)]);
+        $user->forceFill([
+            'password' => Hash::make($request->password),
+            'remember_token' => Str::random(60),
+        ])->save();
+
+        return response()->json(['message' => 'Contraseña cambiada correctamente']);
+    }
+
+    private function ocultarCorreo($email)
+    {
+        $partes = explode('@', $email);
+        $nombre = $partes[0];
+        $dominio = $partes[1];
+
+        if (strlen($nombre) <= 2) {
+            return '*' . substr($nombre, -1) . '@' . $dominio;
+        }
+
+        return substr($nombre, 0, 2) . str_repeat('*', strlen($nombre) - 2) . '@' . $dominio;
     }
 }

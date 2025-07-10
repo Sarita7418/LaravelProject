@@ -2,7 +2,12 @@ import { useState, useEffect, useRef } from 'react'
 import axios from '../lib/axios'
 import './AutenticacionDosPasos.css'
 
-export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsuario, onCancelar }) {
+export default function AutenticacionDosPasos({ 
+  onVerificacionExitosa, 
+  correoUsuario, 
+  onCancelar,
+  esRecuperacion = false 
+}) {
   const [codigo, setCodigo] = useState(['', '', '', '', '', ''])
   const [error, setError] = useState('')
   const [mensaje, setMensaje] = useState('')
@@ -22,13 +27,19 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
   const enviarCodigo = async () => {
     setEnviandoCodigo(true)
     try {
-      const response = await axios.post('/api/dos-pasos/enviar-codigo')
-      setCorreoOculto(response.data.correo_parcial)
+      const endpoint = esRecuperacion 
+        ? '/api/reset-password/enviar-codigo' 
+        : '/api/dos-pasos/enviar-codigo'
+      
+      const data = esRecuperacion ? { email: correoUsuario } : {}
+      
+      const response = await axios.post(endpoint, data, { withCredentials: true })
+      setCorreoOculto(response.data.correo_parcial || correoUsuario)
       setMensaje('Código enviado a tu correo electrónico')
       setError('')
       setTiempoRestante(600)
     } catch (err) {
-      setError('Error al enviar el código. Inténtalo nuevamente.')
+      setError(err.response?.data?.error || 'Error al enviar el código. Inténtalo nuevamente.')
     } finally {
       setEnviandoCodigo(false)
     }
@@ -43,12 +54,23 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
 
     setVerificandoCodigo(true)
     try {
-      const response = await axios.post('/api/dos-pasos/verificar-codigo', { codigo: codigoCompleto })
+      const endpoint = esRecuperacion
+        ? '/api/reset-password/verificar-codigo'
+        : '/api/dos-pasos/verificar-codigo'
+      
+      const data = esRecuperacion
+        ? { email: correoUsuario, codigo: codigoCompleto }
+        : { codigo: codigoCompleto }
+
+      const response = await axios.post(endpoint, data, { withCredentials: true })
       setMensaje('Código verificado correctamente')
       setError('')
-      setTimeout(() => {
+      
+      if (esRecuperacion) {
+        onVerificacionExitosa()
+      } else {
         onVerificacionExitosa(response.data.usuario, response.data.rol)
-      }, 1000)
+      }
     } catch (err) {
       setError(err.response?.data?.error || 'Error al verificar el código')
     } finally {
@@ -58,7 +80,9 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
 
   const cancelarProceso = async () => {
     try {
-      await axios.post('/api/dos-pasos/deshabilitar')
+      if (!esRecuperacion) {
+        await axios.post('/api/dos-pasos/deshabilitar', {}, { withCredentials: true })
+      }
     } catch (_) {
       // No mostrar nada en consola
     } finally {
@@ -92,23 +116,33 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
   }
 
   return (
-    <div>
+    <div className="dos-pasos-container">
       <h2>Verificación en Dos Pasos</h2>
 
-      <div>
+      <div className="correo-info">
         <p>📧 Enviaremos el código a:</p>
-        <p>{correoOculto || correoUsuario}</p>
+        <p className="correo-destino">{correoOculto || correoUsuario}</p>
       </div>
 
       {!correoOculto && (
-        <button onClick={enviarCodigo} disabled={enviandoCodigo}>
+        <button 
+          onClick={enviarCodigo} 
+          disabled={enviandoCodigo}
+          className="btn-enviar"
+        >
           {enviandoCodigo ? 'Enviando...' : 'Enviar código'}
         </button>
       )}
 
       {correoOculto && (
         <>
-          <div className="codigo-inputs">
+          <div className="codigo-inputs" onPaste={(e) => {
+            const paste = e.clipboardData.getData('text');
+            if (/^\d{6}$/.test(paste)) {
+              setCodigo(paste.split('').slice(0, 6));
+              inputsRef.current[5]?.focus();
+            }
+          }}>
             {codigo.map((valor, index) => (
               <input
                 key={index}
@@ -119,6 +153,9 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
                 onChange={e => manejarCambio(index, e.target.value)}
                 onKeyDown={e => manejarRetroceso(e, index)}
                 disabled={verificandoCodigo}
+                className="codigo-input"
+                autoFocus={index === 0 && !codigo.join('')}
+                inputMode="numeric"
               />
             ))}
           </div>
@@ -126,15 +163,20 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
           <button
             onClick={verificarCodigo}
             disabled={codigo.join('').length !== 6 || verificandoCodigo}
+            className="btn-verificar"
           >
             {verificandoCodigo ? 'Verificando...' : 'Verificar Código'}
           </button>
 
-          <div>
+          <div className="tiempo-container">
             {tiempoRestante > 0 ? (
               <p>Tiempo restante: {formatearTiempo(tiempoRestante)}</p>
             ) : (
-              <button onClick={enviarCodigo} disabled={enviandoCodigo}>
+              <button 
+                onClick={enviarCodigo} 
+                disabled={enviandoCodigo}
+                className="btn-reenviar"
+              >
                 {enviandoCodigo ? 'Enviando...' : 'Reenviar código'}
               </button>
             )}
@@ -142,10 +184,15 @@ export default function AutenticacionDosPasos({ onVerificacionExitosa, correoUsu
         </>
       )}
 
-      <button onClick={cancelarProceso}>Cancelar</button>
+      <button 
+        onClick={cancelarProceso}
+        className="btn-cancelar"
+      >
+        Cancelar
+      </button>
 
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-      {mensaje && !error && <div style={{ color: 'green' }}>{mensaje}</div>}
+      {error && <div className="mensaje-error">{error}</div>}
+      {mensaje && !error && <div className="mensaje-exito">{mensaje}</div>}
     </div>
   )
 }
