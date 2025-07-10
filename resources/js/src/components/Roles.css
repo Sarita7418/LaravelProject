@@ -206,6 +206,168 @@
 .edit-btn:hover {
   background-color: #2563eb;
 }
+.roles-panel-permisos {
+  background: #23272f;
+  color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px #0007;
+  margin: 32px auto;
+  padding: 32px 28px 20px 28px;
+  max-width: 750px;
+  min-width: 350px;
+  min-height: 340px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.roles-panel-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.roles-panel-titulo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 1.13em;
+  font-weight: bold;
+  color: #6bb3fd;
+  letter-spacing: 0.3px;
+  margin-left: 2px;
+}
+
+.roles-editar-acciones-btn,
+.roles-guardar-acciones-btn,
+.roles-cerrar-panel-btn {
+  background: #383f4e;
+  color: #b1cdfa;
+  border: none;
+  padding: 7px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.roles-editar-acciones-btn:hover,
+.roles-guardar-acciones-btn:hover,
+.roles-cerrar-panel-btn:hover {
+  background: #4b5770;
+  color: #fff;
+}
+
+.roles-arbol {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto 20px auto;
+  background: #181b22;
+  border-radius: 12px;
+  padding: 16px 18px 10px 18px;
+  min-height: 160px;
+  box-sizing: border-box;
+}
+
+.roles-arbol-lista {
+  list-style: none;
+  padding-left: 24px;
+  margin: 0;
+}
+.roles-arbol-item {
+  margin-bottom: 8px;
+  position: relative;
+}
+.roles-arbol-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.roles-arbol-checkbox {
+  accent-color: #3082ff;
+  width: 18px;
+  height: 18px;
+}
+.roles-arbol-texto {
+  font-size: 1em;
+  font-weight: 500;
+  color: #e8eaff;
+  padding: 2px 4px;
+}
+.roles-arbol-checkbox:disabled + .roles-arbol-texto {
+  color: #6c7a92;
+}
+
+.roles-acciones-list {
+  margin-left: 20px;
+  display: flex;
+  gap: 10px;
+}
+.roles-acciones-checkbox-label {
+  display: flex;
+  align-items: center;
+  background: #253050;
+  border-radius: 5px;
+  padding: 2px 8px 2px 5px;
+  font-size: 0.95em;
+  margin-right: 8px;
+}
+.roles-acciones-checkbox {
+  accent-color: #42d392;
+  margin-right: 4px;
+  width: 15px;
+  height: 15px;
+}
+.roles-acciones-texto {
+  color: #a4c7f5;
+}
+.roles-acciones-checkbox:not(:checked) + .roles-acciones-texto {
+  color: #757d99;
+  opacity: 0.7;
+}
+
+.roles-panel-botones {
+  margin-top: 18px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+.roles-guardar-menus-btn {
+  background: #265ac7;
+  color: #fff;
+  border: none;
+  padding: 9px 24px;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: bold;
+  margin-left: 14px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.roles-guardar-menus-btn:hover {
+  background: #326bfc;
+}
+.detalle-btn {
+  background: #23272f;
+  color: #7ac0ff;
+  border: 1px solid #3b4d73;
+  padding: 5px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.99em;
+  margin-left: 6px;
+  transition: background 0.18s, color 0.18s;
+}
+.detalle-btn:hover {
+  background: #38537d;
+  color: #fff;
+}
 
 /* Estilos del Modal */
 .modal-overlay {
