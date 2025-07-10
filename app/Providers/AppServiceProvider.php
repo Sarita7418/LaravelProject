@@ -27,14 +27,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //Pista de auditoria
-        CodigoVerificacion::observe(PistaAuditoriaObserver::class);
-        Role::observe(PistaAuditoriaObserver::class);
-        User::observe(PistaAuditoriaObserver::class);
-
-        //Añadir mas modelos a desarrollar y observar para auditar
-        ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
-            return config('app.frontend_url') . "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
-        });
+        
     }
 }

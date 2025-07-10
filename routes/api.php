@@ -15,6 +15,7 @@ use App\Http\Controllers\Crud\UsuarioCrudController;
 use App\Http\Controllers\ProtocoloController;
 use App\Http\Controllers\Crud\PersonaCrudController;
 use App\Http\Controllers\Navegacion\NavegacionController;
+use App\Http\Controllers\Auth\NewPasswordController;
 
 Route::middleware([
     EnsureFrontendRequestsAreStateful::class,
@@ -23,19 +24,29 @@ Route::middleware([
     SubstituteBindings::class,
     ThrottleRequests::class,
 ])->group(function () {
-    
+
 
     // Autenticación y permisos
     Route::get('/user', [NavegacionController::class, 'obtenerUsuarioConPermisos'])->middleware('auth:sanctum');
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest');
+    
+    // Login temporal para 2FA (sin middleware)
+    Route::post('/reset-password/enviar-codigo', [NewPasswordController::class, 'enviarCodigoReset']);
+    Route::post('/reset-password/verificar-codigo', [NewPasswordController::class, 'verificarCodigoReset']);
+    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword']);
     Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
 
-    // Autenticación de dos pasos
+    // Autenticación de dos pasos (para usuarios autenticados)
     Route::post('/dos-pasos/enviar-codigo', [AutenticacionDosPasosController::class, 'enviarCodigo'])->middleware('auth:sanctum');
     Route::post('/dos-pasos/verificar-codigo', [AutenticacionDosPasosController::class, 'verificarCodigo'])->middleware('auth:sanctum');
     Route::post('/dos-pasos/habilitar', [AutenticacionDosPasosController::class, 'habilitarDosPasos'])->middleware('auth:sanctum');
     Route::post('/dos-pasos/deshabilitar', [AutenticacionDosPasosController::class, 'deshabilitarDosPasos'])->middleware('auth:sanctum');
+
+    // Restablecimiento de contraseña (sin autenticación)
+    Route::post('/reset-password/enviar-codigo', [NewPasswordController::class, 'enviarCodigoReset']);
+    Route::post('/reset-password/verificar-codigo', [NewPasswordController::class, 'verificarCodigoReset']);
+    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword']);
 
     // Roles
     Route::get('/roles', [RolCrudController::class, 'index'])->middleware('auth:sanctum');
@@ -44,6 +55,12 @@ Route::middleware([
     Route::put('/roles/{id}', [RolCrudController::class, 'update'])->middleware('auth:sanctum');
     Route::get('/roles/inactivos', [RolCrudController::class, 'inactivos'])->middleware('auth:sanctum');
     Route::put('/roles/{id}/reactivar', [RolCrudController::class, 'reactivar'])->middleware('auth:sanctum');
+
+    Route::get('/roles/menus-acciones', [RolCrudController::class, 'todosLosMenusYAcciones'])->middleware('auth:sanctum');
+    Route::get('/roles/{idRol}/menus', [RolCrudController::class, 'menusDeRol'])->middleware('auth:sanctum');
+    Route::get('/roles/{idRol}/acciones', [RolCrudController::class, 'accionesDeRol'])->middleware('auth:sanctum');
+    Route::put('/roles/{idRol}/menus', [RolCrudController::class, 'actualizarMenusDeRol'])->middleware('auth:sanctum');
+    Route::put('/roles/{idRol}/acciones', [RolCrudController::class, 'actualizarAccionesDeRol'])->middleware('auth:sanctum');
 
     // Personas
     Route::get('/personas', [PersonaCrudController::class, 'index'])->middleware('auth:sanctum');
@@ -71,7 +88,6 @@ Route::middleware([
     Route::put('/protocolos/{id}', [ProtocoloController::class, 'update'])->middleware('auth:sanctum');
     Route::put('/protocolos/{id}/reactivar', [ProtocoloController::class, 'reactivar'])->middleware('auth:sanctum');
     Route::put('/protocolos/{id}/archivar', [ProtocoloController::class, 'archivar'])->middleware('auth:sanctum');
-
 
     // Navegación
     Route::get('/menu/{id_usuario}', [NavegacionController::class, 'obtenerMenu'])->middleware('auth:sanctum');

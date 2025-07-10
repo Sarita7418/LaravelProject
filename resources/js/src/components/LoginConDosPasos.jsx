@@ -23,6 +23,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       try {
         await axios.post('/api/logout')
       } catch (error) {
+        console.error('Error al cerrar sesión previa:', error)
       }
     }
 
@@ -41,10 +42,21 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
 
   const handleLogin = async (e) => {
     e.preventDefault()
+    setError('') // Limpiar errores previos
 
     try {
       await axios.get('/sanctum/csrf-cookie')
-      await axios.post('/api/login', { email, password }, { withCredentials: true })
+      const loginResponse = await axios.post(
+        '/api/login', 
+        { email, password }, 
+        { withCredentials: true }
+      )
+
+      // Verificar si la respuesta indica error
+      if (loginResponse.data.error) {
+        setError(loginResponse.data.error)
+        return
+      }
 
       const res = await axios.get('/api/user')
       console.log('Respuesta completa del backend:', res.data)
@@ -61,10 +73,17 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     } catch (err) {
       console.error('Error al iniciar sesión', err)
       
-      if (err.response && err.response.status === 403) {
-        setError(err.response.data.message || 'Tu cuenta está inactiva.')
+      // Manejo mejorado de errores
+      if (err.response) {
+        if (err.response.status === 403) {
+          setError(err.response.data.message || 'Tu cuenta está inactiva.')
+        } else if (err.response.status === 422) {
+          setError('Credenciales inválidas. Verifica tu email y contraseña.')
+        } else {
+          setError(err.response.data.message || 'Error al iniciar sesión.')
+        }
       } else {
-        setError('Credenciales inválidas o error de red.')
+        setError('Error de conexión. Verifica tu conexión a internet.')
       }
     }
   }
@@ -142,22 +161,33 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   return (
     <div>
       <h2>Iniciar Sesión</h2>
+      {error && <div style={{ color: 'red', margin: '10px 0' }}>{error}</div>}
       <form onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Correo"
           value={email}
           onChange={handleEmailChange}
+          required
         /><br />
         <input
           type="password"
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         /><br />
         <button type="submit">Entrar</button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>
+      <label
+        style={{ color: 'blue', cursor: 'pointer', marginLeft: '10px', userSelect: 'none' }}
+        onClick={() => {
+          const emailParam = encodeURIComponent(email)
+          navigate(`/cambiar-contrasena?email=${emailParam}`)
+        }}
+      >
+        ¿Olvidaste tu contraseña?
+      </label>
     </div>
-  );
+  )
 }
