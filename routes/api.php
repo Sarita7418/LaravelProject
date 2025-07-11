@@ -17,6 +17,9 @@ use App\Http\Controllers\Crud\PersonaCrudController;
 use App\Http\Controllers\Navegacion\NavegacionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 
+
+Route::post('/personas', [PersonaCrudController::class, 'store']);
+
 Route::middleware([
     EnsureFrontendRequestsAreStateful::class,
     AddQueuedCookiesToResponse::class,
@@ -64,7 +67,6 @@ Route::middleware([
 
     // Personas
     Route::get('/personas', [PersonaCrudController::class, 'index'])->middleware('auth:sanctum');
-    Route::post('/personas', [PersonaCrudController::class, 'store'])->middleware('auth:sanctum');
     Route::put('/personas/{id}', [PersonaCrudController::class, 'update'])->middleware('auth:sanctum');
     Route::delete('/personas/{id}', [PersonaCrudController::class, 'destroy'])->middleware('auth:sanctum');
     Route::get('/personas/inactivos', [PersonaCrudController::class, 'inactivos'])->middleware('auth:sanctum');

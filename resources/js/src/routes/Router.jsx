@@ -11,6 +11,8 @@ import Protocolos from '../components/Protocolos'
 import LayoutDashboard from '../components/LayoutDashboard'
 import PrivateRoute from './PrivateRoute'
 
+import Registro from '../components/Registro' 
+
 export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -43,6 +45,9 @@ export default function Router() {
           setPendingTwoFactor={setPendingTwoFactor}
         />
       } />
+
+      <Route path="/registro" element={<Registro />} />
+
       <Route path="/cambiar-contrasena" element={<CambiarContrasena />} />
 
       <Route path="/dashboard" element={
@@ -99,10 +104,6 @@ export default function Router() {
             </PrivateRoute>
           } />
         )}
-
-
-        {/* Agregar aquí nuevas rutas manualmente si se crean más componentes */}
-
       </Route>
 
       <Route path="/unauthorized" element={<h1>No autorizado</h1>} />
