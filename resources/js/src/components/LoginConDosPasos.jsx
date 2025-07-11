@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+
 import axios from '../lib/axios'
 import AutenticacionDosPasos from './AutenticacionDosPasos'
 
@@ -47,8 +49,8 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     try {
       await axios.get('/sanctum/csrf-cookie')
       const loginResponse = await axios.post(
-        '/api/login', 
-        { email, password }, 
+        '/api/login',
+        { email, password },
         { withCredentials: true }
       )
 
@@ -72,7 +74,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
 
     } catch (err) {
       console.error('Error al iniciar sesión', err)
-      
+
       // Manejo mejorado de errores
       if (err.response) {
         if (err.response.status === 403) {
@@ -188,6 +190,11 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       >
         ¿Olvidaste tu contraseña?
       </label>
+
+      <p className="registro-enlace">
+        ¿No tienes cuenta? <Link to="/registro">Regístrate aquí</Link>
+      </p>
+
     </div>
   )
 }
