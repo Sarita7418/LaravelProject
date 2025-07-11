@@ -11,6 +11,7 @@ export default function Registro() {
     ci: '',
     telefono: '',
     fecha_nacimiento: '',
+    username: '',
     email: '',
     password: ''
   })
@@ -51,6 +52,7 @@ export default function Registro() {
         <input name="telefono" placeholder="Teléfono" value={formData.telefono} onChange={handleInputChange} />
         <input name="fecha_nacimiento" type="date" placeholder="Fecha de nacimiento" value={formData.fecha_nacimiento} onChange={handleInputChange} />
 
+        <input type="text" name="username" value={formData.username || ''} onChange={handleInputChange} placeholder="Nombre de usuario (opcional)" />
         <input name="email" type="email" placeholder="Correo electrónico" value={formData.email} onChange={handleInputChange} required />
         <input name="password" type="password" placeholder="Contraseña" value={formData.password} onChange={handleInputChange} required />
 
@@ -58,6 +60,10 @@ export default function Registro() {
 
         <button type="submit" disabled={loading}>
           {loading ? 'Registrando...' : 'Registrarse'}
+        </button>
+
+        <button type="button" className="cancelar" onClick={() => navigate('/login')} disabled={loading}>
+          Cancelar
         </button>
       </form>
     </div>
