@@ -11,6 +11,8 @@ class AccionMenuItemRolSeeder extends Seeder
 {
     public function run(): void
     {
+        $now = now();
+
         // ADMIN (ID 1) tiene crear, editar, activar en Usuarios (menu_id: x) y Roles (menu_id: y)
         $usuarios   = MenuItem::where('ruta', '/dashboard/usuarios')->first();
         $roles      = MenuItem::where('ruta', '/dashboard/roles')->first();
@@ -25,16 +27,22 @@ class AccionMenuItemRolSeeder extends Seeder
                 'id_rol'       => 1,
                 'id_menu_item' => $usuarios->id,
                 'id_accion'    => $crear->id,
+                'created_at'   => $now,
+                'updated_at'   => $now,
             ],
             [
                 'id_rol'       => 1,
                 'id_menu_item' => $usuarios->id,
                 'id_accion'    => $editar->id,
+                'created_at'   => $now,
+                'updated_at'   => $now,
             ],
             [
                 'id_rol'       => 1,
                 'id_menu_item' => $usuarios->id,
                 'id_accion'    => $activar->id,
+                'created_at'   => $now,
+                'updated_at'   => $now,
             ],
         ]);
 
@@ -44,16 +52,22 @@ class AccionMenuItemRolSeeder extends Seeder
                 'id_rol'       => 1,
                 'id_menu_item' => $roles->id,
                 'id_accion'    => $crear->id,
+                'created_at'   => $now,
+                'updated_at'   => $now,
             ],
             [
                 'id_rol'       => 1,
                 'id_menu_item' => $roles->id,
                 'id_accion'    => $editar->id,
+                'created_at'   => $now,
+                'updated_at'   => $now,
             ],
             [
                 'id_rol'       => 1,
                 'id_menu_item' => $roles->id,
                 'id_accion'    => $activar->id,
+                'created_at'   => $now,
+                'updated_at'   => $now,
             ],
         ]);
 
@@ -63,11 +77,15 @@ class AccionMenuItemRolSeeder extends Seeder
                 'id_rol'       => 2,
                 'id_menu_item' => $usuarios->id,
                 'id_accion'    => $crear->id,
+                'created_at'   => $now,
+                'updated_at'   => $now,
             ],
             [
                 'id_rol'       => 2,
                 'id_menu_item' => $usuarios->id,
                 'id_accion'    => $editar->id,
+                'created_at'   => $now,
+                'updated_at'   => $now,
             ],
         ]);
     }

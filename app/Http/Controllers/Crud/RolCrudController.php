@@ -144,11 +144,14 @@ class RolCrudController extends Controller
         DB::table('accion_menu_item_rol')->where('id_rol', $idRol)->delete();
 
         // Inserta las nuevas combinaciones
+        $now = now();
         foreach ($acciones as $accion) {
             DB::table('accion_menu_item_rol')->insert([
-                'id_rol' => $idRol,
+                'id_rol'       => $idRol,
                 'id_menu_item' => $accion['id_menu_item'],
-                'id_accion' => $accion['id_accion'],
+                'id_accion'    => $accion['id_accion'],
+                'created_at'   => $now,
+                'updated_at'   => $now,
             ]);
         }
 
