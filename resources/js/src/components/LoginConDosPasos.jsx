@@ -25,7 +25,6 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       try {
         await axios.post('/api/logout')
       } catch (error) {
-        console.error('Error al cerrar sesión previa:', error)
       }
     }
 
@@ -44,7 +43,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    setError('') // Limpiar errores previos
+    setError('') 
 
     try {
       await axios.get('/sanctum/csrf-cookie')
@@ -54,14 +53,12 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
         { withCredentials: true }
       )
 
-      // Verificar si la respuesta indica error
       if (loginResponse.data.error) {
         setError(loginResponse.data.error)
         return
       }
 
       const res = await axios.get('/api/user')
-      console.log('Respuesta completa del backend:', res.data)
 
       const permisos = res.data.permisos
       const rutas = extraerRutasDesdePermisos(permisos)
@@ -73,9 +70,6 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       }
 
     } catch (err) {
-      console.error('Error al iniciar sesión', err)
-
-      // Manejo mejorado de errores
       if (err.response) {
         if (err.response.status === 403) {
           setError(err.response.data.message || 'Tu cuenta está inactiva.')
@@ -108,7 +102,6 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   }
 
   const manejarVerificacionExitosa = async () => {
-    console.log('Verificación 2FA exitosa')
 
     try {
       const res = await axios.get('/api/user')
@@ -117,7 +110,6 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
 
       completarLogin(rutas)
     } catch (error) {
-      console.error('Error al obtener usuario después del 2FA:', error)
       setError('Error al cargar los datos del usuario.')
       navigate('/login')
     }
@@ -134,7 +126,6 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     try {
       await axios.post('/api/logout')
     } catch (error) {
-      console.error('Error al cerrar sesión:', error)
     }
   }
 
@@ -182,7 +173,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
         <button type="submit">Entrar</button>
       </form>
       <label
-        style={{ color: 'blue', cursor: 'pointer', marginLeft: '10px', userSelect: 'none' }}
+        style={{ color: 'gray', cursor: 'pointer', marginLeft: '10px', userSelect: 'none' }}
         onClick={() => {
           const emailParam = encodeURIComponent(email)
           navigate(`/cambiar-contrasena?email=${emailParam}`)

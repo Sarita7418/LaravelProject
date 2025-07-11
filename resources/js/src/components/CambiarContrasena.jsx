@@ -7,7 +7,6 @@ export default function CambiarContrasena() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  // Extrae email de la query string ?email=
   const queryParams = new URLSearchParams(location.search)
   const correoInicial = queryParams.get('email') || ''
 
@@ -25,7 +24,6 @@ export default function CambiarContrasena() {
         await axios.post('/api/logout')
         await axios.get('/sanctum/csrf-cookie')
         
-        // Si hay un email, iniciamos el proceso de recuperación
         if (correoInicial) {
           try {
             const response = await axios.post(
@@ -34,13 +32,11 @@ export default function CambiarContrasena() {
               { withCredentials: true }
             )
             setCorreoOculto(response.data.correo_parcial || correoInicial)
-          } catch (err) {
-            console.error('Error al enviar código:', err.response?.data || err)
+          } catch {
             setError('Error al enviar código de verificación')
           }
         }
-      } catch (err) {
-        console.error('Error al preparar sesión:', err)
+      } catch {
       }
     }
     prepararSesion()
@@ -86,7 +82,6 @@ export default function CambiarContrasena() {
       navigate('/login')
     } catch (err) {
       setError(err.response?.data?.message || 'Error al cambiar la contraseña.')
-      console.error('Error al cambiar contraseña:', err.response?.data || err)
     }
   }
 

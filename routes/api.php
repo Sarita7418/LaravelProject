@@ -32,25 +32,17 @@ Route::middleware([
     // Autenticación y permisos
     Route::get('/user', [NavegacionController::class, 'obtenerUsuarioConPermisos'])->middleware('auth:sanctum');
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest');
-    
-    // Login temporal para 2FA (sin middleware)
-    Route::post('/reset-password/enviar-codigo', [NewPasswordController::class, 'enviarCodigoReset']);
-    Route::post('/reset-password/verificar-codigo', [NewPasswordController::class, 'verificarCodigoReset']);
-    Route::post('/reset-password', [NewPasswordController::class, 'resetPassword']);
     Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
 
-    // Autenticación de dos pasos (para usuarios autenticados)
-    Route::post('/dos-pasos/enviar-codigo', [AutenticacionDosPasosController::class, 'enviarCodigo'])->middleware('auth:sanctum');
-    Route::post('/dos-pasos/verificar-codigo', [AutenticacionDosPasosController::class, 'verificarCodigo'])->middleware('auth:sanctum');
-    Route::post('/dos-pasos/habilitar', [AutenticacionDosPasosController::class, 'habilitarDosPasos'])->middleware('auth:sanctum');
-    Route::post('/dos-pasos/deshabilitar', [AutenticacionDosPasosController::class, 'deshabilitarDosPasos'])->middleware('auth:sanctum');
+    Route::post('/dos-pasos/enviar-codigo', [AutenticacionDosPasosController::class, 'enviarCodigo']);
+    Route::post('/dos-pasos/verificar-codigo', [AutenticacionDosPasosController::class, 'verificarCodigo']);
+    Route::post('/dos-pasos/habilitar', [AutenticacionDosPasosController::class, 'habilitarDosPasos']);
+    Route::post('/dos-pasos/deshabilitar', [AutenticacionDosPasosController::class, 'deshabilitarDosPasos']);
 
-    // Restablecimiento de contraseña (sin autenticación)
     Route::post('/reset-password/enviar-codigo', [NewPasswordController::class, 'enviarCodigoReset']);
     Route::post('/reset-password/verificar-codigo', [NewPasswordController::class, 'verificarCodigoReset']);
     Route::post('/reset-password', [NewPasswordController::class, 'resetPassword']);
-
     // Roles
     Route::get('/roles', [RolCrudController::class, 'index'])->middleware('auth:sanctum');
     Route::post('/roles', [RolCrudController::class, 'store'])->middleware('auth:sanctum');
