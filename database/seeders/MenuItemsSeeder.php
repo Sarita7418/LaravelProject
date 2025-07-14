@@ -51,5 +51,14 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 4,
         ]);
+
+        // Submenú: Reportes
+        MenuItem::create([
+            'item' => 'Reportes',
+            'ruta' => '/dashboard/reportes',
+            'id_padre' => $admin->id,
+            'nivel' => 3,
+            'orden' => 5,
+        ]);
     }
 }

@@ -17,6 +17,9 @@ use App\Http\Controllers\Crud\PersonaCrudController;
 use App\Http\Controllers\Navegacion\NavegacionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 
+use App\Http\Controllers\ReporteController;
+
+
 
 Route::post('/personas', [PersonaCrudController::class, 'store']);
 
@@ -28,6 +31,7 @@ Route::middleware([
     ThrottleRequests::class,
 ])->group(function () {
 
+    Route::get('/reportes/usuarios/excel', [ReporteController::class, 'exportUsuarios']);
 
     // Autenticación y permisos
     Route::get('/user', [NavegacionController::class, 'obtenerUsuarioConPermisos'])->middleware('auth:sanctum');

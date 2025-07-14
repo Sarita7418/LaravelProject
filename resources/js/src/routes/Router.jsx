@@ -12,6 +12,7 @@ import LayoutDashboard from '../components/LayoutDashboard'
 import PrivateRoute from './PrivateRoute'
 
 import Registro from '../components/Registro' 
+import ReportesUsuarios from '../components/ReportesUsuarios'
 
 export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -101,6 +102,17 @@ export default function Router() {
               allowedPermisos={["/protocolos"]}
             >
               <Protocolos />
+            </PrivateRoute>
+          } />
+        )}
+        {permisos.includes("/dashboard/reportes") && (
+          <Route path="reportes" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/reportes"]}
+            >
+              <ReportesUsuarios />
             </PrivateRoute>
           } />
         )}
