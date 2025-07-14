@@ -18,6 +18,7 @@ use App\Http\Controllers\Navegacion\NavegacionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\ReportePDFController;
 
 
 
@@ -32,6 +33,8 @@ Route::middleware([
 ])->group(function () {
 
     Route::get('/reportes/usuarios/excel', [ReporteController::class, 'exportUsuarios']);
+    Route::get('/reportes/usuarios/pdf', [ReportePDFController::class, 'usuarios']);
+
 
     // Autenticación y permisos
     Route::get('/user', [NavegacionController::class, 'obtenerUsuarioConPermisos'])->middleware('auth:sanctum');
