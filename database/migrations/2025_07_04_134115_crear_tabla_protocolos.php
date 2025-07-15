@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('id_usuario_creador');
             $table->unsignedBigInteger('id_especialidad');
             $table->unsignedBigInteger('id_estado');
-            $table->unsignedBigInteger('id_area_impacto');
             $table->string('titulo', 200);
             $table->text('resumen');
             $table->text('objetivo_general');
@@ -28,7 +27,6 @@ return new class extends Migration
             $table->foreign('id_usuario_creador')->references('id')->on('usuarios')->onDelete('cascade');
             $table->foreign('id_especialidad')->references('id')->on('especialidades')->onDelete('cascade');
             $table->foreign('id_estado')->references('id')->on('subdominios')->onDelete('cascade');
-            $table->foreign('id_area_impacto')->references('id')->on('subdominios')->onDelete('cascade');
         });
     }
 

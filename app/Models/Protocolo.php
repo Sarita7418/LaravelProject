@@ -18,7 +18,6 @@ class Protocolo extends Model
         'metodologia',
         'justificacion',
         'fecha_creacion',
-        'id_area_impacto'
     ];
     
     protected $casts = [
@@ -40,12 +39,7 @@ class Protocolo extends Model
     {
         return $this->belongsTo(Subdominio::class, 'id_estado');
     }
-    
-    public function areaImpacto()
-    {
-        return $this->belongsTo(Subdominio::class, 'id_area_impacto');
-    }
-    
+        
     public function versionesProtocolo()
     {
         return $this->hasMany(VersionesProtocolo::class, 'id_protocolo');
