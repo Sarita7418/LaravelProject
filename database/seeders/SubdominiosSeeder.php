@@ -16,10 +16,10 @@ class SubdominiosSeeder extends Seeder
             //['id' => 3, 'id_dominio' => 1, 'descripcion' => 'Formativo'],
 
             // estado protocolo (id_dominio = 2)
-            ['id' => 4, 'id_dominio' => 1, 'descripcion' => 'Activo'],
-            ['id' => 5, 'id_dominio' => 1, 'descripcion' => 'En Revision'],
-            ['id' => 6, 'id_dominio' => 1, 'descripcion' => 'Validado'],
-            ['id' => 7, 'id_dominio' => 1, 'descripcion' => 'Archivado'],
+            ['id' => 1, 'id_dominio' => 1, 'descripcion' => 'Activo'],
+            ['id' => 2, 'id_dominio' => 1, 'descripcion' => 'En Revision'],
+            ['id' => 3, 'id_dominio' => 1, 'descripcion' => 'Validado'],
+            ['id' => 4, 'id_dominio' => 1, 'descripcion' => 'Archivado'],
 
         ]);
     }
