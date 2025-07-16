@@ -4,24 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class area_impacto extends Model
+class AreaImpacto extends Model
 {
     use HasFactory;
 
-    protected $table = 'areas_impacto';
+    // Asegúrate que esta tabla exista como 'area_impactos' (en plural)
+    protected $table = 'area_impactos';
 
     protected $fillable = [
         'nombre',
         'descripcion',
-        'id_protocolo', // Incluye esto solo si la FK está en esta tabla
     ];
 
     /**
-     * Relación: Un área de impacto pertenece a un protocolo.
+     * Relación muchos a muchos con el modelo Protocolo
      */
-    public function protocolo()
+    public function protocolos(): BelongsToMany
     {
-        return $this->belongsTo(Protocolo::class, 'id_protocolo');
+        return $this->belongsToMany(
+            Protocolo::class,            // Modelo relacionado
+            'area_impacto_protocolo',    // Nombre de la tabla pivote
+            'id_area_impactos',           // Clave foránea en la tabla pivote que apunta a este modelo
+            'id_protocolo'               // Clave foránea en la tabla pivote que apunta al modelo Protocolo
+        )->withTimestamps();             // Mantiene timestamps en la tabla pivote
     }
 }

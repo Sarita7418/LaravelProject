@@ -54,4 +54,15 @@ class Protocolo extends Model
     {
         return $this->hasMany(ComentariosRevision::class, 'id_protocolos');
     }
+
+    public function areasImpacto()
+    {
+        return $this->belongsToMany(
+            AreaImpacto::class,
+            'area_impacto_protocolo',
+            'id_protocolo',
+            'id_area_impacto'
+        )->withTimestamps();
+    }
+
 }
