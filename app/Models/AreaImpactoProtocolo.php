@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class area_impacto_protocolo extends Model
 {
-     protected $table = 'area_impacto';
+    protected $table = 'area_impactos';
 
     protected $fillable = [
         'nombre',
@@ -16,6 +16,6 @@ class area_impacto_protocolo extends Model
 
     public function protocolos(): BelongsToMany
     {
-        return $this->belongsToMany(Protocolo::class, 'area_impacto_protocolo', 'id_area_impacto', 'id_protocolo')->withTimestamps();
+        return $this->belongsToMany(Protocolo::class, 'area_impacto_protocolo', 'id_area_impactos', 'id_protocolo')->withTimestamps();
     }
 }
