@@ -61,7 +61,7 @@ class Protocolo extends Model
             AreaImpacto::class,
             'area_impacto_protocolo',
             'id_protocolo',
-            'id_area_impacto'
+            'id_area_impactos'
         )->withTimestamps();
     }
 
