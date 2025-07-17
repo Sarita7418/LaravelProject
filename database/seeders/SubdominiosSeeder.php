@@ -10,16 +10,9 @@ class SubdominiosSeeder extends Seeder
     public function run()
     {
         DB::table('subdominios')->insert([
-            // área de impacto (id_dominio = 1)
-            //['id' => 1, 'id_dominio' => 1, 'descripcion' => 'Judicial'],
-            //['id' => 2, 'id_dominio' => 1, 'descripcion' => 'Cientifico'],
-            //['id' => 3, 'id_dominio' => 1, 'descripcion' => 'Formativo'],
-
-            // estado protocolo (id_dominio = 2)
             ['id' => 1, 'id_dominio' => 1, 'descripcion' => 'Activo'],
             ['id' => 2, 'id_dominio' => 1, 'descripcion' => 'En Revision'],
-            ['id' => 3, 'id_dominio' => 1, 'descripcion' => 'Validado'],
-            ['id' => 4, 'id_dominio' => 1, 'descripcion' => 'Archivado'],
+            ['id' => 3, 'id_dominio' => 1, 'descripcion' => 'Archivado'],
 
         ]);
     }

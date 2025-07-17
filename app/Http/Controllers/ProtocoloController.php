@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Protocolo;
 use App\Models\Especialidad;
 use App\Models\Subdominio;
-use App\Models\Dominio;
+use App\Models\AreaImpacto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
@@ -16,183 +16,138 @@ class ProtocoloController extends Controller
     public function index()
     {
         try {
-            $protocolos = Protocolo::with(['especialidad', 'estado', 'areaImpacto', 'usuarioCreador'])->get();
-
-            $protocolos->transform(function ($protocolo) {
-                $protocolo->activo = (bool) $protocolo->activo;
-                return $protocolo;
-            });
+            $protocolos = Protocolo::with(['especialidad', 'estado', 'areasImpacto'])->get();
 
             return response()->json($protocolos);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Error al obtener protocolos'], 500);
-        }
-    }
-
-    public function activos()
-    {
-        try {
-            $protocolos = Protocolo::with(['especialidad', 'estado', 'areaImpacto', 'usuarioCreador'])
-                ->where('activo', true)
-                ->get();
-
-            return response()->json($protocolos);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Error al obtener protocolos activos'], 500);
-        }
-    }
-
-    public function inactivos()
-    {
-        try {
-            $protocolos = Protocolo::with(['especialidad', 'estado', 'areaImpacto', 'usuarioCreador'])
-                ->where('activo', false)
-                ->get();
-
-            return response()->json($protocolos);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Error al obtener protocolos inactivos'], 500);
-        }
-    }
-
-    public function porEstado($estado)
-    {
-        try {
-            $protocolos = Protocolo::with(['especialidad', 'estado', 'areaImpacto', 'usuarioCreador'])
-                ->whereHas('estado', function ($query) use ($estado) {
-                    $query->where('descripcion', $estado);
-                })
-                ->where('activo', true)
-                ->get();
-
-            return response()->json($protocolos);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Error al obtener protocolos por estado'], 500);
+            return response()->json([
+                'mensaje' => 'Error al obtener los protocolos',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'titulo' => 'required|string|max:200',
-                'resumen' => 'required|string',
-                'objetivo_general' => 'required|string',
-                'metodologia' => 'required|string',
-                'justificacion' => 'required|string',
-                'id_usuario_creador' => 'required|exists:usuarios,id',
-                'id_estado' => 'required|exists:subdominios,id',
-            ]);
+        $request->validate([
+            'titulo' => 'required|string',
+            'resumen' => 'nullable|string',
+            'objetivo_general' => 'nullable|string',
+            'justificacion' => 'nullable|string',
+            'metodologia' => 'nullable|string',
+            'id_especialidad' => 'nullable|exists:especialidades,id',
+            'areas_impacto' => 'nullable|array',
+        ]);
 
-            $idEspecialidad = $request->id_especialidad;
-            if ($request->nueva_especialidad) {
-                $especialidad = Especialidad::firstOrCreate(['nombre' => $request->nueva_especialidad]);
-                $idEspecialidad = $especialidad->id;
+        try {
+            $estadoEnRevision = Subdominio::where('descripcion', 'En Revisión')
+                ->orWhere('descripcion', 'En Revision')
+                ->first();
+
+            if (!$estadoEnRevision) {
+                return response()->json([
+                    'mensaje' => 'Error: No se encontró el estado "En Revisión" en el sistema',
+                ], 500);
             }
 
-            $idAreaImpacto = $request->id_area_impacto;
-            if ($request->nueva_area) {
-                $dominioArea = Dominio::where('descripcion', 'area_impacto')->first();
-                if ($dominioArea) {
-                    $area = Subdominio::firstOrCreate([
-                        'id_dominio' => $dominioArea->id,
-                        'descripcion' => $request->nueva_area
-                    ]);
-                    $idAreaImpacto = $area->id;
+            $protocolo = new Protocolo($request->only([
+                'titulo',
+                'resumen',
+                'objetivo_general',
+                'justificacion',
+                'metodologia',
+                'id_especialidad',
+            ]));
+
+            $protocolo->id_usuario_creador = Auth::id();
+            $protocolo->fecha_creacion = Carbon::now();
+            $protocolo->id_estado = $estadoEnRevision->id; 
+            $protocolo->save();
+
+            $areasImpactoIds = [];
+
+            if ($request->filled('areas_impacto')) {
+                foreach ($request->input('areas_impacto') as $area) {
+                    if (isset($area['nueva_area'])) {
+                        $nuevaArea = AreaImpacto::create([
+                            'nombre' => $area['nueva_area']['nombre'],
+                            'descripcion' => $area['nueva_area']['descripcion'],
+                        ]);
+                        $areasImpactoIds[] = $nuevaArea->id;
+                    } elseif (isset($area['id_area_impactos'])) {
+                        $areasImpactoIds[] = $area['id_area_impactos'];
+                    }
                 }
+                $protocolo->areasImpacto()->sync($areasImpactoIds);
             }
 
-            $protocolo = Protocolo::create([
-                'titulo' => $request->titulo,
-                'resumen' => $request->resumen,
-                'objetivo_general' => $request->objetivo_general,
-                'metodologia' => $request->metodologia,
-                'justificacion' => $request->justificacion,
-                'id_usuario_creador' => $request->id_usuario_creador,
-                'id_especialidad' => $idEspecialidad,
-                'id_estado' => $request->id_estado,
-                'id_area_impacto' => $idAreaImpacto,
-                'fecha_creacion' => Carbon::now()->format('Y-m-d'),
-                'activo' => true
+            return response()->json([
+                'mensaje' => 'Protocolo creado exitosamente con estado "En Revisión"',
+                'protocolo' => $protocolo->load(['especialidad', 'estado', 'areasImpacto']),
             ]);
-
-            $protocolo->load(['especialidad', 'estado', 'areaImpacto', 'usuarioCreador']);
-
-            return response()->json($protocolo, 201);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Error al crear protocolo'], 500);
-        }
-    }
-
-    public function show($id)
-    {
-        try {
-            $protocolo = Protocolo::with(['especialidad', 'estado', 'areaImpacto', 'usuarioCreador'])->findOrFail($id);
-            return response()->json($protocolo);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Protocolo no encontrado'], 404);
+            return response()->json([
+                'mensaje' => 'Error al crear el protocolo',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
     public function update(Request $request, $id)
     {
-        try {
-            $request->validate([
-                'titulo' => 'required|string|max:200',
-                'resumen' => 'required|string',
-                'objetivo_general' => 'required|string',
-                'metodologia' => 'required|string',
-                'justificacion' => 'required|string',
-            ]);
+        $request->validate([
+            'titulo' => 'required|string',
+            'resumen' => 'nullable|string',
+            'objetivo_general' => 'nullable|string',
+            'justificacion' => 'nullable|string',
+            'metodologia' => 'nullable|string',
+            'id_especialidad' => 'nullable|exists:especialidades,id',
+            'id_estado' => 'nullable|exists:subdominios,id',
+            'areas_impacto' => 'nullable|array',
+        ]);
 
+        try {
             $protocolo = Protocolo::findOrFail($id);
 
-            $idEspecialidad = $request->id_especialidad;
-            if ($request->nueva_especialidad) {
-                $especialidad = Especialidad::firstOrCreate(['nombre' => $request->nueva_especialidad]);
-                $idEspecialidad = $especialidad->id;
-            }
+            $protocolo->fill($request->only([
+                'titulo',
+                'resumen',
+                'objetivo_general',
+                'justificacion',
+                'metodologia',
+                'id_especialidad',
+                'id_estado',
+            ]));
 
-            $idAreaImpacto = $request->id_area_impacto;
-            if ($request->nueva_area) {
-                $dominioArea = Dominio::where('descripcion', 'area_impacto')->first();
-                if ($dominioArea) {
-                    $area = Subdominio::firstOrCreate([
-                        'id_dominio' => $dominioArea->id,
-                        'descripcion' => $request->nueva_area
-                    ]);
-                    $idAreaImpacto = $area->id;
+            $protocolo->save();
+
+            $areasImpactoIds = [];
+
+            if ($request->filled('areas_impacto')) {
+                foreach ($request->input('areas_impacto') as $area) {
+                    if (isset($area['nueva_area'])) {
+                        $nuevaArea = AreaImpacto::create([
+                            'nombre' => $area['nueva_area']['nombre'],
+                            'descripcion' => $area['nueva_area']['descripcion'],
+                        ]);
+                        $areasImpactoIds[] = $nuevaArea->id;
+                    } elseif (isset($area['id_area_impactos'])) {
+                        $areasImpactoIds[] = $area['id_area_impactos'];
+                    }
                 }
             }
 
-            $protocolo->update([
-                'titulo' => $request->titulo,
-                'resumen' => $request->resumen,
-                'objetivo_general' => $request->objetivo_general,
-                'metodologia' => $request->metodologia,
-                'justificacion' => $request->justificacion,
-                'id_especialidad' => $idEspecialidad,
-                'id_estado' => $request->id_estado,
-                'id_area_impacto' => $idAreaImpacto,
+            $protocolo->areasImpacto()->sync($areasImpactoIds);
+
+            return response()->json([
+                'mensaje' => 'Protocolo actualizado exitosamente',
+                'protocolo' => $protocolo->load(['especialidad', 'estado', 'areasImpacto']),
             ]);
-
-            $protocolo->load(['especialidad', 'estado', 'areaImpacto', 'usuarioCreador']);
-
-            return response()->json($protocolo);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Error al actualizar protocolo'], 500);
-        }
-    }
-
-    public function destroy($id)
-    {
-        try {
-            $protocolo = Protocolo::findOrFail($id);
-            $protocolo->update(['activo' => false]);
-
-            return response()->json(['mensaje' => 'Protocolo desactivado']);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Error al desactivar protocolo'], 500);
+            return response()->json([
+                'mensaje' => 'Error al actualizar protocolo',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -200,28 +155,18 @@ class ProtocoloController extends Controller
     {
         try {
             $protocolo = Protocolo::findOrFail($id);
-
-            $estadoArchivado = Subdominio::whereHas('dominio', function ($query) {
-                $query->where('descripcion', 'estado_protocolo');
-            })->where('descripcion', 'Archivado')->first();
+            $estadoArchivado = Subdominio::where('descripcion', 'Archivado')->first();
 
             if (!$estadoArchivado) {
-                return response()->json(['error' => 'Estado "Archivado" no encontrado'], 400);
+                return response()->json(['mensaje' => 'Estado Archivado no encontrado'], 404);
             }
 
-            $protocolo->update([
-                'activo' => false,
-                'id_estado' => $estadoArchivado->id
-            ]);
+            $protocolo->id_estado = $estadoArchivado->id;
+            $protocolo->save();
 
-            $protocolo->load(['especialidad', 'estado', 'areaImpacto', 'usuarioCreador']);
-
-            return response()->json([
-                'mensaje' => 'Protocolo archivado',
-                'protocolo' => $protocolo
-            ]);
+            return response()->json(['mensaje' => 'Protocolo archivado correctamente']);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Error al archivar protocolo'], 500);
+            return response()->json(['mensaje' => 'Error al archivar protocolo', 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -229,48 +174,37 @@ class ProtocoloController extends Controller
     {
         try {
             $protocolo = Protocolo::findOrFail($id);
-
-            $estadoActivo = Subdominio::whereHas('dominio', function ($query) {
-                $query->where('descripcion', 'estado_protocolo');
-            })->where('descripcion', 'Activo')->first();
+            $estadoActivo = Subdominio::where('descripcion', 'Activo')->first();
 
             if (!$estadoActivo) {
-                return response()->json(['error' => 'Estado "Activo" no encontrado'], 400);
+                return response()->json(['mensaje' => 'Estado Activo no encontrado'], 404);
             }
 
-            $protocolo->update([
-                'activo' => true,
-                'id_estado' => $estadoActivo->id
-            ]);
+            $protocolo->id_estado = $estadoActivo->id;
+            $protocolo->save();
 
-            $protocolo->load(['especialidad', 'estado', 'areaImpacto', 'usuarioCreador']);
-
-            return response()->json([
-                'mensaje' => 'Protocolo reactivado',
-                'protocolo' => $protocolo
-            ]);
+            return response()->json(['mensaje' => 'Protocolo reactivado correctamente']);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Error al reactivar protocolo'], 500);
+            return response()->json(['mensaje' => 'Error al reactivar protocolo', 'error' => $e->getMessage()], 500);
         }
     }
-
     public function catalogos()
     {
         try {
-            $dominioEstado = Dominio::where('descripcion', 'estado_protocolo')->first();
-            $dominioArea = Dominio::where('descripcion', 'area_impacto')->first();
-
-            $estadoId = $dominioEstado ? $dominioEstado->id : null;
-            $areaId = $dominioArea ? $dominioArea->id : null;
+            $especialidades = Especialidad::all();
+            $estados = Subdominio::where('id_dominio', 1)->get();
+            $areasImpacto = AreaImpacto::all();
 
             return response()->json([
-                'especialidades' => Especialidad::all(['id', 'nombre']),
-                'estados' => $estadoId ? Subdominio::where('id_dominio', $estadoId)->get(['id', 'descripcion']) : [],
-                'areasImpacto' => $areaId ? Subdominio::where('id_dominio', $areaId)->get(['id', 'descripcion']) : [],
-                'usuario_autenticado' => Auth::user(),
+                'especialidades' => $especialidades,
+                'estados' => $estados,
+                'areasImpacto' => $areasImpacto,
             ]);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Error al obtener catálogos'], 500);
+            return response()->json([
+                'mensaje' => 'Error al cargar catálogos',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }
