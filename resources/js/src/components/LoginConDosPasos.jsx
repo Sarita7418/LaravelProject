@@ -1,22 +1,21 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'
 
 import axios from '../lib/axios'
 import AutenticacionDosPasos from './AutenticacionDosPasos'
 
 export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [mostrarDosPasos, setMostrarDosPasos] = useState(false)
-  const [usuarioEmail, setUsuarioEmail] = useState('')
+  const [usuarioName, setUsuarioName] = useState('')
 
   useEffect(() => {
     const limpiarEstado = async () => {
       setMostrarDosPasos(false)
-      setUsuarioEmail('')
+      setUsuarioName('')
       setError('')
       if (setPendingTwoFactor) {
         setPendingTwoFactor(false)
@@ -25,6 +24,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       try {
         await axios.post('/api/logout')
       } catch (error) {
+        // Silenciar error de logout
       }
     }
 
@@ -43,13 +43,13 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    setError('') 
+    setError('')
 
     try {
       await axios.get('/sanctum/csrf-cookie')
       const loginResponse = await axios.post(
         '/api/login',
-        { email, password },
+        { name: username, password },
         { withCredentials: true }
       )
 
@@ -63,7 +63,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       const permisos = res.data.permisos
       const rutas = extraerRutasDesdePermisos(permisos)
 
-      setUsuarioEmail(res.data.email)
+      setUsuarioName(res.data.name)
       setMostrarDosPasos(true)
       if (setPendingTwoFactor) {
         setPendingTwoFactor(true)
@@ -74,7 +74,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
         if (err.response.status === 403) {
           setError(err.response.data.message || 'Tu cuenta está inactiva.')
         } else if (err.response.status === 422) {
-          setError('Credenciales inválidas. Verifica tu email y contraseña.')
+          setError('Credenciales inválidas. Verifica tu nombre de usuario y contraseña.')
         } else {
           setError(err.response.data.message || 'Error al iniciar sesión.')
         }
@@ -102,12 +102,10 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   }
 
   const manejarVerificacionExitosa = async () => {
-
     try {
       const res = await axios.get('/api/user')
       const permisos = res.data.permisos
       const rutas = extraerRutasDesdePermisos(permisos)
-
       completarLogin(rutas)
     } catch (error) {
       setError('Error al cargar los datos del usuario.')
@@ -117,7 +115,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
 
   const manejarCancelarDosPasos = async () => {
     setMostrarDosPasos(false)
-    setUsuarioEmail('')
+    setUsuarioName('')
     setError('')
     if (setPendingTwoFactor) {
       setPendingTwoFactor(false)
@@ -126,14 +124,15 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     try {
       await axios.post('/api/logout')
     } catch (error) {
+      // Silenciar error de logout
     }
   }
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value)
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value)
     if (mostrarDosPasos) {
       setMostrarDosPasos(false)
-      setUsuarioEmail('')
+      setUsuarioName('')
       setError('')
       if (setPendingTwoFactor) {
         setPendingTwoFactor(false)
@@ -145,7 +144,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     return (
       <AutenticacionDosPasos
         onVerificacionExitosa={manejarVerificacionExitosa}
-        correoUsuario={usuarioEmail}
+        usuarioName={usuarioName}
         onCancelar={manejarCancelarDosPasos}
       />
     )
@@ -157,10 +156,10 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       {error && <div style={{ color: 'red', margin: '10px 0' }}>{error}</div>}
       <form onSubmit={handleLogin}>
         <input
-          type="email"
-          placeholder="Correo"
-          value={email}
-          onChange={handleEmailChange}
+          type="text"
+          placeholder="Nombre de usuario"
+          value={username}
+          onChange={handleUsernameChange}
           required
         /><br />
         <input
@@ -175,8 +174,8 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       <label
         style={{ color: 'gray', cursor: 'pointer', marginLeft: '10px', userSelect: 'none' }}
         onClick={() => {
-          const emailParam = encodeURIComponent(email)
-          navigate(`/cambiar-contrasena?email=${emailParam}`)
+          const userParam = encodeURIComponent(username)
+          navigate(`/cambiar-contrasena?user=${userParam}`)
         }}
       >
         ¿Olvidaste tu contraseña?
@@ -185,7 +184,6 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       <p className="registro-enlace">
         ¿No tienes cuenta? <Link to="/registro">Regístrate aquí</Link>
       </p>
-
     </div>
   )
 }
