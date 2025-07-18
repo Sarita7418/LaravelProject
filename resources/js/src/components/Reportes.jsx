@@ -1,23 +1,39 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './Reportes.css'
 
 const Reportes = () => {
+  const [desde, setDesde] = useState('')
+  const [hasta, setHasta] = useState('')
+
   const reportesDisponibles = [
     {
       nombre: 'Usuarios',
       excel: '/api/reportes/usuarios/excel',
-      pdf: '/api/reportes/usuarios/pdf', // este lo creamos luego
+      pdf: '/api/reportes/usuarios/pdf',
     },
-    // Puedes agregar más reportes acá
+    // Agregá más reportes acá si querés
   ]
 
   const descargarArchivo = (url) => {
-    window.open(url, '_blank')
+    const query = `?desde=${desde}&hasta=${hasta}`
+    window.open(url + query, '_blank')
   }
 
   return (
     <div className="reportes-contenedor">
       <h2>Reportes</h2>
+
+      <div className="filtros-fechas">
+        <label>
+          Desde:
+          <input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} />
+        </label>
+        <label>
+          Hasta:
+          <input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} />
+        </label>
+      </div>
+
       <table className="tabla-reportes">
         <thead>
           <tr>

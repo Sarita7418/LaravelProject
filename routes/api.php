@@ -32,6 +32,7 @@ Route::middleware([
     ThrottleRequests::class,
 ])->group(function () {
 
+    
     Route::get('/reportes/usuarios/excel', [ReporteController::class, 'exportUsuarios']);
     Route::get('/reportes/usuarios/pdf', [ReportePDFController::class, 'usuarios']);
 

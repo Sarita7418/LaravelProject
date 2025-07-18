@@ -8,12 +8,19 @@ use Illuminate\Http\Request;
 
 class ReportePDFController extends Controller
 {
-     public function usuarios()
-    {
-        $usuarios = User::with(['persona', 'role'])->get();
+     public function usuarios(Request $request)
+{
+    $desde = $request->input('desde');
+    $hasta = $request->input('hasta');
 
-        $pdf = PDF::loadView('reportes.usuarios_pdf', compact('usuarios'));
+    $usuarios = User::with(['persona', 'role'])
+        ->when($desde, fn($q) => $q->whereDate('created_at', '>=', $desde))
+        ->when($hasta, fn($q) => $q->whereDate('created_at', '<=', $hasta))
+        ->get();
 
-        return $pdf->download('reporte_usuarios.pdf');
-    }
+    $pdf = PDF::loadView('reportes.usuarios_pdf', compact('usuarios'));
+
+    return $pdf->download('reporte_usuarios.pdf');
+}
+
 }

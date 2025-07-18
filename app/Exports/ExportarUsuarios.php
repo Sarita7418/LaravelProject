@@ -9,9 +9,16 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class ExportarUsuarios implements FromCollection, WithHeadings, WithMapping
 {
+    protected $usuarios;
+
+    public function __construct($usuarios)
+    {
+        $this->usuarios = $usuarios;
+    }
+
     public function collection()
     {
-        return User::with(['persona', 'role'])->get();
+        return $this->usuarios;
     }
 
     public function map($user): array
