@@ -3,20 +3,22 @@ import { useNavigate, Link } from 'react-router-dom'
 
 import axios from '../lib/axios'
 import AutenticacionDosPasos from './AutenticacionDosPasos'
+import './LoginConDosPasos.css'
 
-export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
+export default function LoginConDosPasos({ setAuth, setPermisos, setPendingTwoFactor }) {
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
   const [mostrarDosPasos, setMostrarDosPasos] = useState(false)
   const [usuarioName, setUsuarioName] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState({})
 
   useEffect(() => {
     const limpiarEstado = async () => {
       setMostrarDosPasos(false)
       setUsuarioName('')
-      setError('')
+      setErrors({})
       if (setPendingTwoFactor) {
         setPendingTwoFactor(false)
       }
@@ -41,25 +43,70 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     return permisos.map(p => p.ruta).filter(Boolean)
   }
 
+  const validateUsername = (value) => {
+    const newErrors = { ...errors }
+    const cleanValue = value.trim()
+
+    if (!cleanValue) {
+      newErrors.username = 'El nombre de usuario es obligatorio'
+    } else if (cleanValue.length < 3) {
+      newErrors.username = 'El nombre de usuario debe tener al menos 3 caracteres'
+    } else if (cleanValue.length > 20) {
+      newErrors.username = 'El nombre de usuario no puede exceder 20 caracteres'
+    } else if (!/^[a-zA-Z0-9_]+$/.test(cleanValue)) {
+      newErrors.username = 'El nombre de usuario solo puede contener letras, números y guión bajo'
+    } else {
+      delete newErrors.username
+    }
+
+    setErrors(newErrors)
+    return !newErrors.username
+  }
+
+  const validatePassword = (value) => {
+    const newErrors = { ...errors }
+
+    if (!value) {
+      newErrors.password = 'La contraseña es obligatoria'
+    } else if (value.length > 255) {
+      newErrors.password = 'La contraseña no puede exceder 255 caracteres'
+    } else {
+      delete newErrors.password
+    }
+
+    setErrors(newErrors)
+    return !newErrors.password
+  }
+
+  const validateAllFields = () => {
+    const usernameValid = validateUsername(username)
+    const passwordValid = validatePassword(password)
+    return usernameValid && passwordValid
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault()
-    setError('')
+    
+    if (!validateAllFields()) return
+
+    setLoading(true)
+    setErrors({})
 
     try {
       await axios.get('/sanctum/csrf-cookie')
       const loginResponse = await axios.post(
         '/api/login',
-        { name: username, password },
+        { name: username.trim(), password },
         { withCredentials: true }
       )
 
       if (loginResponse.data.error) {
-        setError(loginResponse.data.error)
+        setErrors({ general: loginResponse.data.error })
+        setLoading(false)
         return
       }
 
       const res = await axios.get('/api/user')
-
       const permisos = res.data.permisos
       const rutas = extraerRutasDesdePermisos(permisos)
 
@@ -72,15 +119,26 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
     } catch (err) {
       if (err.response) {
         if (err.response.status === 403) {
-          setError(err.response.data.message || 'Tu cuenta está inactiva.')
+          setErrors({ general: 'Tu cuenta está desactivada, contacta al administrador' })
         } else if (err.response.status === 422) {
-          setError('Credenciales inválidas. Verifica tu nombre de usuario y contraseña.')
+          const errorMessage = err.response.data.message
+          if (errorMessage.includes('username') || errorMessage.includes('usuario')) {
+            setErrors({ username: 'El nombre de usuario no existe' })
+          } else if (errorMessage.includes('credenciales') || errorMessage.includes('password')) {
+            setErrors({ general: 'El usuario o la contraseña no son correctos.' })
+          } else {
+            setErrors({ general: 'El usuario o la contraseña no son correctos.' })
+          }
+        } else if (err.response.status === 429) {
+          setErrors({ general: 'Demasiados intentos fallidos, intenta en 15 minutos' })
         } else {
-          setError(err.response.data.message || 'Error al iniciar sesión.')
+          setErrors({ general: err.response.data.message || 'Error al iniciar sesión' })
         }
       } else {
-        setError('Error de conexión. Verifica tu conexión a internet.')
+        setErrors({ general: 'Error de conexión. Verifica tu conexión a internet' })
       }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -108,7 +166,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
       const rutas = extraerRutasDesdePermisos(permisos)
       completarLogin(rutas)
     } catch (error) {
-      setError('Error al cargar los datos del usuario.')
+      setErrors({ general: 'Error al cargar los datos del usuario' })
       navigate('/login')
     }
   }
@@ -116,7 +174,7 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   const manejarCancelarDosPasos = async () => {
     setMostrarDosPasos(false)
     setUsuarioName('')
-    setError('')
+    setErrors({})
     if (setPendingTwoFactor) {
       setPendingTwoFactor(false)
     }
@@ -129,15 +187,48 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   }
 
   const handleUsernameChange = (e) => {
-    setUsername(e.target.value)
+    const value = e.target.value
+    setUsername(value)
+    validateUsername(value)
+    
+    // Limpiar error general cuando el usuario modifica el campo
+    if (errors.general) {
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors.general
+        return newErrors
+      })
+    }
+    
     if (mostrarDosPasos) {
       setMostrarDosPasos(false)
       setUsuarioName('')
-      setError('')
+      setErrors({})
       if (setPendingTwoFactor) {
         setPendingTwoFactor(false)
       }
     }
+  }
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value
+    setPassword(value)
+    validatePassword(value)
+    
+    // Limpiar error general cuando el usuario modifica el campo
+    if (errors.general) {
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors.general
+        return newErrors
+      })
+    }
+  }
+
+  const isFormValid = () => {
+    const hasRequiredFields = username.trim() && password
+    const hasNoErrors = Object.keys(errors).length === 0
+    return hasRequiredFields && hasNoErrors
   }
 
   if (mostrarDosPasos) {
@@ -151,39 +242,74 @@ export default function Login({ setAuth, setPermisos, setPendingTwoFactor }) {
   }
 
   return (
-    <div>
-      <h2>Iniciar Sesión</h2>
-      {error && <div style={{ color: 'red', margin: '10px 0' }}>{error}</div>}
-      <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          placeholder="Nombre de usuario"
-          value={username}
-          onChange={handleUsernameChange}
-          required
-        /><br />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        /><br />
-        <button type="submit">Entrar</button>
-      </form>
-      <label
-        style={{ color: 'gray', cursor: 'pointer', marginLeft: '10px', userSelect: 'none' }}
-        onClick={() => {
-          const userParam = encodeURIComponent(username)
-          navigate(`/cambiar-contrasena?user=${userParam}`)
-        }}
-      >
-        ¿Olvidaste tu contraseña?
-      </label>
+    <div className="login-container">
+      <div className="login-card">
+        <h2 className="login-title">Iniciar Sesión</h2>
+        
+        {errors.general && (
+          <div className="error-message general-error">{errors.general}</div>
+        )}
+        
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="form-group">
+            <label className="form-label">
+              Nombre de Usuario <span className="required">*</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Ingrese su nombre de usuario"
+              value={username}
+              onChange={handleUsernameChange}
+              className={`form-input ${errors.username ? 'error' : ''}`}
+              required
+            />
+            {errors.username && (
+              <div className="error-message">{errors.username}</div>
+            )}
+          </div>
 
-      <p className="registro-enlace">
-        ¿No tienes cuenta? <Link to="/registro">Regístrate aquí</Link>
-      </p>
+          <div className="form-group">
+            <label className="form-label">
+              Contraseña <span className="required">*</span>
+            </label>
+            <input
+              type="password"
+              placeholder="Ingrese su contraseña"
+              value={password}
+              onChange={handlePasswordChange}
+              className={`form-input ${errors.password ? 'error' : ''}`}
+              required
+            />
+            {errors.password && (
+              <div className="error-message">{errors.password}</div>
+            )}
+          </div>
+
+          <button 
+            type="submit" 
+            className="login-btn"
+            disabled={loading || !isFormValid()}
+          >
+            {loading ? 'Iniciando sesión...' : 'Entrar'}
+          </button>
+        </form>
+
+        <div className="login-links">
+          <label
+            className="forgot-password-link"
+            onClick={() => {
+              const userParam = encodeURIComponent(username)
+              navigate(`/cambiar-contrasena?user=${userParam}`)
+            }}
+          >
+            ¿Olvidaste tu contraseña?
+          </label>
+
+          <p className="register-link">
+            ¿No tienes cuenta? <Link to="/registro">Regístrate aquí</Link>
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
