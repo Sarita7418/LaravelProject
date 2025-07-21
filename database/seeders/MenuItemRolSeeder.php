@@ -27,7 +27,7 @@ class MenuItemRolSeeder extends Seeder
         }
 
         // USER (ID 2) accede a Dashboard y Usuarios
-        foreach ([$administracion, $usuarios] as $menuItem) {
+        foreach ([$administracion, $usuarios, $personas] as $menuItem) {
             if ($menuItem) {
                 MenuItemRol::create([
                     'id_rol' => 2,

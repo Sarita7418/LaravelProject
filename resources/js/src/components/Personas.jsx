@@ -9,6 +9,7 @@ function Personas() {
     const [personaEditando, setPersonaEditando] = useState(null)
     const [mostrarInactivos, setMostrarInactivos] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [accionesPermitidas, setAccionesPermitidas] = useState([])
 
     const [formData, setFormData] = useState({
         nombres: '',
@@ -25,8 +26,25 @@ function Personas() {
         axios.get('/sanctum/csrf-cookie').then(() => {
             fetchPersonas()
             fetchInactivos()
+            fetchAccionesUsuario()
         })
     }, [])
+
+    const fetchAccionesUsuario = async () => {
+        try {
+            const userRes = await axios.get('/api/user')
+            const userId = userRes.data.id
+            const accionesRes = await axios.get(`/api/acciones/${userId}`)
+            const accionesFiltradas = accionesRes.data.filter(
+                (a) => a.menu_item === 'Personas'
+            ).map((a) => a.accion)
+            setAccionesPermitidas(accionesFiltradas)
+        } catch (error) {
+            console.error('Error al obtener las acciones del usuario:', error)
+        }
+    }
+
+    const puede = (accion) => accionesPermitidas.includes(accion)
 
     const fetchPersonas = async () => {
         try {
@@ -58,7 +76,7 @@ function Personas() {
         try {
             await axios.post('/api/personas', {
                 ...formData,
-                estado: 1 // <- ¡Aquí está la clave!
+                estado: 1
             })
             resetFormulario()
             fetchPersonas()
@@ -68,7 +86,6 @@ function Personas() {
             setLoading(false)
         }
     }
-
 
     const actualizarPersona = async () => {
         if (!personaEditando) return
@@ -130,7 +147,9 @@ function Personas() {
             apellido_materno: '',
             ci: '',
             telefono: '',
-            fecha_nacimiento: ''
+            fecha_nacimiento: '',
+            email: '',
+            password: ''
         })
     }
 
@@ -175,41 +194,43 @@ function Personas() {
                             <td>{p.ci}</td>
                             <td>{p.telefono}</td>
                             <td>{p.fecha_nacimiento}</td>
-
-                            {/* NUEVA COLUMNA DE ESTADO */}
                             <td>
                                 <span className={`status ${p.estado ? 'active' : 'inactive'}`}>
                                     {p.estado ? 'Activo' : 'Inactivo'}
                                 </span>
                             </td>
-
                             <td>
                                 {mostrarInactivos ? (
-                                    <button className="reactivate-btn" onClick={() => reactivarPersona(p.id)}>
-                                        Reactivar
-                                    </button>
+                                    puede('activar') && (
+                                        <button className="reactivate-btn" onClick={() => reactivarPersona(p.id)}>
+                                            Reactivar
+                                        </button>
+                                    )
                                 ) : (
                                     <>
-                                        <button className="edit-btn" onClick={() => iniciarEdicion(p)}>
-                                            Editar
-                                        </button>
-                                        <button className="delete-btn" onClick={() => eliminarPersona(p.id)}>
-                                            Desactivar
-                                        </button>
+                                        {puede('editar') && (
+                                            <button className="edit-btn" onClick={() => iniciarEdicion(p)}>
+                                                Editar
+                                            </button>
+                                        )}
+                                        {puede('activar') && (
+                                            <button className="delete-btn" onClick={() => eliminarPersona(p.id)}>
+                                                Desactivar
+                                            </button>
+                                        )}
                                     </>
                                 )}
                             </td>
                         </tr>
                     ))}
                 </tbody>
-
             </table>
 
-            {!mostrarInactivos && !formVisible ? (
+            {!mostrarInactivos && !formVisible && puede('crear') ? (
                 <button className="add-btn" onClick={() => setFormVisible(true)}>
                     Añadir Persona
                 </button>
-            ) : !mostrarInactivos ? (
+            ) : !mostrarInactivos && formVisible ? (
                 <div className="form-container">
                     <label className="form-label">Nombres</label>
                     <input className="form-input" name="nombres" value={formData.nombres} onChange={handleInputChange} />
@@ -223,12 +244,10 @@ function Personas() {
                     <input className="form-input" name="telefono" value={formData.telefono} onChange={handleInputChange} />
                     <label className="form-label">Fecha de nacimiento</label>
                     <input className="form-input" type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleInputChange} />
-
                     <label className="form-label">Correo</label>
-                    <input className="form-input" type="email" name="email" value={formData.email} onChange={handleInputChange} />                    
+                    <input className="form-input" type="email" name="email" value={formData.email} onChange={handleInputChange} />
                     <label className="form-label">Contraseña</label>
                     <input className="form-input" type="password" name="password" value={formData.password} onChange={handleInputChange} />
-
 
                     <div className="form-actions">
                         <button

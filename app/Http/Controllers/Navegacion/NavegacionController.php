@@ -6,6 +6,8 @@ use App\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\AccionMenuItemRol;
+use App\Models\User;
 
 
 
@@ -67,14 +69,19 @@ class NavegacionController extends Controller
 
     public function obtenerAcciones($idUsuario)
     {
-        $user = \App\Models\User::with('role.menuItems.acciones')->findOrFail($idUsuario);
+        $user = User::with('role')->findOrFail($idUsuario);
 
-        $acciones = $user->role->menuItems
-            ->flatMap(function ($menu) {
-                return $menu->acciones->pluck('nombre');
-            })
-            ->unique()
-            ->values();
+        $acciones = AccionMenuItemRol::with(['accion', 'menuItem'])
+            ->where('id_rol', $user->role->id)
+            ->get()
+            ->map(function ($registro) {
+                return [
+                    'id_accion' => $registro->id_accion,
+                    'accion' => $registro->accion->nombre,
+                    'id_menu_item' => $registro->id_menu_item,
+                    'menu_item' => $registro->menuItem->item,
+                ];
+            });
 
         return response()->json($acciones);
     }

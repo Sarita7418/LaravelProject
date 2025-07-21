@@ -334,6 +334,32 @@ function Usuarios() {
     return hasRequiredFields && hasNoErrors
   }
 
+  const [accionesPermitidas, setAccionesPermitidas] = useState([])
+  const puede = (accion) => accionesPermitidas.includes(accion)
+
+  useEffect(() => {
+    axios.get('/sanctum/csrf-cookie').then(() => {
+      fetchUsuarios()
+      fetchUsuariosInactivos()
+      fetchRoles()
+      fetchAccionesUsuario()
+    })
+  }, [])
+
+  const fetchAccionesUsuario = async () => {
+    try {
+      const userRes = await axios.get('/api/user')
+      const userId = userRes.data.id
+      const accionesRes = await axios.get(`/api/acciones/${userId}`)
+      const accionesFiltradas = accionesRes.data
+        .filter((a) => a.menu_item === 'Usuarios')
+        .map((a) => a.accion)
+      setAccionesPermitidas(accionesFiltradas)
+    } catch (error) {
+      console.error('Error al obtener las acciones del usuario:', error)
+    }
+  }
+
   return (
     <div className="usuarios-container">
       <h2 className="usuarios-title">Usuarios</h2>
@@ -378,30 +404,38 @@ function Usuarios() {
               </td>
               <td>
                 {mostrarInactivos ? (
-                  <button className="reactivate-btn" onClick={() => reactivarUsuario(usuario.id)}>
-                    Reactivar
-                  </button>
+                  puede('activar') && (
+                    <button className="reactivate-btn" onClick={() => reactivarUsuario(usuario.id)}>
+                      Reactivar
+                    </button>
+                  )
                 ) : (
                   <>
-                    <button className="edit-btn" onClick={() => iniciarEdicion(usuario)}>
-                      Editar
-                    </button>
-                    <button className="delete-btn" onClick={() => eliminarUsuario(usuario.id)}>
-                      Desactivar
-                    </button>
+                    {puede('editar') && (
+                      <button className="edit-btn" onClick={() => iniciarEdicion(usuario)}>
+                        Editar
+                      </button>
+                    )}
+                    {puede('activar') && (
+                      <button className="delete-btn" onClick={() => eliminarUsuario(usuario.id)}>
+                        Desactivar
+                      </button>
+                    )}
                   </>
                 )}
               </td>
+
             </tr>
           ))}
         </tbody>
       </table>
 
-      {!mostrarInactivos && !formVisible ? (
+      {!mostrarInactivos && !formVisible && puede('crear') ? (
         <button className="add-btn" onClick={() => setFormVisible(true)}>
           Añadir Usuario
         </button>
-      ) : !mostrarInactivos ? (
+      ) : !mostrarInactivos && formVisible ? (
+
         <div className="form-container">
           <label className="form-label">
             Nombre <span className="required">*</span>

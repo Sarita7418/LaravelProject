@@ -13,80 +13,69 @@ class AccionMenuItemRolSeeder extends Seeder
     {
         $now = now();
 
-        // ADMIN (ID 1) tiene crear, editar, activar en Usuarios (menu_id: x) y Roles (menu_id: y)
-        $usuarios   = MenuItem::where('ruta', '/dashboard/usuarios')->first();
-        $roles      = MenuItem::where('ruta', '/dashboard/roles')->first();
+        $adminId = 1;
+        $userId = 2;
 
-        $crear      = Accion::where('nombre', 'crear')->first();
-        $editar     = Accion::where('nombre', 'editar')->first();
-        $activar    = Accion::where('nombre', 'activar')->first();
+        $menuUsuarios   = MenuItem::where('ruta', '/dashboard/usuarios')->first();
+        $menuRoles      = MenuItem::where('ruta', '/dashboard/roles')->first();
+        $menuPersonas   = MenuItem::where('ruta', '/dashboard/personas')->first();
+        $menuProtocolos = MenuItem::where('ruta', '/dashboard/protocolos')->first();
 
-        // Admin en Usuarios
-        DB::table('accion_menu_item_rol')->insert([
-            [
-                'id_rol'       => 1,
-                'id_menu_item' => $usuarios->id,
-                'id_accion'    => $crear->id,
-                'created_at'   => $now,
-                'updated_at'   => $now,
-            ],
-            [
-                'id_rol'       => 1,
-                'id_menu_item' => $usuarios->id,
-                'id_accion'    => $editar->id,
-                'created_at'   => $now,
-                'updated_at'   => $now,
-            ],
-            [
-                'id_rol'       => 1,
-                'id_menu_item' => $usuarios->id,
-                'id_accion'    => $activar->id,
-                'created_at'   => $now,
-                'updated_at'   => $now,
-            ],
-        ]);
+        $acciones = Accion::all();
 
-        // Admin en Roles
-        DB::table('accion_menu_item_rol')->insert([
-            [
-                'id_rol'       => 1,
-                'id_menu_item' => $roles->id,
-                'id_accion'    => $crear->id,
-                'created_at'   => $now,
-                'updated_at'   => $now,
-            ],
-            [
-                'id_rol'       => 1,
-                'id_menu_item' => $roles->id,
-                'id_accion'    => $editar->id,
-                'created_at'   => $now,
-                'updated_at'   => $now,
-            ],
-            [
-                'id_rol'       => 1,
-                'id_menu_item' => $roles->id,
-                'id_accion'    => $activar->id,
-                'created_at'   => $now,
-                'updated_at'   => $now,
-            ],
-        ]);
+        // ADMIN - Todas las acciones en todos los menús
+        foreach ([$menuUsuarios, $menuRoles, $menuPersonas, $menuProtocolos] as $menu) {
+            foreach ($acciones as $accion) {
+                DB::table('accion_menu_item_rol')->updateOrInsert(
+                    [
+                        'id_rol'       => $adminId,
+                        'id_menu_item' => $menu->id,
+                        'id_accion'    => $accion->id,
+                    ],
+                    [
+                        'created_at'   => $now,
+                        'updated_at'   => $now,
+                    ]
+                );
+            }
+        }
 
-        // USER (ID 2) tiene solo crear y editar en Usuarios
-        DB::table('accion_menu_item_rol')->insert([
+        // USER - Crear y editar en Usuarios
+        DB::table('accion_menu_item_rol')->updateOrInsert(
             [
-                'id_rol'       => 2,
-                'id_menu_item' => $usuarios->id,
-                'id_accion'    => $crear->id,
-                'created_at'   => $now,
-                'updated_at'   => $now,
+                'id_rol'       => $userId,
+                'id_menu_item' => $menuUsuarios->id,
+                'id_accion'    => Accion::where('nombre', 'crear')->first()->id,
             ],
             [
-                'id_rol'       => 2,
-                'id_menu_item' => $usuarios->id,
-                'id_accion'    => $editar->id,
                 'created_at'   => $now,
                 'updated_at'   => $now,
+            ]
+        );
+
+        DB::table('accion_menu_item_rol')->updateOrInsert(
+            [
+                'id_rol'       => $userId,
+                'id_menu_item' => $menuUsuarios->id,
+                'id_accion'    => Accion::where('nombre', 'editar')->first()->id,
             ],
-        ]);
+            [
+                'created_at'   => $now,
+                'updated_at'   => $now,
+            ]
+        );
+
+        // USER - Editar en Personas
+        DB::table('accion_menu_item_rol')->updateOrInsert(
+            [
+                'id_rol'       => $userId,
+                'id_menu_item' => $menuPersonas->id,
+                'id_accion'    => Accion::where('nombre', 'editar')->first()->id,
+            ],
+            [
+                'created_at'   => $now,
+                'updated_at'   => $now,
+            ]
+        );
     }
 }
