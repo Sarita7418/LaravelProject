@@ -13,6 +13,7 @@ class AccionesSeeder extends Seeder
             ['nombre' => 'crear',   'descripcion' => 'Permite crear registros'],
             ['nombre' => 'editar',  'descripcion' => 'Permite editar registros'],
             ['nombre' => 'activar', 'descripcion' => 'Permite activar o desactivar registros'],
+            ['nombre' => 'eliminar', 'descripcion' => 'Permite eliminar registros']
         ];
 
         foreach ($acciones as $accionData) {

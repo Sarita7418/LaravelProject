@@ -15,7 +15,7 @@ function Protocolos() {
   const [idEspecialidad, setIdEspecialidad] = useState('');
   const [nuevaEspecialidad, setNuevaEspecialidad] = useState('');
   const [idEstado, setIdEstado] = useState('');
-  const [idEstadoOriginal, setIdEstadoOriginal] = useState(''); 
+  const [idEstadoOriginal, setIdEstadoOriginal] = useState('');
   const [areasSeleccionadas, setAreasSeleccionadas] = useState([]);
   const [nuevaAreaNombre, setNuevaAreaNombre] = useState('');
   const [nuevaAreaDescripcion, setNuevaAreaDescripcion] = useState('');
@@ -30,11 +30,14 @@ function Protocolos() {
   const [mostrarConfirmacionEstado, setMostrarConfirmacionEstado] = useState(false);
   const [estadoTemporal, setEstadoTemporal] = useState('');
 
+  const [accionesPermitidas, setAccionesPermitidas] = useState([]);
+  const puede = (accion) => accionesPermitidas.includes(accion);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         await axios.get('/sanctum/csrf-cookie');
-        await Promise.all([fetchProtocolos(), fetchCatalogos()]);
+        await Promise.all([fetchProtocolos(), fetchCatalogos(), fetchAccionesUsuario()]);
       } catch (error) {
         console.error('Error inicializando:', error);
         setError('Error al cargar datos iniciales');
@@ -42,6 +45,20 @@ function Protocolos() {
     };
     fetchData();
   }, []);
+
+  const fetchAccionesUsuario = async () => {
+    try {
+      const userRes = await axios.get('/api/user');
+      const userId = userRes.data.id;
+      const accionesRes = await axios.get(`/api/acciones/${userId}`);
+      const accionesFiltradas = accionesRes.data
+        .filter((a) => a.menu_item === 'Protocolos')
+        .map((a) => a.accion);
+      setAccionesPermitidas(accionesFiltradas);
+    } catch (error) {
+      console.error('Error al obtener las acciones del usuario:', error);
+    }
+  };
 
   const fetchProtocolos = async () => {
     try {
@@ -162,8 +179,8 @@ function Protocolos() {
 
       Object.keys(payload).forEach(k => {
         if (
-          payload[k] === '' || 
-          payload[k] === null || 
+          payload[k] === '' ||
+          payload[k] === null ||
           (Array.isArray(payload[k]) && payload[k].length === 0)
         ) {
           delete payload[k];
@@ -181,7 +198,6 @@ function Protocolos() {
       alert(`Protocolo ${protocoloEditando ? 'actualizado' : 'creado'} correctamente`);
     } catch (err) {
       console.error('Error al guardar protocolo:', err);
-
       if (err.response?.data?.errors) {
         const errs = Object.values(err.response.data.errors).flat();
         setError('Errores de validación:\n' + errs.join('\n'));
@@ -201,7 +217,7 @@ function Protocolos() {
     setJustificacion(protocolo.justificacion);
     setIdEspecialidad(protocolo.id_especialidad);
     setIdEstado(protocolo.id_estado);
-    setIdEstadoOriginal(protocolo.id_estado); 
+    setIdEstadoOriginal(protocolo.id_estado);
 
     const areasFormateadas = protocolo.areas_impacto?.map(area => ({
       tipo: 'existente',
@@ -225,7 +241,7 @@ function Protocolos() {
     setIdEspecialidad('');
     setNuevaEspecialidad('');
     setIdEstado('');
-    setIdEstadoOriginal(''); 
+    setIdEstadoOriginal('');
     setAreasSeleccionadas([]);
     setNuevaAreaNombre('');
     setNuevaAreaDescripcion('');
@@ -276,7 +292,11 @@ function Protocolos() {
     return (
       <div className="protocolos-container">
         <div className="error-message">{error}</div>
-        <button className="reactivate-btn" onClick={() => window.location.reload()}>Recargar</button>
+        {puede('activar') && (
+          <button className="reactivate-btn" onClick={() => window.location.reload()}>
+            Recargar
+          </button>
+        )}
       </div>
     );
   }
@@ -285,23 +305,21 @@ function Protocolos() {
     <div className="protocolos-container">
       <h2 className="protocolos-title">Protocolos</h2>
 
-      {/* TABS */}
       <div className="toggle-container">
-        <button 
-          className={`toggle-btn ${vistaActual === 'activos' ? 'active' : ''}`} 
+        <button
+          className={`toggle-btn ${vistaActual === 'activos' ? 'active' : ''}`}
           onClick={() => setVistaActual('activos')}
         >
           Activos ({contarProtocolos('activos')})
         </button>
-        <button 
-          className={`toggle-btn ${vistaActual === 'enRevision' ? 'active' : ''}`} 
+        <button
+          className={`toggle-btn ${vistaActual === 'enRevision' ? 'active' : ''}`}
           onClick={() => setVistaActual('enRevision')}
         >
           En Revisión ({contarProtocolos('enRevision')})
         </button>
-
-        <button 
-          className={`toggle-btn ${vistaActual === 'archivados' ? 'active' : ''}`} 
+        <button
+          className={`toggle-btn ${vistaActual === 'archivados' ? 'active' : ''}`}
           onClick={() => setVistaActual('archivados')}
         >
           Archivados ({contarProtocolos('archivados')})
@@ -331,22 +349,38 @@ function Protocolos() {
                 <td>
                   {p.areas_impacto?.length > 0 ? (
                     <ul className="areas-lista">
-                      {p.areas_impacto.map(area => (
+                      {p.areas_impacto.map((area) => (
                         <li key={area.id}>{area.nombre}</li>
                       ))}
                     </ul>
-                  ) : 'N/A'}
+                  ) : (
+                    'N/A'
+                  )}
                 </td>
                 <td>{p.estado?.descripcion || `Estado ID: ${p.id_estado}`}</td>
                 <td>
-                  <button className="edit-btn" onClick={() => setProtocoloDetalle(p)}>Ver más</button>
+                  <button className="edit-btn" onClick={() => setProtocoloDetalle(p)}>
+                    Ver más
+                  </button>
                   {vistaActual !== 'archivados' ? (
                     <>
-                      <button className="edit-btn" onClick={() => iniciarEdicion(p)}>Editar</button>
-                      <button className="delete-btn" onClick={() => cambiarEstadoProtocolo(p.id, false)}>Archivar</button>
+                      {puede('editar') && (
+                        <button className="edit-btn" onClick={() => iniciarEdicion(p)}>
+                          Editar
+                        </button>
+                      )}
+                      {puede('activar') && (
+                        <button className="delete-btn" onClick={() => cambiarEstadoProtocolo(p.id, false)}>
+                          Archivar
+                        </button>
+                      )}
                     </>
                   ) : (
-                    <button className="reactivate-btn" onClick={() => cambiarEstadoProtocolo(p.id, true)}>Reactivar</button>
+                    puede('activar') && (
+                      <button className="reactivate-btn" onClick={() => cambiarEstadoProtocolo(p.id, true)}>
+                        Reactivar
+                      </button>
+                    )
                   )}
                 </td>
               </tr>
@@ -355,16 +389,17 @@ function Protocolos() {
         </tbody>
       </table>
 
-      {vistaActual !== 'archivados' && !formVisible && (
-        <button className="add-btn" onClick={() => setFormVisible(true)}>Añadir Protocolo</button>
+      {!formVisible && vistaActual !== 'archivados' && puede('crear') && (
+        <button className="add-btn" onClick={() => setFormVisible(true)}>
+          Añadir Protocolo
+        </button>
       )}
 
       {formVisible && (
         <div className="modal-overlay" onClick={resetFormulario}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <form className="form-container" onSubmit={handleSubmit}>
               <h3>{protocoloEditando ? 'Editar Protocolo' : 'Nuevo Protocolo'}</h3>
-
               {error && <div className="form-error">{error}</div>}
 
               <label className="form-label">Título</label>
@@ -451,10 +486,10 @@ function Protocolos() {
               )}
 
               {!protocoloEditando && (
-                <div className="info-message" style={{ 
-                  backgroundColor: '#e3f2fd', 
-                  padding: '10px', 
-                  borderRadius: '4px', 
+                <div className="info-message" style={{
+                  backgroundColor: '#e3f2fd',
+                  padding: '10px',
+                  borderRadius: '4px',
                   marginBottom: '15px',
                   color: '#1565c0',
                   fontSize: '14px'
@@ -470,7 +505,7 @@ function Protocolos() {
                 className="form-input"
               >
                 <option value="">Seleccione área...</option>
-                {catalogos?.areasImpacto?.map(a => (
+                {catalogos?.areasImpacto?.map((a) => (
                   <option key={a.id} value={a.id}>{a.nombre}</option>
                 ))}
                 <option value="nueva">-- Nueva Área de Impacto --</option>
@@ -493,11 +528,7 @@ function Protocolos() {
                 </>
               )}
 
-              <button
-                type="button"
-                onClick={agregarArea}
-                className="add-area-btn"
-              >
+              <button type="button" onClick={agregarArea} className="add-area-btn">
                 Añadir Área
               </button>
 
@@ -506,33 +537,17 @@ function Protocolos() {
                   {areasSeleccionadas.map((a, idx) => (
                     <li key={idx}>
                       {a.nombre} {a.tipo === 'nueva' && '(Nueva)'}
-                      <button
-                        type="button"
-                        onClick={() => eliminarArea(idx)}
-                        className="remove-area-btn"
-                      >
-                        X
-                      </button>
+                      <button type="button" onClick={() => eliminarArea(idx)} className="remove-area-btn">X</button>
                     </li>
                   ))}
                 </ul>
               )}
 
               <div className="form-buttons">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="submit-btn"
-                >
+                <button type="submit" disabled={loading} className="submit-btn">
                   {loading ? 'Guardando...' : protocoloEditando ? 'Actualizar' : 'Crear'}
                 </button>
-                <button
-                  type="button"
-                  onClick={resetFormulario}
-                  className="cancel-btn"
-                >
-                  Cancelar
-                </button>
+                <button type="button" onClick={resetFormulario} className="cancel-btn">Cancelar</button>
               </div>
             </form>
           </div>
@@ -545,20 +560,9 @@ function Protocolos() {
             <h3>Confirmar Cambio de Estado</h3>
             <p>¿Confirma que cambiará el estado del protocolo?</p>
             <p><strong>Nuevo estado:</strong> {catalogos?.estados?.find(e => e.id.toString() === estadoTemporal)?.descripcion}</p>
-            
             <div className="form-buttons">
-              <button
-                onClick={confirmarCambioEstado}
-                className="submit-btn"
-              >
-                Confirmar
-              </button>
-              <button
-                onClick={cancelarCambioEstado}
-                className="cancel-btn"
-              >
-                Cancelar
-              </button>
+              <button onClick={confirmarCambioEstado} className="submit-btn">Confirmar</button>
+              <button onClick={cancelarCambioEstado} className="cancel-btn">Cancelar</button>
             </div>
           </div>
         </div>
@@ -568,57 +572,23 @@ function Protocolos() {
         <div className="modal-overlay" onClick={() => setProtocoloDetalle(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h3>Detalle Protocolo</h3>
-
-            <div className="detalle-item">
-              <strong>Título:</strong>
-              <p>{protocoloDetalle.titulo}</p>
-            </div>
-
-            <div className="detalle-item">
-              <strong>Resumen:</strong>
-              <p>{protocoloDetalle.resumen}</p>
-            </div>
-
-            <div className="detalle-item">
-              <strong>Objetivo General:</strong>
-              <p>{protocoloDetalle.objetivo_general}</p>
-            </div>
-
-            <div className="detalle-item">
-              <strong>Metodología:</strong>
-              <p>{protocoloDetalle.metodologia}</p>
-            </div>
-
-            <div className="detalle-item">
-              <strong>Justificación:</strong>
-              <p>{protocoloDetalle.justificacion}</p>
-            </div>
-
-            <div className="detalle-item">
-              <strong>Especialidad:</strong>
-              <p>{protocoloDetalle.especialidad?.nombre || 'N/A'}</p>
-            </div>
-
-            <div className="detalle-item">
-              <strong>Estado:</strong>
-              <p>{protocoloDetalle.estado?.descripcion || 'N/A'}</p>
-            </div>
-
-            <div className="detalle-item" style={{flexDirection: 'column', alignItems: 'flex-start'}}>
+            <div className="detalle-item"><strong>Título:</strong><p>{protocoloDetalle.titulo}</p></div>
+            <div className="detalle-item"><strong>Resumen:</strong><p>{protocoloDetalle.resumen}</p></div>
+            <div className="detalle-item"><strong>Objetivo General:</strong><p>{protocoloDetalle.objetivo_general}</p></div>
+            <div className="detalle-item"><strong>Metodología:</strong><p>{protocoloDetalle.metodologia}</p></div>
+            <div className="detalle-item"><strong>Justificación:</strong><p>{protocoloDetalle.justificacion}</p></div>
+            <div className="detalle-item"><strong>Especialidad:</strong><p>{protocoloDetalle.especialidad?.nombre || 'N/A'}</p></div>
+            <div className="detalle-item"><strong>Estado:</strong><p>{protocoloDetalle.estado?.descripcion || 'N/A'}</p></div>
+            <div className="detalle-item" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
               <strong>Áreas de Impacto:</strong>
               {protocoloDetalle.areas_impacto?.length > 0 ? (
                 <ul>
                   {protocoloDetalle.areas_impacto.map(a => (
-                    <li key={a.id}>
-                      <strong>{a.nombre}</strong>: {a.descripcion}
-                    </li>
+                    <li key={a.id}><strong>{a.nombre}</strong>: {a.descripcion}</li>
                   ))}
                 </ul>
-              ) : (
-                <p>N/A</p>
-              )}
+              ) : <p>N/A</p>}
             </div>
-
             <button onClick={() => setProtocoloDetalle(null)} className="close-btn">Cerrar</button>
           </div>
         </div>
