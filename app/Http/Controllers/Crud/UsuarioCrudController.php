@@ -74,7 +74,7 @@ class UsuarioCrudController extends Controller
         $usuario->name = $request->name;
         $usuario->email = $request->email;
         $usuario->id_rol = $request->id_rol;
-                         
+
         // Solo actualizar la contraseña si se proporciona
         if ($request->filled('password')) {
             $usuario->password = bcrypt($request->password);
@@ -116,5 +116,18 @@ class UsuarioCrudController extends Controller
         // Solo obtener roles activos para la selección
         $roles = Role::where('estado', 1)->get();
         return response()->json($roles);
+    }
+
+    public function verificarUsername(Request $request)
+    {
+        $name = $request->input('name');
+        if (!$name) {
+            return response()->json(['error' => 'No se proporcionó el nombre de usuario'], 400);
+        }
+
+        $existe = \App\Models\User::where('name', $name)->exists();
+
+        // Si NO existe, está disponible (1); si SÍ existe, no está disponible (0)
+        return response()->json(['disponible' => $existe ? 0 : 1]);
     }
 }

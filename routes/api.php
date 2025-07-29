@@ -80,6 +80,8 @@ Route::middleware([
     Route::get('/usuarios/roles', [UsuarioCrudController::class, 'getRoles'])->middleware('auth:sanctum');
     Route::get('/usuarios/inactivos', [UsuarioCrudController::class, 'inactivos'])->middleware('auth:sanctum');
     Route::put('/usuarios/{id}/reactivar', [UsuarioCrudController::class, 'reactivar'])->middleware('auth:sanctum');
+    Route::get('/usuario/verificar-username', [UsuarioCrudController::class, 'verificarUsername']);
+
 
     // Protocolos
     Route::get('/protocolos', [ProtocoloController::class, 'index'])->middleware('auth:sanctum');

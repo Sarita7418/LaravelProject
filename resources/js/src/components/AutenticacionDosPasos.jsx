@@ -120,8 +120,7 @@ export default function AutenticacionDosPasos({
       <h2>Verificación en Dos Pasos</h2>
 
       <div className="correo-info">
-        <p>📧 Enviaremos el código a:</p>
-        <p className="correo-destino">{correoOculto || correoUsuario}</p>
+        <p>📧 Enviaremos el código de verificacion al correo vinculado a tu usuario</p>
       </div>
 
       {!correoOculto && (

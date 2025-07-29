@@ -31,7 +31,7 @@ function Usuarios() {
 
   const validateName = (value) => {
     const newErrors = { ...errors }
-    
+
     if (!value.trim()) {
       newErrors.name = 'El nombre es obligatorio'
     } else if (value.trim().length < 2) {
@@ -43,14 +43,14 @@ function Usuarios() {
     } else {
       delete newErrors.name
     }
-    
+
     setErrors(newErrors)
     return !newErrors.name
   }
 
   const validateEmail = (value) => {
     const newErrors = { ...errors }
-    
+
     if (!value.trim()) {
       newErrors.email = 'El email es obligatorio'
     } else if (value.length > 255) {
@@ -58,8 +58,8 @@ function Usuarios() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
       newErrors.email = 'El formato del email no es válido'
     } else {
-      const emailExistente = usuarios.find(usuario => 
-        usuario.email.toLowerCase() === value.trim().toLowerCase() && 
+      const emailExistente = usuarios.find(usuario =>
+        usuario.email.toLowerCase() === value.trim().toLowerCase() &&
         usuario.id !== usuarioEditando
       )
       if (emailExistente) {
@@ -68,7 +68,7 @@ function Usuarios() {
         delete newErrors.email
       }
     }
-    
+
     setErrors(newErrors)
     return !newErrors.email
   }
@@ -80,7 +80,7 @@ function Usuarios() {
       setErrors(newErrors)
       return true
     }
-    
+
     if (!value.trim()) {
       newErrors.password = 'La contraseña es obligatoria'
     } else if (value.length < 8) {
@@ -90,14 +90,14 @@ function Usuarios() {
     } else {
       delete newErrors.password
     }
-    
+
     setErrors(newErrors)
     return !newErrors.password
   }
 
   const validateRol = (value) => {
     const newErrors = { ...errors }
-    
+
     if (!value || value === '') {
       newErrors.rol = 'Debe seleccionar un rol'
     } else {
@@ -108,7 +108,7 @@ function Usuarios() {
         delete newErrors.rol
       }
     }
-    
+
     setErrors(newErrors)
     return !newErrors.rol
   }
@@ -118,7 +118,7 @@ function Usuarios() {
     const emailValid = validateEmail(email)
     const passwordValid = validatePassword(password)
     const rolValid = validateRol(idRol)
-    
+
     return nameValid && emailValid && passwordValid && rolValid
   }
 
@@ -186,17 +186,29 @@ function Usuarios() {
 
   const crearUsuario = async () => {
     if (!validateAllFields()) return
-    
+
     setLoading(true)
     try {
       const trimmedName = name.trim()
       const trimmedEmail = email.trim().toLowerCase()
-      
-      await axios.post('/api/usuarios', { 
-        name: trimmedName, 
-        email: trimmedEmail, 
-        password, 
-        id_rol: idRol 
+
+      // Verificar disponibilidad del nombre de usuario
+      const res = await axios.get('/api/usuario/verificar-username', {
+        params: { name: trimmedName }
+      })
+
+      if (res.data.disponible === 0) {
+        setErrors(prev => ({ ...prev, name: 'El nombre de usuario ya existe' }))
+        setLoading(false)
+        return
+      }
+
+      // Si está disponible, registrar
+      await axios.post('/api/usuarios', {
+        name: trimmedName,
+        email: trimmedEmail,
+        password,
+        id_rol: idRol
       })
       resetFormulario()
       fetchUsuarios()
@@ -207,12 +219,12 @@ function Usuarios() {
       if (error.response?.data?.errors) {
         const serverErrors = error.response.data.errors
         const newErrors = {}
-        
+
         if (serverErrors.name) newErrors.name = serverErrors.name[0]
         if (serverErrors.email) newErrors.email = serverErrors.email[0]
         if (serverErrors.password) newErrors.password = serverErrors.password[0]
         if (serverErrors.id_rol) newErrors.rol = serverErrors.id_rol[0]
-        
+
         setErrors(newErrors)
       }
     } finally {
@@ -220,18 +232,19 @@ function Usuarios() {
     }
   }
 
+
   const actualizarUsuario = async () => {
     if (!validateAllFields()) return
-    
+
     setLoading(true)
     try {
       const trimmedName = name.trim()
       const trimmedEmail = email.trim().toLowerCase()
-      
-      const data = { 
-        name: trimmedName, 
-        email: trimmedEmail, 
-        id_rol: idRol 
+
+      const data = {
+        name: trimmedName,
+        email: trimmedEmail,
+        id_rol: idRol
       }
       if (password.trim()) {
         data.password = password
@@ -247,12 +260,12 @@ function Usuarios() {
       if (error.response?.data?.errors) {
         const serverErrors = error.response.data.errors
         const newErrors = {}
-        
+
         if (serverErrors.name) newErrors.name = serverErrors.name[0]
         if (serverErrors.email) newErrors.email = serverErrors.email[0]
         if (serverErrors.password) newErrors.password = serverErrors.password[0]
         if (serverErrors.id_rol) newErrors.rol = serverErrors.id_rol[0]
-        
+
         setErrors(newErrors)
       }
     } finally {
@@ -321,18 +334,44 @@ function Usuarios() {
     return hasRequiredFields && hasNoErrors
   }
 
+  const [accionesPermitidas, setAccionesPermitidas] = useState([])
+  const puede = (accion) => accionesPermitidas.includes(accion)
+
+  useEffect(() => {
+    axios.get('/sanctum/csrf-cookie').then(() => {
+      fetchUsuarios()
+      fetchUsuariosInactivos()
+      fetchRoles()
+      fetchAccionesUsuario()
+    })
+  }, [])
+
+  const fetchAccionesUsuario = async () => {
+    try {
+      const userRes = await axios.get('/api/user')
+      const userId = userRes.data.id
+      const accionesRes = await axios.get(`/api/acciones/${userId}`)
+      const accionesFiltradas = accionesRes.data
+        .filter((a) => a.menu_item === 'Usuarios')
+        .map((a) => a.accion)
+      setAccionesPermitidas(accionesFiltradas)
+    } catch (error) {
+      console.error('Error al obtener las acciones del usuario:', error)
+    }
+  }
+
   return (
     <div className="usuarios-container">
       <h2 className="usuarios-title">Usuarios</h2>
 
       <div className="toggle-container">
-        <button 
+        <button
           className={`toggle-btn ${!mostrarInactivos ? 'active' : ''}`}
           onClick={() => setMostrarInactivos(false)}
         >
           Usuarios Activos ({usuarios.length})
         </button>
-        <button 
+        <button
           className={`toggle-btn ${mostrarInactivos ? 'active' : ''}`}
           onClick={() => setMostrarInactivos(true)}
         >
@@ -365,30 +404,38 @@ function Usuarios() {
               </td>
               <td>
                 {mostrarInactivos ? (
-                  <button className="reactivate-btn" onClick={() => reactivarUsuario(usuario.id)}>
-                    Reactivar
-                  </button>
+                  puede('activar') && (
+                    <button className="reactivate-btn" onClick={() => reactivarUsuario(usuario.id)}>
+                      Reactivar
+                    </button>
+                  )
                 ) : (
                   <>
-                    <button className="edit-btn" onClick={() => iniciarEdicion(usuario)}>
-                      Editar
-                    </button>
-                    <button className="delete-btn" onClick={() => eliminarUsuario(usuario.id)}>
-                      Desactivar
-                    </button>
+                    {puede('editar') && (
+                      <button className="edit-btn" onClick={() => iniciarEdicion(usuario)}>
+                        Editar
+                      </button>
+                    )}
+                    {puede('activar') && (
+                      <button className="delete-btn" onClick={() => eliminarUsuario(usuario.id)}>
+                        Desactivar
+                      </button>
+                    )}
                   </>
                 )}
               </td>
+
             </tr>
           ))}
         </tbody>
       </table>
 
-      {!mostrarInactivos && !formVisible ? (
+      {!mostrarInactivos && !formVisible && puede('crear') ? (
         <button className="add-btn" onClick={() => setFormVisible(true)}>
           Añadir Usuario
         </button>
-      ) : !mostrarInactivos ? (
+      ) : !mostrarInactivos && formVisible ? (
+
         <div className="form-container">
           <label className="form-label">
             Nombre <span className="required">*</span>
@@ -463,11 +510,11 @@ function Usuarios() {
                   ? 'Actualizando...'
                   : 'Creando...'
                 : usuarioEditando
-                ? 'Actualizar Usuario'
-                : 'Crear Usuario'}
+                  ? 'Actualizar Usuario'
+                  : 'Crear Usuario'}
             </button>
-            <button 
-              className="cancel-btn" 
+            <button
+              className="cancel-btn"
               onClick={resetFormulario}
               type="button"
             >
@@ -481,8 +528,8 @@ function Usuarios() {
           <div className="modal-content">
             <h3 className="modal-title">Confirmar acción</h3>
             <p className="modal-message">
-              {modalAction === 'desactivar' 
-                ? '¿Estás seguro de que quieres desactivar este usuario?' 
+              {modalAction === 'desactivar'
+                ? '¿Estás seguro de que quieres desactivar este usuario?'
                 : '¿Estás seguro de que quieres reactivar este usuario?'}
             </p>
             <div className="modal-actions">

@@ -22,14 +22,14 @@ class Role extends Model
     }
 
     // Relación con items de menú (accesos de navegación)
-    public function menuItems(): BelongsToMany
+    public function menuItems()
     {
         return $this->belongsToMany(
             MenuItem::class,
             'menu_item_rol',
             'id_rol',
             'id_menu_item'
-        );
+        )->withTimestamps();
     }
 
     // Scope para roles activos
