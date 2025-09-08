@@ -14,6 +14,7 @@ use App\Http\Controllers\Crud\RolCrudController;
 use App\Http\Controllers\Crud\UsuarioCrudController;
 use App\Http\Controllers\ProtocoloController;
 use App\Http\Controllers\Crud\PersonaCrudController;
+use App\Http\Controllers\Crud\PlanCuentasCrudController;
 use App\Http\Controllers\Navegacion\NavegacionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 
@@ -88,4 +89,13 @@ Route::middleware([
     // Navegación
     Route::get('/menu/{id_usuario}', [NavegacionController::class, 'obtenerMenu'])->middleware('auth:sanctum');
     Route::get('/acciones/{id_usuario}', [NavegacionController::class, 'obtenerAcciones'])->middleware('auth:sanctum');
+
+    //plan cuentas
+    Route::get('/plan-cuentas', [PlanCuentasCrudController::class, 'index'])->middleware('auth:sanctum');
+Route::post('/plan-cuentas', [PlanCuentasCrudController::class, 'store'])->middleware('auth:sanctum');
+Route::put('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'update'])->middleware('auth:sanctum');
+Route::delete('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'destroy'])->middleware('auth:sanctum');
+Route::get('/plan-cuentas/inactivas', [PlanCuentasCrudController::class, 'inactivas'])->middleware('auth:sanctum');
+Route::put('/plan-cuentas/{id}/reactivar', [PlanCuentasCrudController::class, 'reactivar'])->middleware('auth:sanctum');
+Route::get('/plan-cuentas/padres', [PlanCuentasCrudController::class, 'getCuentasPadre'])->middleware('auth:sanctum');
 });
