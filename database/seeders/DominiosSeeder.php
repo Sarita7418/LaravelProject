@@ -11,6 +11,9 @@ class DominiosSeeder extends Seeder
     {
         DB::table('dominios')->insert([
             ['id' => 1, 'descripcion' => 'estado_protocolo'],
+            ['id' => 2, 'descripcion' => 'tipo_cuenta'],
+            ['id' => 3, 'descripcion' => 'grupo_estado_financiero'],
+            ['id' => 4, 'descripcion' => 'cuenta_ajuste_presupuesto'],
         ]);
     }
 }
