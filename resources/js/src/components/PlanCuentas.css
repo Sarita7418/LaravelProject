@@ -1,405 +1,626 @@
+/* PlanCuentas.css */
 .plan-cuentas-container {
-    padding: 20px;
-    background: #f5f5f5;
-    min-height: 100vh;
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: 100vh;
 }
 
 .plan-cuentas-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .plan-cuentas-title {
-    color: #333;
-    font-size: 28px;
-    font-weight: 600;
-    margin: 0;
+  margin: 0;
+  color: #2c3e50;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .add-btn {
-    background: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .add-btn:hover {
-    background: #218838;
-    transform: translateY(-1px);
+  background: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .tabla-container {
-    background: white;
-    border-radius: 8px;
-    overflow: visible; /* Cambio importante para permitir overflow */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .plan-cuentas-table {
-    width: 100%;
-    border-collapse: collapse;
-    position: relative;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.plan-cuentas-table thead {
+  background: #343a40;
+  color: white;
 }
 
 .plan-cuentas-table th {
-    background: linear-gradient(135deg, #2c3e50, #34495e);
-    color: white;
-    padding: 15px 12px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 3px solid #1abc9c;
-    position: relative;
-    z-index: 10;
-}
-
-.plan-cuentas-table th:nth-child(3),
-.plan-cuentas-table th:nth-child(4),
-.plan-cuentas-table th:nth-child(5) {
-    text-align: right;
+  padding: 15px 10px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
 }
 
 .plan-cuentas-table td {
-    padding: 12px;
-    border-bottom: 1px solid #e9ecef;
-    vertical-align: middle;
-    font-size: 13px;
+  padding: 12px 10px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: middle;
 }
 
 .cuenta-row {
-    transition: all 0.2s ease;
-    position: relative;
+  transition: background-color 0.2s ease;
 }
 
 .cuenta-row:hover {
-    background-color: #f8f9fa;
+  background-color: #f1f3f4;
 }
 
-/* Contenedor para los hijos expandidos */
-.hijos-container {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    z-index: 100;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    border: 1px solid #dee2e6;
-    border-top: none;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.hijos-container table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0;
-}
-
-.hijos-container .cuenta-row {
-    background: white;
-    position: relative;
-}
-
-.hijos-container .cuenta-row:hover {
-    background-color: #f8f9fa;
-}
-
-/* Estilos específicos para cada nivel */
 .cuenta-nivel-1 {
-    background-color: #e8f4fd;
-    font-weight: 700;
-    border-left: 5px solid #007bff;
-    font-size: 15px;
-    position: relative;
-}
-
-.cuenta-nivel-1:hover {
-    background-color: #d1ecf1;
-}
-
-.cuenta-nivel-1 .cuenta-descripcion {
-    color: #1e3a8a;
-    font-size: 15px;
-    font-weight: 700;
+  background-color: #fff;
+  font-weight: 600;
 }
 
 .cuenta-nivel-2 {
-    background-color: #f0f8ff;
-    font-weight: 600;
-    border-left: 4px solid #17a2b8;
-    font-size: 14px;
-    position: relative;
-}
-
-.cuenta-nivel-2:hover {
-    background-color: #e6f3ff;
-}
-
-.cuenta-nivel-2 .cuenta-descripcion {
-    color: #0c5460;
-    font-weight: 600;
+  background-color: #f8f9fa;
 }
 
 .cuenta-nivel-3 {
-    background-color: #f8f9fa;
-    font-weight: 500;
-    border-left: 3px solid #6c757d;
-    font-size: 13px;
-    position: relative;
-}
-
-.cuenta-nivel-3:hover {
-    background-color: #e9ecef;
-}
-
-.cuenta-nivel-3 .cuenta-descripcion {
-    color: #495057;
-    font-weight: 500;
+  background-color: #e9ecef;
 }
 
 .cuenta-nivel-4 {
-    background-color: #fff;
-    font-weight: 500;
-    border-left: 2px solid #adb5bd;
-    font-size: 13px;
-    position: relative;
-}
-
-.cuenta-nivel-4:hover {
-    background-color: #f8f9fa;
-}
-
-.cuenta-nivel-4 .cuenta-descripcion {
-    color: #6c757d;
-    font-weight: 500;
+  background-color: #dee2e6;
 }
 
 .cuenta-nivel-5 {
-    background-color: #fff5f5;
-    font-weight: 400;
-    border-left: 2px solid #ffc107;
-    font-size: 12px;
+  background-color: #ced4da;
 }
 
-.cuenta-nivel-5:hover {
-    background-color: #fff3cd;
-}
-
-.cuenta-nivel-5 .cuenta-descripcion {
-    color: #856404;
-    font-weight: 400;
-}
-
-/* Remover estilos antiguos conflictivos */
-.cuenta-padre {
-    /* Los estilos ahora están en cuenta-nivel-X */
-}
-
-.cuenta-hija {
-    /* Los estilos ahora están en cuenta-nivel-X */
+.cuenta-nivel-6 {
+  background-color: #adb5bd;
 }
 
 .cuenta-codigo-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .expand-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 6px;
-    font-size: 12px;
-    color: #495057;
-    transition: all 0.2s;
-    min-width: 20px;
-    text-align: center;
-    border-radius: 3px;
-    flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  min-width: 20px;
 }
 
 .expand-btn:hover {
-    background: #e9ecef;
-    color: #007bff;
+  background: #e9ecef;
+  color: #495057;
 }
 
 .expand-btn.expanded {
-    color: #007bff;
-    font-weight: bold;
+  color: #007bff;
 }
 
 .cuenta-codigo {
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    color: #2c3e50;
-    font-size: 14px;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #495057;
 }
 
 .cuenta-descripcion {
-    font-weight: 600;
-    color: #2c3e50;
-    max-width: 300px;
-    word-wrap: break-word;
+  font-weight: 500;
+  color: #2c3e50;
 }
 
-.saldo-debe,
-.saldo-haber,
-.saldo-total {
-    font-family: 'Courier New', monospace;
-    text-align: right;
-    font-weight: 600;
-    font-size: 13px;
-    padding-right: 15px;
+.cuenta-tipo,
+.cuenta-grupo,
+.cuenta-ajuste,
+.cuenta-presupuesto {
+  font-size: 13px;
+  color: #6c757d;
 }
 
-.saldo-debe {
-    color: #dc3545;
-}
-
-.saldo-haber {
-    color: #28a745;
-}
-
-.saldo-total {
-    color: #007bff;
-    font-weight: 700;
-}
-
-/* Montos más prominentes para niveles superiores */
-.cuenta-nivel-1 .saldo-debe,
-.cuenta-nivel-1 .saldo-haber,
-.cuenta-nivel-1 .saldo-total {
-    font-size: 14px;
-    font-weight: 800;
-}
-
-.cuenta-nivel-2 .saldo-debe,
-.cuenta-nivel-2 .saldo-haber,
-.cuenta-nivel-2 .saldo-total {
-    font-size: 13px;
-    font-weight: 700;
+.cuenta-nivel-col {
+  font-size: 12px;
+  color: #868e96;
+  font-weight: 500;
 }
 
 .status {
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .status.active {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+  background: #d4edda;
+  color: #155724;
 }
 
 .status.inactive {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+  background: #f8d7da;
+  color: #721c24;
 }
 
 .acciones-cell {
-    text-align: center;
-    white-space: nowrap;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .edit-btn,
-.delete-btn {
-    background: none;
-    border: 1px solid #dee2e6;
-    padding: 6px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 0 2px;
-    font-size: 14px;
-    transition: all 0.2s;
+.delete-btn,
+.add-child-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 8px;
+  margin: 0 2px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
 }
 
 .edit-btn:hover {
-    background: #007bff;
-    border-color: #007bff;
-    transform: scale(1.1);
+  background: #e7f3ff;
+  transform: scale(1.1);
 }
 
 .delete-btn:hover {
-    background: #dc3545;
-    border-color: #dc3545;
-    transform: scale(1.1);
+  background: #ffebee;
+  transform: scale(1.1);
+}
+
+.add-child-btn {
+  color: #28a745;
+}
+
+.add-child-btn:hover {
+  background: #d4edda;
+  transform: scale(1.1);
 }
 
 .no-actions {
-    color: #6c757d;
-    font-size: 12px;
-    font-style: italic;
+  color: #adb5bd;
+  font-style: italic;
 }
 
-.loading-cell,
-.empty-cell {
-    text-align: center;
-    padding: 40px 20px;
-    color: #6c757d;
-    font-style: italic;
+/* Estilos para modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
 }
 
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalAppear 0.3s ease-out;
+  position: relative;
+  z-index: 1001;
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 12px 12px 0 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #495057;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: white !important;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1002;
+  color: #495057 !important;
+  font-weight: 500;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+  z-index: 1003;
+}
+
+.form-group select {
+  cursor: pointer;
+  position: relative;
+  z-index: 1002;
+  /* Asegurar que el texto seleccionado sea visible */
+  background-color: white !important;
+  color: #2c3e50 !important;
+  font-weight: 500 !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Específico para las opciones del select */
+.form-group select option {
+  background: white !important;
+  color: #495057 !important;
+  padding: 8px 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Mejorar la visibilidad del dropdown */
+.form-group select:focus option {
+  background: white !important;
+  color: #2c3e50 !important;
+}
+
+.form-group select option:hover {
+  background: #f8f9fa !important;
+  color: #007bff !important;
+}
+
+.form-group select option:checked,
+.form-group select option:selected {
+  background: #007bff !important;
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.form-group input::placeholder {
+  color: #adb5bd;
+}
+
+.cuenta-padre-info {
+  background: #e9ecef;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  color: #495057;
+  font-weight: 500;
+}
+
+.form-help {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.cuenta-info {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+  margin: 16px 0;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1001;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  background: #f8f9fa;
+  border-radius: 0 0 12px 12px;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #545b62;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(220,53,69,0.3);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Debug info */
 .debug-info {
-    margin-top: 20px;
+  font-size: 12px;
+  color: #6c757d;
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 20px;
+  border: 1px solid #dee2e6;
 }
 
-.debug-btn {
-    background: #ffc107;
-    color: #000;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
+/* Responsive */
+@media (max-width: 768px) {
+  .plan-cuentas-container {
+    padding: 10px;
+  }
+
+  .plan-cuentas-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .plan-cuentas-table {
     font-size: 12px;
-    font-weight: bold;
+  }
+
+  .plan-cuentas-table th,
+  .plan-cuentas-table td {
+    padding: 8px 5px;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
 }
 
-.debug-btn:hover {
-    background: #e0a800;
+/* Animaciones adicionales */
+.cuenta-row {
+  transition: all 0.2s ease;
 }
 
-/* Efectos visuales adicionales para mejor jerarquía */
-.cuenta-nivel-1 .cuenta-codigo {
-    font-size: 16px;
-    color: #1e3a8a;
-    font-weight: 900;
+.cuenta-padre:hover {
+  background-color: #e3f2fd !important;
 }
 
-.cuenta-nivel-2 .cuenta-codigo {
-    font-size: 15px;
-    color: #0c5460;
-    font-weight: 800;
+.cuenta-hija:hover {
+  background-color: #f1f8e9 !important;
 }
 
-.cuenta-nivel-3 .cuenta-codigo {
-    font-size: 14px;
-    color: #495057;
-    font-weight: 700;
+/* Estados de carga */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-.cuenta-nivel-4 .cuenta-codigo {
-    font-size: 13px;
-    color: #6c757d;
-    font-weight: 600;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.cuenta-nivel-5 .cuenta-codigo {
-    font-size: 12px;
-    color: #856404;
-    font-weight: 500;
+/* Tooltips mejorados */
+[title] {
+  position: relative;
+}
+
+/* Mejoras en accesibilidad */
+button:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+/* Estilos para validación */
+.form-group.error input,
+.form-group.error select {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220,53,69,0.1);
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.success-message {
+  color: #28a745;
+  font-size: 12px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Arreglo específico para el problema del dropdown */
+.form-group select {
+  /* Forzar que el select aparezca por encima de otros elementos */
+  position: relative !important;
+  z-index: 999 !important;
+}
+
+/* Cuando el select está abierto (focused), asegurar máxima prioridad */
+.form-group select:focus,
+.form-group select:active,
+.form-group select[aria-expanded="true"] {
+  z-index: 1000 !important;
+  position: relative !important;
+}
+
+/* Asegurar que el modal tenga el z-index correcto */
+.modal-overlay {
+  z-index: 998 !important;
+}
+
+.modal-content {
+  z-index: 999 !important;
 }

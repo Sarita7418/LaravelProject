@@ -44,6 +44,7 @@ Route::middleware([
     Route::post('/reset-password/enviar-codigo', [NewPasswordController::class, 'enviarCodigoReset']);
     Route::post('/reset-password/verificar-codigo', [NewPasswordController::class, 'verificarCodigoReset']);
     Route::post('/reset-password', [NewPasswordController::class, 'resetPassword']);
+    
     // Roles
     Route::get('/roles', [RolCrudController::class, 'index'])->middleware('auth:sanctum');
     Route::post('/roles', [RolCrudController::class, 'store'])->middleware('auth:sanctum');
@@ -75,7 +76,6 @@ Route::middleware([
     Route::put('/usuarios/{id}/reactivar', [UsuarioCrudController::class, 'reactivar'])->middleware('auth:sanctum');
     Route::get('/usuario/verificar-username', [UsuarioCrudController::class, 'verificarUsername']);
 
-
     // Protocolos
     Route::get('/protocolos', [ProtocoloController::class, 'index'])->middleware('auth:sanctum');
     Route::get('/protocolos/catalogos', [ProtocoloController::class, 'catalogos'])->middleware('auth:sanctum');
@@ -90,12 +90,22 @@ Route::middleware([
     Route::get('/menu/{id_usuario}', [NavegacionController::class, 'obtenerMenu'])->middleware('auth:sanctum');
     Route::get('/acciones/{id_usuario}', [NavegacionController::class, 'obtenerAcciones'])->middleware('auth:sanctum');
 
-    //plan cuentas
-    Route::get('/plan-cuentas', [PlanCuentasCrudController::class, 'index'])->middleware('auth:sanctum');
-Route::post('/plan-cuentas', [PlanCuentasCrudController::class, 'store'])->middleware('auth:sanctum');
-Route::put('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'update'])->middleware('auth:sanctum');
-Route::delete('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'destroy'])->middleware('auth:sanctum');
-Route::get('/plan-cuentas/inactivas', [PlanCuentasCrudController::class, 'inactivas'])->middleware('auth:sanctum');
-Route::put('/plan-cuentas/{id}/reactivar', [PlanCuentasCrudController::class, 'reactivar'])->middleware('auth:sanctum');
-Route::get('/plan-cuentas/padres', [PlanCuentasCrudController::class, 'getCuentasPadre'])->middleware('auth:sanctum');
+    // Plan cuentas - RUTAS CORREGIDAS (ORDEN IMPORTANTE)
+    // PRIMERO: Rutas específicas (más específicas primero)
+    Route::get('/plan-cuentas/todas', [PlanCuentasCrudController::class, 'indexTodas']);
+    Route::get('/plan-cuentas/inactivas', [PlanCuentasCrudController::class, 'inactivas']);
+    Route::get('/plan-cuentas/debug', [PlanCuentasCrudController::class, 'debug']);
+    Route::get('/plan-cuentas/padres', [PlanCuentasCrudController::class, 'getCuentasPadre']);
+    Route::get('/plan-cuentas/subdominios/{dominio}', [PlanCuentasCrudController::class, 'getSubdominiosPorDominio']);
+    Route::get('/plan-cuentas/subdominios', [PlanCuentasCrudController::class, 'getSubdominios']);
+    
+    // SEGUNDO: Rutas con parámetros variables
+    Route::put('/plan-cuentas/{id}/reactivar', [PlanCuentasCrudController::class, 'reactivar']);
+    
+    // TERCERO: Rutas CRUD básicas
+    Route::get('/plan-cuentas', [PlanCuentasCrudController::class, 'index']);
+    Route::post('/plan-cuentas', [PlanCuentasCrudController::class, 'store']);
+    Route::put('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'update']);
+    Route::delete('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'destroy']);
+    
 });
