@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +19,7 @@ class Empresa extends Model
         'municipio',
         'departamento',
         'estado',
+        'id_representante_legal',  // Nuevo campo
     ];
 
     // para que estado se maneje como bool y timestamps se auto-completen
@@ -30,4 +30,22 @@ class Empresa extends Model
     ];
 
     public $timestamps = true;
+
+    // Relación con el representante legal
+    public function representanteLegal()
+    {
+        return $this->belongsTo(Persona::class, 'id_representante_legal');
+    }
+
+    // Relación con las sucursales
+    public function sucursales()
+    {
+        return $this->hasMany(Sucursal::class, 'id_empresa');
+    }
+
+    // Relación con los logos
+    public function logos()
+    {
+        return $this->morphMany(Logo::class, 'entidad');
+    }
 }

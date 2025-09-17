@@ -5,14 +5,15 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void {
+    public function up(): void
+    {
         Schema::create('sucursales', function (Blueprint $table) {
             $table->id(); // PK: id
 
             // FK personalizada: id_empresa -> empresas.id
             $table->foreignId('id_empresa')
-                  ->constrained(table: 'empresas', column: 'id')
-                  ->cascadeOnDelete();
+                ->constrained(table: 'empresas', column: 'id')
+                ->cascadeOnDelete();
 
             $table->string('nombre');
             $table->string('codigo_sucursal')->default(0); // 0 = Casa Matriz (SIN)
@@ -20,11 +21,14 @@ return new class extends Migration {
             $table->string('telefono', 30)->nullable();
             $table->string('email', 150)->nullable();
             $table->boolean('estado')->default(true);
+            $table->foreignId('id_sucursal_padre')->nullable()->constrained('sucursales')->onDelete('cascade');
+            $table->foreignId('id_representante_legal')->nullable()->constrained('personas');
             $table->timestamps();
         });
     }
 
-    public function down(): void {
+    public function down(): void
+    {
         Schema::dropIfExists('sucursales');
     }
 };
