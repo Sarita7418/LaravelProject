@@ -16,6 +16,8 @@ use App\Http\Controllers\ProtocoloController;
 use App\Http\Controllers\Crud\PersonaCrudController;
 use App\Http\Controllers\Navegacion\NavegacionController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Crud\EmpresaCrudController;
+use App\Http\Controllers\Crud\SucursalCrudController;
 
 
 Route::post('/personas', [PersonaCrudController::class, 'store']);
@@ -73,6 +75,26 @@ Route::middleware([
     Route::get('/usuarios/inactivos', [UsuarioCrudController::class, 'inactivos'])->middleware('auth:sanctum');
     Route::put('/usuarios/{id}/reactivar', [UsuarioCrudController::class, 'reactivar'])->middleware('auth:sanctum');
     Route::get('/usuario/verificar-username', [UsuarioCrudController::class, 'verificarUsername']);
+
+    // CSRF lo sirve Sanctum automáticamente (no va en api.php)
+
+    // Empresas
+    Route::get('/empresas', [EmpresaCrudController::class, 'index'])->middleware('auth:sanctum');
+    Route::get('/empresas-inactivas', [EmpresaCrudController::class, 'inactivos'])->middleware('auth:sanctum');
+    Route::post('/empresas', [EmpresaCrudController::class, 'store'])->middleware('auth:sanctum');
+    Route::put('/empresas/{id}', [EmpresaCrudController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/empresas/{id}', [EmpresaCrudController::class, 'destroy'])->middleware('auth:sanctum');
+    Route::patch('/empresas/{id}/reactivar', [EmpresaCrudController::class, 'reactivar'])->middleware('auth:sanctum');
+
+
+    // Sucursales
+    Route::get('/sucursales', [SucursalCrudController::class, 'index'])->middleware('auth:sanctum');                 // ?empresa_id=#
+    Route::get('/sucursales-inactivas', [SucursalCrudController::class, 'inactivos'])->middleware('auth:sanctum');   // ?empresa_id=#
+    Route::post('/sucursales', [SucursalCrudController::class, 'store'])->middleware('auth:sanctum');
+    Route::get('/sucursales/{id}', [SucursalCrudController::class, 'show'])->middleware('auth:sanctum');
+    Route::put('/sucursales/{id}', [SucursalCrudController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/sucursales/{id}', [SucursalCrudController::class, 'destroy'])->middleware('auth:sanctum');
+    Route::patch('/sucursales/{id}/reactivar', [SucursalCrudController::class, 'reactivar'])->middleware('auth:sanctum');
 
 
     // Protocolos

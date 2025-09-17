@@ -8,10 +8,12 @@ import Usuarios from '../components/Usuarios'
 import Roles from '../components/Roles'
 import Personas from '../components/Personas'
 import Protocolos from '../components/Protocolos'
+import Empresas from '../components/Empresas'
+import Sucursales from '../components/Sucursales'
 import LayoutDashboard from '../components/LayoutDashboard'
 import PrivateRoute from './PrivateRoute'
 
-import Registro from '../components/Registro' 
+import Registro from '../components/Registro'
 
 export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -36,7 +38,7 @@ export default function Router() {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login"/>} />
+      <Route path="/" element={<Navigate to="/login" />} />
 
       <Route path="/login" element={
         <LoginConDosPasos
@@ -45,6 +47,7 @@ export default function Router() {
           setPendingTwoFactor={setPendingTwoFactor}
         />
       } />
+
 
       <Route path="/registro" element={<Registro />} />
 
@@ -101,6 +104,28 @@ export default function Router() {
               allowedPermisos={["/protocolos"]}
             >
               <Protocolos />
+            </PrivateRoute>
+          } />
+        )}
+        {permisos.includes("/dashboard/empresas") && (
+          <Route path="empresas" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/empresas"]}
+            >
+              <Empresas />
+            </PrivateRoute>
+          } />
+        )}
+        {permisos.includes("/dashboard/sucursales") && (
+          <Route path="sucursales" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/sucursales"]}
+            >
+              <Sucursales />
             </PrivateRoute>
           } />
         )}

@@ -51,5 +51,23 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 4,
         ]);
+
+        // Submenú: Empresas
+        MenuItem::create([
+            'item' => 'Empresas',
+            'ruta' => '/dashboard/empresas',
+            'id_padre' => 1,
+            'nivel' => 3,
+            'orden' => 5,
+        ]);
+
+        // Submenú: Sucursales
+        MenuItem::create([
+            'item' => 'Sucursales',
+            'ruta' => '/dashboard/sucursales',
+            'id_padre' => 1,
+            'nivel' => 3,
+            'orden' => 6,
+        ]);
     }
 }

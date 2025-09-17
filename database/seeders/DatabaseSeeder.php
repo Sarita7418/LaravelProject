@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
             EspecialidadSeeder::class,
             SubdominiosSeeder::class,
             AccionMenuItemRolSeeder::class,
-            AreaImpactoSeeder::class
+            AreaImpactoSeeder::class,
+            EmpresaSeeder::class,
         ]);
     }
 }
