@@ -9,7 +9,6 @@ function Empresas() {
   const [empresaEditando, setEmpresaEditando] = useState(null)
   const [mostrarInactivas, setMostrarInactivas] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [accionesPermitidas, setAccionesPermitidas] = useState([])
 
   const [formData, setFormData] = useState({
     razon_social: '',
@@ -20,10 +19,11 @@ function Empresas() {
     telefono: '',
     email: '',
     municipio: '',
-    departamento: ''
+    departamento: '',
+    id_representante_legal: '', // ID del representante legal
+    logo: null // Logo
   })
 
-  // ===== Helpers de depuración =====
   const logAxiosError = (error, label) => {
     if (error?.response) {
       console.error(`${label} -> RESPONSE ERROR`, {
@@ -38,62 +38,32 @@ function Empresas() {
     }
   }
 
+  const logRequest = (url, method, data) => {
+    console.log(`Request made to: ${url} with method: ${method}`);
+    console.log("Request data: ", data);
+  }
+
+  const logResponse = (url, status, responseData) => {
+    console.log(`Response from: ${url} with status: ${status}`);
+    console.log("Response data: ", responseData);
+  }
+
   const normalizeArray = (payload) =>
     Array.isArray(payload) ? payload : (payload?.data ?? [])
 
   useEffect(() => {
-    console.log('[Empresas] Componente montado')
-    console.log('[Empresas] axios baseURL:', axios.defaults.baseURL)
-
     axios.get('/sanctum/csrf-cookie').then(() => {
-      console.log('[Empresas] CSRF cookie OK')
       fetchEmpresas()
       fetchInactivas()
-      fetchAccionesUsuario()
     }).catch(err => logAxiosError(err, 'CSRF'))
   }, [])
 
-  // Logs cuando cambian los estados
-  useEffect(() => {
-    console.log('[Empresas] empresas (activas) en estado:', empresas)
-  }, [empresas])
-
-  useEffect(() => {
-    console.log('[Empresas] empresas inactivas en estado:', inactivas)
-  }, [inactivas])
-
-  // ===== Acciones / permisos =====
-  const fetchAccionesUsuario = async () => {
-    try {
-      const userRes = await axios.get('/api/user')
-      console.log('[Empresas] GET /api/user:', userRes.status, userRes.data)
-      const userId = userRes.data.id
-
-      const accionesRes = await axios.get(`/api/acciones/${userId}`)
-      console.log('[Empresas] GET /api/acciones/{id}:', accionesRes.status, accionesRes.data)
-
-      const accionesFiltradas = accionesRes.data
-        .filter(a => a.menu_item === 'Empresas')
-        .map(a => a.accion)
-
-      console.log('[Empresas] Acciones permitidas:', accionesFiltradas)
-      setAccionesPermitidas(accionesFiltradas)
-    } catch (error) {
-      logAxiosError(error, 'fetchAccionesUsuario')
-    }
-  }
-
-  const puede = accion => accionesPermitidas.includes(accion)
-
-  // ===== Fetch activos / inactivos (con logs) =====
   const fetchEmpresas = async () => {
     try {
+      logRequest('/api/empresas', 'GET', {})
       const res = await axios.get('/api/empresas')
-      console.log('[Empresas] GET /api/empresas -> status:', res.status)
-      console.log('[Empresas] payload bruto:', res.data)
-
+      logResponse('/api/empresas', res.status, res.data)
       const lista = normalizeArray(res.data)
-      console.log('[Empresas] normalizado (activas):', lista)
       setEmpresas(lista)
     } catch (error) {
       logAxiosError(error, 'fetchEmpresas')
@@ -103,12 +73,10 @@ function Empresas() {
 
   const fetchInactivas = async () => {
     try {
+      logRequest('/api/empresas-inactivas', 'GET', {})
       const res = await axios.get('/api/empresas-inactivas')
-      console.log('[Empresas] GET /api/empresas-inactivas -> status:', res.status)
-      console.log('[Empresas] payload bruto (inactivas):', res.data)
-
+      logResponse('/api/empresas-inactivas', res.status, res.data)
       const lista = normalizeArray(res.data)
-      console.log('[Empresas] normalizado (inactivas):', lista)
       setInactivas(lista)
     } catch (error) {
       logAxiosError(error, 'fetchInactivas')
@@ -116,18 +84,38 @@ function Empresas() {
     }
   }
 
-  // ===== CRUD (con logs) =====
+  const cambiarEstado = async (id, estado) => {
+    try {
+      const res = await axios.patch(`/api/empresas/${id}/reactivar`, { estado })
+      logResponse(`/api/empresas/${id}/reactivar`, res.status, res.data)
+      fetchEmpresas()
+      fetchInactivas()
+    } catch (error) {
+      logAxiosError(error, 'cambiarEstado')
+    }
+  }
+
   const handleInputChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
+  const handleFileChange = e => {
+    setFormData({ ...formData, logo: e.target.files[0] })
+  }
+
   const crearEmpresa = async () => {
     setLoading(true)
-    console.log('[Empresas] POST /api/empresas -> body:', { ...formData, estado: 1 })
+    const formDataWithFile = new FormData()
+    for (const [key, value] of Object.entries(formData)) {
+      formDataWithFile.append(key, value)
+    }
+
+    logRequest('/api/empresas', 'POST', formData)
     try {
-      const res = await axios.post('/api/empresas', { ...formData, estado: 1 })
-      console.log('[Empresas] Respuesta crear:', res.status, res.data)
-      resetFormulario()
+      const res = await axios.post('/api/empresas', formDataWithFile, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      logResponse('/api/empresas', res.status, res.data)
       fetchEmpresas()
     } catch (error) {
       logAxiosError(error, 'crearEmpresa')
@@ -139,11 +127,17 @@ function Empresas() {
   const actualizarEmpresa = async () => {
     if (!empresaEditando) return
     setLoading(true)
-    console.log('[Empresas] PUT /api/empresas/' + empresaEditando, '-> body:', formData)
+    const formDataWithFile = new FormData()
+    for (const [key, value] of Object.entries(formData)) {
+      formDataWithFile.append(key, value)
+    }
+
+    logRequest(`/api/empresas/${empresaEditando}`, 'PUT', formData)
     try {
-      const res = await axios.put(`/api/empresas/${empresaEditando}`, formData)
-      console.log('[Empresas] Respuesta actualizar:', res.status, res.data)
-      resetFormulario()
+      const res = await axios.put(`/api/empresas/${empresaEditando}`, formDataWithFile, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      logResponse(`/api/empresas/${empresaEditando}`, res.status, res.data)
       fetchEmpresas()
     } catch (error) {
       logAxiosError(error, 'actualizarEmpresa')
@@ -155,9 +149,9 @@ function Empresas() {
   const eliminarEmpresa = async id => {
     if (!window.confirm('¿Estás seguro de que quieres desactivar esta empresa?')) return
     try {
-      console.log('[Empresas] DELETE /api/empresas/' + id)
+      logRequest(`/api/empresas/${id}`, 'DELETE', {})
       const res = await axios.delete(`/api/empresas/${id}`)
-      console.log('[Empresas] Respuesta eliminar:', res.status, res.data)
+      logResponse(`/api/empresas/${id}`, res.status, res.data)
       fetchEmpresas()
       fetchInactivas()
     } catch (error) {
@@ -168,9 +162,9 @@ function Empresas() {
   const reactivarEmpresa = async id => {
     if (!window.confirm('¿Deseas reactivar esta empresa?')) return
     try {
-      console.log('[Empresas] PATCH /api/empresas/' + id + '/reactivar')
+      logRequest(`/api/empresas/${id}/reactivar`, 'PATCH', { estado: true })
       const res = await axios.patch(`/api/empresas/${id}/reactivar`)
-      console.log('[Empresas] Respuesta reactivar:', res.status, res.data)
+      logResponse(`/api/empresas/${id}/reactivar`, res.status, res.data)
       fetchEmpresas()
       fetchInactivas()
     } catch (error) {
@@ -179,7 +173,6 @@ function Empresas() {
   }
 
   const iniciarEdicion = empresa => {
-    console.log('[Empresas] Editando empresa:', empresa)
     setFormVisible(true)
     setEmpresaEditando(empresa.id)
     setFormData({
@@ -191,7 +184,8 @@ function Empresas() {
       telefono: empresa.telefono,
       email: empresa.email,
       municipio: empresa.municipio,
-      departamento: empresa.departamento
+      departamento: empresa.departamento,
+      id_representante_legal: empresa.id_representante_legal, // Asignar representante legal
     })
   }
 
@@ -207,7 +201,9 @@ function Empresas() {
       telefono: '',
       email: '',
       municipio: '',
-      departamento: ''
+      departamento: '',
+      id_representante_legal: '',
+      logo: null
     })
   }
 
@@ -216,113 +212,67 @@ function Empresas() {
   return (
     <div className="empresas-container">
       <h2 className="empresas-title">Empresas</h2>
-
       <div className="toggle-container">
-        <button
-          className={`toggle-btn ${!mostrarInactivas ? 'active' : ''}`}
-          onClick={() => setMostrarInactivas(false)}
-        >
-          Activas ({empresas.length})
-        </button>
-        <button
-          className={`toggle-btn ${mostrarInactivas ? 'active' : ''}`}
-          onClick={() => setMostrarInactivas(true)}
-        >
-          Inactivas ({inactivas.length})
-        </button>
+        <button className={`toggle-btn ${!mostrarInactivas ? 'active' : ''}`} onClick={() => setMostrarInactivas(false)}>Activas</button>
+        <button className={`toggle-btn ${mostrarInactivas ? 'active' : ''}`} onClick={() => setMostrarInactivas(true)}>Inactivas</button>
       </div>
 
-      <table className="empresas-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Razón Social</th>
-            <th>NIT</th>
-            <th>Dirección Fiscal</th>
-            <th>Teléfono</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {empresasMostradas.map(e => (
-            <tr key={e.id}>
-              <td>{e.id}</td>
-              <td>{e.razon_social}</td>
-              <td>{e.nit}</td>
-              <td>{e.direccion_fiscal}</td>
-              <td>{e.telefono}</td>
-              <td>
-                <span className={`status ${e.estado ? 'active' : 'inactive'}`}>
-                  {e.estado ? 'Activo' : 'Inactivo'}
-                </span>
-              </td>
-              <td>
-                {mostrarInactivas ? (
-                  puede('reactivar') && (
-                    <button className="reactivate-btn" onClick={() => reactivarEmpresa(e.id)}>
-                      Reactivar
-                    </button>
-                  )
-                ) : (
-                  <>
-                    {puede('editar') && (
-                      <button className="edit-btn" onClick={() => iniciarEdicion(e)}>
-                        Editar
-                      </button>
-                    )}
-                    {puede('eliminar') && (
-                      <button className="delete-btn" onClick={() => eliminarEmpresa(e.id)}>
-                        Desactivar
-                      </button>
-                    )}
-                  </>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="empresas-cards">
+        {empresasMostradas.map(empresa => (
+          <div className="empresa-card" key={empresa.id}>
+            {empresa.logo && <img className="empresa-logo" src={`data:image/png;base64,${empresa.logo}`} alt="Logo" />}
+            <h3>{empresa.razon_social}</h3>
+            <p>{empresa.nombre_comercial}</p>
+            <p>{empresa.nit}</p>
+            <p>{empresa.direccion_fiscal}</p>
+            <p>{empresa.telefono}</p>
+            <p>{empresa.email}</p>
+            {empresa.estado === true ? (
+              <>
+                <button onClick={() => iniciarEdicion(empresa)}>Editar</button>
+                <button onClick={() => eliminarEmpresa(empresa.id)}>Desactivar</button>
+              </>
+            ) : (
+              <button onClick={() => reactivarEmpresa(empresa.id)}>Reactivar</button>
+            )}
+          </div>
+        ))}
+      </div>
 
-      {!mostrarInactivas && !formVisible && puede('crear') ? (
-        <button className="add-btn" onClick={() => setFormVisible(true)}>
-          Añadir Empresa
-        </button>
-      ) : !mostrarInactivas && formVisible ? (
-        <div className="form-container">
-          <label className="form-label">Razón Social</label>
-          <input className="form-input" name="razon_social" value={formData.razon_social} onChange={handleInputChange} />
-          <label className="form-label">Nombre Comercial</label>
-          <input className="form-input" name="nombre_comercial" value={formData.nombre_comercial} onChange={handleInputChange} />
-          <label className="form-label">NIT</label>
-          <input className="form-input" name="nit" value={formData.nit} onChange={handleInputChange} />
-          <label className="form-label">Matrícula Comercio</label>
-          <input className="form-input" name="matricula_comercio" value={formData.matricula_comercio} onChange={handleInputChange} />
-          <label className="form-label">Dirección Fiscal</label>
-          <input className="form-input" name="direccion_fiscal" value={formData.direccion_fiscal} onChange={handleInputChange} />
-          <label className="form-label">Teléfono</label>
-          <input className="form-input" name="telefono" value={formData.telefono} onChange={handleInputChange} />
-          <label className="form-label">Correo</label>
-          <input className="form-input" type="email" name="email" value={formData.email} onChange={handleInputChange} />
-          <label className="form-label">Municipio</label>
-          <input className="form-input" name="municipio" value={formData.municipio} onChange={handleInputChange} />
-          <label className="form-label">Departamento</label>
-          <input className="form-input" name="departamento" value={formData.departamento} onChange={handleInputChange} />
-
-          <div className="form-actions">
-            <button
-              className="create-btn"
-              onClick={empresaEditando ? actualizarEmpresa : crearEmpresa}
-              disabled={loading}
-            >
-              {loading ? (empresaEditando ? 'Actualizando...' : 'Creando...') : (empresaEditando ? 'Actualizar' : 'Crear Empresa')}
-            </button>
-            <button className="cancel-btn" onClick={resetFormulario}>
-              Cancelar
-            </button>
+      {formVisible && (
+        <div className="form-overlay">
+          <div className="form-container">
+            <label>Razón Social</label>
+            <input type="text" name="razon_social" value={formData.razon_social} onChange={handleInputChange} />
+            <label>Nombre Comercial</label>
+            <input type="text" name="nombre_comercial" value={formData.nombre_comercial} onChange={handleInputChange} />
+            <label>NIT</label>
+            <input type="text" name="nit" value={formData.nit} onChange={handleInputChange} />
+            <label>Matrícula Comercio</label>
+            <input type="text" name="matricula_comercio" value={formData.matricula_comercio} onChange={handleInputChange} />
+            <label>Dirección Fiscal</label>
+            <input type="text" name="direccion_fiscal" value={formData.direccion_fiscal} onChange={handleInputChange} />
+            <label>Teléfono</label>
+            <input type="text" name="telefono" value={formData.telefono} onChange={handleInputChange} />
+            <label>Correo</label>
+            <input type="email" name="email" value={formData.email} onChange={handleInputChange} />
+            <label>Municipio</label>
+            <input type="text" name="municipio" value={formData.municipio} onChange={handleInputChange} />
+            <label>Departamento</label>
+            <input type="text" name="departamento" value={formData.departamento} onChange={handleInputChange} />
+            <label>Representante Legal</label>
+            <input type="text" name="id_representante_legal" value={formData.id_representante_legal} onChange={handleInputChange} />
+            <label>Logo</label>
+            <input type="file" name="logo" onChange={handleFileChange} />
+            <div className="form-actions">
+              <button onClick={empresaEditando ? actualizarEmpresa : crearEmpresa}>
+                {loading ? 'Cargando...' : 'Crear Empresa'}
+              </button>
+              <button onClick={resetFormulario}>Cancelar</button>
+            </div>
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   )
 }

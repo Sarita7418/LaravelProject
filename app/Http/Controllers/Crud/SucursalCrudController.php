@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Http\Controllers\Crud;
 
 use App\Models\Sucursal;
+use App\Models\Persona;  // Importamos el modelo Persona
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
@@ -35,12 +35,21 @@ class SucursalCrudController extends Controller
             'direccion'       => ['required', 'string', 'max:255'],
             'telefono'        => ['nullable', 'string', 'max:30'],
             'email'           => ['nullable', 'string', 'max:150'],
+            'id_sucursal_padre' => ['nullable', 'exists:sucursales,id'], // Validar que la sucursal madre exista
+            'id_representante_legal' => ['nullable', 'exists:personas,id'], // Validar que el representante legal exista
         ]);
 
         try {
             \DB::beginTransaction();
 
+            // Crear la sucursal
             $sucursal = Sucursal::create(array_merge($data, ['estado' => 1]));
+
+            // Si se pasa un representante legal, lo asociamos
+            if ($request->has('id_representante_legal')) {
+                $sucursal->id_representante_legal = $request->id_representante_legal;
+                $sucursal->save();
+            }
 
             \DB::commit();
 
@@ -95,9 +104,17 @@ class SucursalCrudController extends Controller
             'telefono'        => ['nullable', 'string', 'max:30'],
             'email'           => ['nullable', 'string', 'max:150'],
             'estado'          => ['nullable', 'boolean'],
+            'id_sucursal_padre' => ['nullable', 'exists:sucursales,id'], // Validar la sub-sucursal
+            'id_representante_legal' => ['nullable', 'exists:personas,id'], // Validar el representante legal
         ]);
 
         $sucursal->update($data);
+
+        // Si se pasa un nuevo representante legal, lo actualizamos
+        if ($request->has('id_representante_legal')) {
+            $sucursal->id_representante_legal = $request->id_representante_legal;
+            $sucursal->save();
+        }
 
         return response()->json([
             'message'  => 'Sucursal actualizada correctamente',

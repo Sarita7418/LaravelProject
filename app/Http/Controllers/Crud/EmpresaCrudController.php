@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Http\Controllers\Crud;
 
 use App\Models\Empresa;
+use App\Models\Persona; // Agregamos el modelo Persona
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
@@ -10,11 +10,6 @@ use Illuminate\Database\QueryException;
 
 class EmpresaCrudController extends Controller
 {
-    /**
-     * Mostrar todas las empresas (puedes dejar paginate o cambiar a get()).
-     */
-
-
     /**
      * Crear una nueva empresa.
      */
@@ -27,18 +22,25 @@ class EmpresaCrudController extends Controller
             'matricula_comercio' => ['nullable', 'string', 'max:50'],
             'direccion_fiscal' => ['required', 'string', 'max:255'],
             'telefono' => ['nullable', 'string', 'max:30'],
-            // email ahora es STRING (no rule "email")
             'email' => ['nullable', 'string', 'max:150'],
             'municipio' => ['nullable', 'string', 'max:120'],
             'departamento' => ['nullable', 'string', 'max:120'],
+            'id_representante_legal' => ['nullable', 'exists:personas,id'], // Validamos el representante legal
         ]);
 
         try {
             \DB::beginTransaction();
 
+            // Crear la empresa
             $empresa = Empresa::create(array_merge($data, [
                 'estado' => 1,
             ]));
+
+            // Si se pasa un representante legal, lo asociamos
+            if ($request->has('id_representante_legal')) {
+                $empresa->id_representante_legal = $request->id_representante_legal;
+                $empresa->save();
+            }
 
             \DB::commit();
 
@@ -64,14 +66,6 @@ class EmpresaCrudController extends Controller
     }
 
     /**
-     * Mostrar detalles.
-     */
-    public function show(Empresa $empresa)
-    {
-        return $empresa;
-    }
-
-    /**
      * Actualizar empresa.
      */
     public function update(Request $request, $id)
@@ -92,12 +86,20 @@ class EmpresaCrudController extends Controller
             'municipio' => ['nullable', 'string', 'max:120'],
             'departamento' => ['nullable', 'string', 'max:120'],
             'estado' => ['nullable', 'boolean'],
+            'id_representante_legal' => ['nullable', 'exists:personas,id'], // Validar el representante legal
         ]);
 
+        // Actualizamos los datos de la empresa
         $empresa->update($data);
+
+        // Si se pasa un nuevo representante legal, lo actualizamos
+        if ($request->has('id_representante_legal')) {
+            $empresa->id_representante_legal = $request->id_representante_legal;
+            $empresa->save();
+        }
+
         return $empresa;
     }
-
 
     /**
      * Desactivar (eliminación lógica).
@@ -160,6 +162,4 @@ class EmpresaCrudController extends Controller
         $empresa->save();
         return response()->json(['message' => 'Empresa reactivada correctamente']);
     }
-
-
 }
