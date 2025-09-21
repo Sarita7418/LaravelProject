@@ -8,10 +8,11 @@ import Usuarios from '../components/Usuarios'
 import Roles from '../components/Roles'
 import Personas from '../components/Personas'
 import Protocolos from '../components/Protocolos'
+import PlanCuentas from '../components/PlanCuentas'   // 👈 IMPORTAR AQUÍ
 import LayoutDashboard from '../components/LayoutDashboard'
 import PrivateRoute from './PrivateRoute'
 
-import Registro from '../components/Registro' 
+import Registro from '../components/Registro'
 import Reportes from '../components/Reportes'
 
 export default function Router() {
@@ -37,7 +38,7 @@ export default function Router() {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login"/>} />
+      <Route path="/" element={<Navigate to="/login" />} />
 
       <Route path="/login" element={
         <LoginConDosPasos
@@ -83,6 +84,7 @@ export default function Router() {
             </PrivateRoute>
           } />
         )}
+
         {permisos.includes("/dashboard/personas") && (
           <Route path="personas" element={
             <PrivateRoute
@@ -94,6 +96,7 @@ export default function Router() {
             </PrivateRoute>
           } />
         )}
+
         {permisos.includes("/dashboard/protocolos") && (
           <Route path="protocolos" element={
             <PrivateRoute
@@ -113,6 +116,18 @@ export default function Router() {
               allowedPermisos={["/reportes"]}
             >
               <Reportes />
+            </PrivateRoute>
+          } />
+        )}
+
+        {permisos.includes("/dashboard/plan-cuentas") && (
+          <Route path="plan-cuentas" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/plan-cuentas"]}
+            >
+              <PlanCuentas />
             </PrivateRoute>
           } />
         )}

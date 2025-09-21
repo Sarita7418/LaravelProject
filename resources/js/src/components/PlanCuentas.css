@@ -1,0 +1,626 @@
+/* PlanCuentas.css */
+.plan-cuentas-container {
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.plan-cuentas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.plan-cuentas-title {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.add-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.add-btn:hover {
+  background: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.tabla-container {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.plan-cuentas-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.plan-cuentas-table thead {
+  background: #343a40;
+  color: white;
+}
+
+.plan-cuentas-table th {
+  padding: 15px 10px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.plan-cuentas-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: middle;
+}
+
+.cuenta-row {
+  transition: background-color 0.2s ease;
+}
+
+.cuenta-row:hover {
+  background-color: #f1f3f4;
+}
+
+.cuenta-nivel-1 {
+  background-color: #fff;
+  font-weight: 600;
+}
+
+.cuenta-nivel-2 {
+  background-color: #f8f9fa;
+}
+
+.cuenta-nivel-3 {
+  background-color: #e9ecef;
+}
+
+.cuenta-nivel-4 {
+  background-color: #dee2e6;
+}
+
+.cuenta-nivel-5 {
+  background-color: #ced4da;
+}
+
+.cuenta-nivel-6 {
+  background-color: #adb5bd;
+}
+
+.cuenta-codigo-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  min-width: 20px;
+}
+
+.expand-btn:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.expand-btn.expanded {
+  color: #007bff;
+}
+
+.cuenta-codigo {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #495057;
+}
+
+.cuenta-descripcion {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.cuenta-tipo,
+.cuenta-grupo,
+.cuenta-ajuste,
+.cuenta-presupuesto {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.cuenta-nivel-col {
+  font-size: 12px;
+  color: #868e96;
+  font-weight: 500;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.acciones-cell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.edit-btn,
+.delete-btn,
+.add-child-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 8px;
+  margin: 0 2px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.edit-btn:hover {
+  background: #e7f3ff;
+  transform: scale(1.1);
+}
+
+.delete-btn:hover {
+  background: #ffebee;
+  transform: scale(1.1);
+}
+
+.add-child-btn {
+  color: #28a745;
+}
+
+.add-child-btn:hover {
+  background: #d4edda;
+  transform: scale(1.1);
+}
+
+.no-actions {
+  color: #adb5bd;
+  font-style: italic;
+}
+
+/* Estilos para modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalAppear 0.3s ease-out;
+  position: relative;
+  z-index: 1001;
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 12px 12px 0 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #495057;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: white !important;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1002;
+  color: #495057 !important;
+  font-weight: 500;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+  z-index: 1003;
+}
+
+.form-group select {
+  cursor: pointer;
+  position: relative;
+  z-index: 1002;
+  /* Asegurar que el texto seleccionado sea visible */
+  background-color: white !important;
+  color: #2c3e50 !important;
+  font-weight: 500 !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Específico para las opciones del select */
+.form-group select option {
+  background: white !important;
+  color: #495057 !important;
+  padding: 8px 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Mejorar la visibilidad del dropdown */
+.form-group select:focus option {
+  background: white !important;
+  color: #2c3e50 !important;
+}
+
+.form-group select option:hover {
+  background: #f8f9fa !important;
+  color: #007bff !important;
+}
+
+.form-group select option:checked,
+.form-group select option:selected {
+  background: #007bff !important;
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.form-group input::placeholder {
+  color: #adb5bd;
+}
+
+.cuenta-padre-info {
+  background: #e9ecef;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  color: #495057;
+  font-weight: 500;
+}
+
+.form-help {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.cuenta-info {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+  margin: 16px 0;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1001;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  background: #f8f9fa;
+  border-radius: 0 0 12px 12px;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #545b62;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(220,53,69,0.3);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Debug info */
+.debug-info {
+  font-size: 12px;
+  color: #6c757d;
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 20px;
+  border: 1px solid #dee2e6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .plan-cuentas-container {
+    padding: 10px;
+  }
+
+  .plan-cuentas-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .plan-cuentas-table {
+    font-size: 12px;
+  }
+
+  .plan-cuentas-table th,
+  .plan-cuentas-table td {
+    padding: 8px 5px;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer button {
+    width: 100%;
+  }
+}
+
+/* Animaciones adicionales */
+.cuenta-row {
+  transition: all 0.2s ease;
+}
+
+.cuenta-padre:hover {
+  background-color: #e3f2fd !important;
+}
+
+.cuenta-hija:hover {
+  background-color: #f1f8e9 !important;
+}
+
+/* Estados de carga */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Tooltips mejorados */
+[title] {
+  position: relative;
+}
+
+/* Mejoras en accesibilidad */
+button:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+/* Estilos para validación */
+.form-group.error input,
+.form-group.error select {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220,53,69,0.1);
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.success-message {
+  color: #28a745;
+  font-size: 12px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Arreglo específico para el problema del dropdown */
+.form-group select {
+  /* Forzar que el select aparezca por encima de otros elementos */
+  position: relative !important;
+  z-index: 999 !important;
+}
+
+/* Cuando el select está abierto (focused), asegurar máxima prioridad */
+.form-group select:focus,
+.form-group select:active,
+.form-group select[aria-expanded="true"] {
+  z-index: 1000 !important;
+  position: relative !important;
+}
+
+/* Asegurar que el modal tenga el z-index correcto */
+.modal-overlay {
+  z-index: 998 !important;
+}
+
+.modal-content {
+  z-index: 999 !important;
+}

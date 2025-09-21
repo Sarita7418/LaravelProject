@@ -20,11 +20,12 @@ class AccionMenuItemRolSeeder extends Seeder
         $menuRoles      = MenuItem::where('ruta', '/dashboard/roles')->first();
         $menuPersonas   = MenuItem::where('ruta', '/dashboard/personas')->first();
         $menuProtocolos = MenuItem::where('ruta', '/dashboard/protocolos')->first();
+        $menuPlanCuentas = MenuItem::where('ruta', '/dashboard/plan-cuentas')->first();
 
         $acciones = Accion::all();
 
         // ADMIN - Todas las acciones en todos los menús
-        foreach ([$menuUsuarios, $menuRoles, $menuPersonas, $menuProtocolos] as $menu) {
+        foreach ([$menuUsuarios, $menuRoles, $menuPersonas, $menuProtocolos, $menuPlanCuentas] as $menu) {
             foreach ($acciones as $accion) {
                 DB::table('accion_menu_item_rol')->updateOrInsert(
                     [

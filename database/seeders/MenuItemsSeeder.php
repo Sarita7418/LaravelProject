@@ -60,5 +60,13 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 5,
         ]);
+        // Submenú: plan_cuentas
+        MenuItem::create([
+            'item' => 'Plan de Cuentas',  
+            'ruta' => '/dashboard/plan-cuentas',
+            'id_padre' => $admin->id,
+            'nivel' => 3,
+            'orden' => 5,
+]);
     }
 }
