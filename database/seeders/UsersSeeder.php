@@ -42,7 +42,7 @@ class UsersSeeder extends Seeder
                 'telefono' => '77734567',
             ],
             [
-                'name' => 'MochiCausaGaaa!',
+                'name' => 'MochiCausaGaaa',
                 'email' => 'maumenachotri224@gmail.com',
                 'rol' => 1,
                 'nombres' => 'Mauricio David',
