@@ -130,7 +130,7 @@ export default function Router() {
               <PlanCuentas />
             </PrivateRoute>
           } />
-        )}
+        )}git add .
       </Route>
 
       <Route path="/unauthorized" element={<h1>No autorizado</h1>} />
