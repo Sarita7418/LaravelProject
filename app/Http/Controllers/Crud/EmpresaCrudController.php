@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
 
 class EmpresaCrudController extends Controller
 {
@@ -86,20 +87,32 @@ class EmpresaCrudController extends Controller
             'municipio' => ['nullable', 'string', 'max:120'],
             'departamento' => ['nullable', 'string', 'max:120'],
             'estado' => ['nullable', 'boolean'],
-            'id_representante_legal' => ['nullable', 'exists:personas,id'], // Validar el representante legal
+            'id_representante_legal' => ['nullable', 'integer', 'exists:personas,id'],
         ]);
 
-        // Actualizamos los datos de la empresa
-        $empresa->update($data);
+        // (opcional) evita sobreescribir con nulls involuntarios:
+        // $data = array_filter($data, fn($v) => !is_null($v));
 
-        // Si se pasa un nuevo representante legal, lo actualizamos
-        if ($request->has('id_representante_legal')) {
-            $empresa->id_representante_legal = $request->id_representante_legal;
+        \Log::info('UPDATE payload validado', $data);
+
+        // fill + dirty + save
+        $empresa->fill($data);
+
+        $dirty = $empresa->getDirty(); // qué campos realmente cambian
+        \Log::info('Atributos que cambiarán', $dirty);
+
+        // Si no hay cambios, igual retornamos el objeto
+        if (!empty($dirty)) {
             $empresa->save();
+        } else {
+            \Log::info('No hay cambios detectados por Eloquent (getDirty vacío).');
         }
 
-        return $empresa;
+        // Devuelve el registro fresco desde la BD
+        return response()->json($empresa->fresh());
     }
+
+
 
     /**
      * Desactivar (eliminación lógica).

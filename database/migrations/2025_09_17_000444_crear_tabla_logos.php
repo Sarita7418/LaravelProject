@@ -12,17 +12,18 @@ return new class extends Migration {
     {
         Schema::create('logos', function (Blueprint $table) {
             $table->id();
-            // id_entidad puede referirse a cualquier entidad (empresa o sucursal)
             $table->unsignedBigInteger('id_entidad');
-            $table->string('tipo_entidad');  // 'empresa' o 'sucursal'
-            $table->binary('logo');  // Logo almacenado en formato binario
+            $table->string('tipo_entidad');
+            $table->binary('logo'); // se crea como BLOB
             $table->timestamps();
         });
-    }
 
+        // Convertir inmediatamente a MEDIUMBLOB (MySQL)
+        DB::statement('ALTER TABLE `logos` MODIFY `logo` MEDIUMBLOB');
+    }
 
     public function down(): void
     {
-
+        Schema::dropIfExists('logos');
     }
 };

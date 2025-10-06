@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -7,17 +6,26 @@ use Illuminate\Database\Eloquent\Model;
 class Logo extends Model
 {
     protected $table = 'logos';
+    public $timestamps = true;
 
-    // Campos permitidos para create()/update()
     protected $fillable = [
         'id_entidad',
-        'tipo_entidad',
-        'logo',  // Este campo almacenará la imagen en formato binario
+        'tipo_entidad', // 'empresa' | 'sucursal'
+        'logo',         // BLOB
     ];
 
-    // Relación polimórfica: el logo puede pertenecer a una empresa o sucursal
+    // Si quieres, puedes declarar el cast a "binary" (opcional)
+    // protected $casts = ['logo' => 'binary'];
+
+    // Si usas la relación para index():
+    // La tabla no usa los nombres morfológicos por defecto,
+    // así que declara morphTo con columnas personalizadas:
     public function entidad()
     {
-        return $this->morphTo();
+        return $this->morphTo(
+            name: null,
+            type: 'tipo_entidad',
+            id: 'id_entidad'
+        );
     }
 }
