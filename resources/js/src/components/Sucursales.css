@@ -1,189 +1,220 @@
+/* ===== Paleta (omite si ya tienes vars globales) ===== */
+:root {
+  --brand-primary: #000359;   /* azul profundo */
+  --brand-accent:  #FFFD55;   /* amarillo */
+  --bg:            #ffffff;   /* blanco predominante */
+  --text:          #0a0a0a;
+  --muted:         #6b7280;
+  --ring:          0 0 0 4px rgba(255,253,85,0.35);
+  --shadow:        0 12px 28px rgba(0,3,89,0.12);
+  --border:        1px solid rgba(0,3,89,0.12);
+}
+
+/* ===== Contenedor ===== */
 .sucursales-container {
   width: 95%;
   margin: 40px auto;
-  padding: 20px;
-  background-color: #1e1e1e;
-  border-radius: 8px;
-  color: #fff;
+  padding: 24px;
+  background-color: var(--bg);
+  border-radius: 24px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  border: var(--border);
 }
 
+/* ===== Título ===== */
 .sucursales-title {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   margin-bottom: 20px;
   text-align: center;
+  font-weight: 800;
+  color: var(--brand-primary);
 }
 
+/* ===== Filtros Activas/Inactivas ===== */
 .toggle-container {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
   justify-content: center;
 }
-
 .toggle-btn {
-  padding: 8px 16px;
-  border: 2px solid #3b82f6;
-  background: #2a2a2a;
-  color: #3b82f6;
-  border-radius: 4px;
+  padding: 10px 16px;
+  border: 2px solid var(--brand-primary);
+  background: var(--bg);
+  color: var(--brand-primary);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  font-weight: 700;
 }
-
-.toggle-btn.active {
-  background: #3b82f6;
-  color: white;
-}
-
 .toggle-btn:hover {
-  background: #2563eb;
-  color: white;
-  border-color: #2563eb;
+  background: var(--brand-accent);
+  color: var(--brand-primary);
+}
+.toggle-btn.active {
+  background: var(--brand-primary);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(0,3,89,0.18);
 }
 
+/* ===== Tabla ===== */
 .sucursales-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  border: var(--border);
 }
-
 .sucursales-table th,
 .sucursales-table td {
   padding: 12px 16px;
   text-align: left;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid rgba(0,3,89,0.10);
+  color: var(--text);
+  font-size: 14px;
 }
-
 .sucursales-table th {
-  background-color: #2b2b2b;
-  font-weight: bold;
+  background: rgba(255,253,85,0.25);
+  font-weight: 800;
+  color: #000;
+}
+.sucursales-table tr:hover td {
+  background: rgba(255,253,85,0.12);
 }
 
+/* ===== Chips de estado ===== */
 .status {
-  padding: 4px 8px;
-  border-radius: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 800;
   text-transform: uppercase;
+  letter-spacing: .02em;
+  border: 2px solid transparent;
 }
-
 .status.active {
-  background: #065f46;
-  color: #10b981;
-  border: 1px solid #10b981;
+  background: #E8FFF3;
+  color: #047857;
+  border-color: #10b981;
 }
-
 .status.inactive {
-  background: #7f1d1d;
-  color: #ef4444;
-  border: 1px solid #ef4444;
+  background: #FFF5F5;
+  color: #b91c1c;
+  border-color: #ef4444;
 }
 
+/* ===== Botones (scope local) ===== */
 .delete-btn,
 .add-btn,
 .create-btn,
-.cancel-btn {
-  background-color: #333;
-  color: white;
-  border: none;
-  padding: 8px 14px;
+.cancel-btn,
+.reactivate-btn,
+.edit-btn {
+  border: 2px solid transparent;
+  padding: 10px 14px;
   margin-right: 8px;
-  border-radius: 4px;
+  border-radius: 14px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.2s ease;
+  font-weight: 800;
+  font-size: 14px;
+  box-shadow: 0 6px 14px rgba(0,3,89,0.08);
 }
 
-.delete-btn:hover {
-  background-color: #a11c1c;
+/* Primario (crear/editar) */
+.create-btn,
+.edit-btn {
+  background-color: var(--brand-primary);
+  color: #ffffff;
 }
+.create-btn:hover,
+.edit-btn:hover { background-color: #00023f; }
 
-.add-btn {
-  background-color: #15803d;
+/* Secundario (agregar/reactivar) con acento */
+.add-btn,
+.reactivate-btn {
+  background-color: var(--brand-accent);
+  color: var(--brand-primary);
+  border-color: var(--brand-primary);
   margin-top: 10px;
 }
+.add-btn:hover,
+.reactivate-btn:hover { filter: brightness(0.95); }
 
-.add-btn:hover {
-  background-color: #166534;
+/* Peligro (eliminar) */
+.delete-btn {
+  background: #ffffff;
+  color: #b91c1c;
+  border-color: #b91c1c;
+}
+.delete-btn:hover {
+  background: #b91c1c;
+  color: #ffffff;
 }
 
-.create-btn {
-  background-color: #2563eb;
-}
-
-.create-btn:hover {
-  background-color: #1d4ed8;
-}
-
+/* Neutro (cancelar) */
 .cancel-btn {
-  background-color: #6b7280;
+  background: #e5e7eb;
+  color: #111827;
+  border-color: rgba(0,3,89,0.12);
 }
+.cancel-btn:hover { background: #d1d5db; }
 
-.cancel-btn:hover {
-  background-color: #4b5563;
-}
-
-.reactivate-btn {
-  background: #15803d;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  margin-right: 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.3s ease;
-}
-
-.reactivate-btn:hover {
-  background: #166534;
-}
-
-.form-container {
-  margin-top: 30px;
-}
-
+/* ===== Formulario ===== */
+.form-container { margin-top: 24px; }
 .form-label {
   display: block;
   margin-bottom: 6px;
+  font-weight: 700;
+  color: var(--text);
 }
-
-.form-input {
-  padding: 8px;
+.form-input,
+.form-select {
+  padding: 12px 14px;
   width: 100%;
-  border-radius: 4px;
-  border: 1px solid #444;
+  border-radius: 14px;
+  border: 2px solid rgba(0,3,89,0.18);
   margin-bottom: 16px;
-  background-color: #2a2a2a;
-  color: white;
+  background-color: #ffffff;
+  color: var(--text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-size: 15px;
+}
+.form-input::placeholder { color: var(--muted); }
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: var(--ring);
 }
 
+/* Acciones del formulario */
 .form-actions {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
-.edit-btn {
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  margin-right: 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+/* ===== Accesibilidad: focus visible ===== */
+.toggle-btn:focus-visible,
+.delete-btn:focus-visible,
+.add-btn:focus-visible,
+.create-btn:focus-visible,
+.cancel-btn:focus-visible,
+.reactivate-btn:focus-visible,
+.edit-btn:focus-visible,
+.form-input:focus-visible,
+.form-select:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 
-.edit-btn:hover {
-  background-color: #2563eb;
-}
-
-.form-input,
-.form-select {
-  padding: 8px;
-  width: 100%;
-  border-radius: 4px;
-  border: 1px solid #444;
-  margin-bottom: 16px;
-  background-color: #2a2a2a;
-  color: white;
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .sucursales-container { padding: 20px; }
+  .sucursales-title { font-size: 1.5rem; }
+  .sucursales-table th, .sucursales-table td { padding: 10px 12px; }
 }

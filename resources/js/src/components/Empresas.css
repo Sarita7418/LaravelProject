@@ -1,23 +1,35 @@
-/* Contenedor principal de empresas */
+/* ===== Paleta base (si ya tienes variables, omite este bloque y usa las tuyas) ===== */
+:root {
+  --brand-primary: #000359;  /* azul profundo */
+  --brand-accent:  #FFFD55;  /* amarillo */
+  --bg:            #ffffff;  /* blanco predominante */
+  --text:          #0a0a0a;
+  --muted:         #6b7280;
+  --shadow:        0 10px 24px rgba(0, 3, 89, 0.10);
+}
+
+/* ===== Contenedor principal de empresas ===== */
 .empresas-container {
   width: 95%;
   margin: 40px auto;
-  padding: 20px;
-  background-color: #1e1e1e;
-  border-radius: 8px;
-  color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 24px;
+  background-color: var(--bg);
+  border-radius: 24px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(0, 3, 89, 0.12);
 }
 
-/* Título de la sección de empresas */
+/* ===== Título ===== */
 .empresas-title {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   margin-bottom: 20px;
   text-align: center;
-  font-weight: 700;
+  font-weight: 800;
+  color: var(--brand-primary);
 }
 
-/* Contenedor para los botones de filtro (activos/inactivos) */
+/* ===== Filtros Activas/Inactivas ===== */
 .toggle-container {
   display: flex;
   gap: 10px;
@@ -25,30 +37,29 @@
   justify-content: center;
 }
 
-/* Estilos para los botones de filtro */
 .toggle-btn {
-  padding: 8px 16px;
-  border: 2px solid #3b82f6;
-  background: #2a2a2a;
-  color: #3b82f6;
-  border-radius: 4px;
+  padding: 10px 16px;
+  border: 2px solid var(--brand-primary);
+  background: var(--bg);
+  color: var(--brand-primary);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   font-size: 1rem;
+  font-weight: 700;
 }
-
 .toggle-btn.active {
-  background: #3b82f6;
-  color: white;
+  background: var(--brand-primary);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(0, 3, 89, 0.18);
 }
-
 .toggle-btn:hover {
-  background: #2563eb;
-  color: white;
-  border-color: #2563eb;
+  background: var(--brand-accent);
+  color: var(--brand-primary);
+  border-color: var(--brand-primary);
 }
 
-/* Contenedor de las tarjetas de empresas */
+/* ===== Grid de tarjetas ===== */
 .empresas-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -56,107 +67,137 @@
   margin-bottom: 30px;
 }
 
-/* Estilo de cada tarjeta de empresa */
+/* ===== Tarjeta de empresa ===== */
 .empresa-card {
-  background-color: #2a2a2a;
+  background-color: var(--bg);
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(0, 3, 89, 0.12);
   text-align: center;
-  transition: transform 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
-
 .empresa-card:hover {
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(0, 3, 89, 0.16);
 }
 
-/* Imagen de logo de la empresa */
+/* ===== Logo ===== */
 .empresa-logo {
-  width: 80px;
-  height: 80px;
+  width: 84px;
+  height: 84px;
   object-fit: cover;
   border-radius: 50%;
-  margin-bottom: 15px;
+  margin-bottom: 14px;
+  border: 2px solid var(--brand-accent);
 }
 
-/* Estilo de los botones dentro de la tarjeta de empresa */
-button {
+/* ===== Botones de acciones dentro de la tarjeta ===== */
+.empresa-card .edit-btn,
+.empresa-card .delete-btn,
+.empresa-card .reactivate-btn {
   margin-top: 10px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
+  padding: 10px 16px;
+  border: 2px solid transparent;
+  border-radius: 14px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  font-weight: 700;
 }
 
-/* Estilo de los botones de acciones en las tarjetas */
+/* Principal (Editar) */
 .edit-btn {
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--brand-primary);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(0, 3, 89, 0.18);
 }
-
 .edit-btn:hover {
-  background-color: #2563eb;
+  background-color: #00023f;
 }
 
+/* Peligro (Eliminar) */
 .delete-btn {
-  background-color: #f87171;
-  color: white;
-  margin-top: 8px;
+  background-color: #ffffff;
+  color: #b91c1c;
+  border-color: #b91c1c;
 }
-
 .delete-btn:hover {
-  background-color: #ef4444;
+  background-color: #b91c1c;
+  color: #ffffff;
 }
 
+/* Éxito (Reactivar) */
 .reactivate-btn {
-  background-color: #10b981;
-  color: white;
-  margin-top: 8px;
+  background-color: var(--brand-accent);
+  color: var(--brand-primary);
+  border-color: var(--brand-primary);
 }
-
 .reactivate-btn:hover {
-  background-color: #065f46;
+  filter: brightness(0.95);
 }
 
-/* Estilos para el formulario */
+/* ===== Overlay de formulario ===== */
 .form-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  inset: 0;
+  background: rgba(0, 3, 89, 0.20);
   display: flex;
   justify-content: center;
   align-items: center;
+  backdrop-filter: blur(1.5px);
 }
 
+/* ===== Contenedor del formulario ===== */
 .form-container {
-  background-color: #2a2a2a;
-  padding: 30px;
-  border-radius: 8px;
-  width: 400px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  color: #fff;
+  background-color: var(--bg);
+  padding: 28px;
+  border-radius: 20px;
+  width: 420px;
+  max-width: 92vw;
+  box-shadow: var(--shadow);
+  color: var(--text);
+  border: 1px solid rgba(0, 3, 89, 0.12);
 }
 
+/* ===== Campos ===== */
 .form-label {
   display: block;
-  margin-bottom: 6px;
+  margin: 8px 0 6px;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .form-input,
 .form-select {
-  padding: 8px;
+  padding: 12px 14px;
   width: 100%;
-  border-radius: 4px;
-  border: 1px solid #444;
+  border-radius: 14px;
+  border: 2px solid rgba(0, 3, 89, 0.18);
   margin-bottom: 16px;
-  background-color: #3b3b3b;
-  color: white;
+  background-color: #ffffff;
+  color: var(--text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-size: 15px;
+}
+.form-input::placeholder {
+  color: var(--muted);
+}
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 4px rgba(255, 253, 85, 0.35);
 }
 
+/* Archivo */
+.form-input[type="file"] {
+  padding: 8px;
+  background-color: #ffffff;
+  border: 2px dashed rgba(0, 3, 89, 0.25);
+  border-radius: 14px;
+}
+
+/* ===== Acciones del formulario ===== */
 .form-actions {
   display: flex;
   justify-content: space-between;
@@ -165,40 +206,40 @@ button {
 
 .create-btn,
 .cancel-btn {
-  background-color: #2563eb;
   padding: 10px 16px;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  color: #ffffff;
+  border: 2px solid transparent;
+  border-radius: 14px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  font-weight: 800;
 }
 
+/* Crear/Guardar: primario */
+.create-btn {
+  background-color: var(--brand-primary);
+  box-shadow: 0 6px 16px rgba(0, 3, 89, 0.18);
+}
 .create-btn:hover {
-  background-color: #1d4ed8;
+  background-color: #00023f;
 }
 
+/* Cancelar: neutro */
 .cancel-btn {
-  background-color: #6b7280;
+  background-color: #e5e7eb;
+  color: #111827;
+  border-color: rgba(0, 3, 89, 0.12);
 }
-
 .cancel-btn:hover {
-  background-color: #4b5563;
+  background-color: #d1d5db;
 }
 
-.form-input[type="file"] {
-  background-color: #3b3b3b;
-  padding: 6px;
-  border: 1px solid #444;
-}
-
-/* Responsive: Ajuste para pantallas pequeñas */
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
   .empresas-cards {
     grid-template-columns: 1fr;
   }
-
   .form-container {
-    width: 90%;
+    width: 92%;
   }
 }

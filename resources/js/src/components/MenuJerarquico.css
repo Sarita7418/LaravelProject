@@ -1,132 +1,159 @@
+/* ===== Sidebar jerárquico (base blanca + detalles de marca) ===== */
 .menujerar-sidebar {
-  background: #242526;
+  background: #ffffff;
   min-width: 260px;
   max-width: 300px;
   height: 100vh;
   padding: 24px 0;
-  border-right: 1px solid #353535;
+  border-right: 1px solid rgba(0, 3, 89, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
+  color: #000359;
 }
 
+/* Usuario (encabezado del sidebar) */
+.menujerar-usuario {
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(0, 3, 89, 0.12);
+}
+.menujerar-nombre {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #000359;
+}
+.menujerar-rol {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* Estructura de listas */
 .menujerar-submenu {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-
 .menujerar-li {
   margin: 0;
   padding: 0;
 }
 
+/* Botón/ítem genérico del menú */
 .menujerar-boton {
   display: flex;
   align-items: center;
-  padding: 10px 24px;
-  color: #f2f2f2;
-  font-size: 1.18rem;
+  gap: 10px;
+  padding: 10px 16px;
+  color: #000359;
+  font-size: 1.05rem;
   cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.2s, color 0.2s;
+  border-radius: 14px;               /* más redondeado */
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  margin: 2px 8px;
 }
 
+/* Variación para hijos (submenú) */
 .menujerar-boton-hijo {
-  padding-left: 20px;
-  font-size: 1.09rem;
-  color: #bdbdbd;
+  padding-left: 28px;
+  font-size: 0.98rem;
+  color: #334155; /* gris azulado suave */
 }
 
-.menujerar-boton:hover,
+/* Hover/activo */
+.menujerar-boton:hover {
+  background: #FFFD55;
+  color: #000359;
+  box-shadow: 0 2px 10px rgba(0, 3, 89, 0.10);
+}
 .menujerar-boton.menujerar-activo {
-  background: #353a3f;
-  color: #ffffff;
+  background: #FFFD55;
+  color: #000359;
+  box-shadow: 0 4px 14px rgba(0, 3, 89, 0.12);
 }
 
+/* Botón padre (sección) */
 .menujerar-boton.menujerar-padre {
-  font-weight: 600;
-  color: #ffffff;
-  font-size: 1.22rem;
-  padding-left: 24px;
-  margin-bottom: 10px;
-  border-left: 3px solid #3b80f9;
-  background: #26292c;
+  font-weight: 700;
+  color: #000359;
+  font-size: 1.12rem;
+  padding-left: 20px;
+  margin: 8px 8px 6px;
+  border-left: 4px solid #000359;    /* detalle azul */
+  background: #ffffff;
 }
 
-.menujerar-boton.menujerar-activo {
-  background: #313743;
-  color: #e2e6ea;
-  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
-}
-
+/* Flecha/ícono */
 .menujerar-arrow {
-  margin-right: 10px;
-  font-size: 1.1em;
+  margin-right: 2px;
+  font-size: 1.05em;
+  opacity: 0.85;
 }
 
+/* Contenedor de hijos (indentación y guía) */
 .menujerar-hijos-seccion {
   padding-left: 12px;
-  border-left: 1px solid #353535;
-  margin-left: 15px;
+  border-left: 1px dashed rgba(0, 3, 89, 0.18);
+  margin-left: 18px;
 }
 
-.menujerar-texto {
-
-  user-select: none;
-}
-
+/* Texto y separadores */
+.menujerar-texto { user-select: none; }
 .menujerar-texto-padre {
-  font-size: 1.1rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
-
 .menujerar-separador {
-  border-top: 1px solid #353535;
-  margin: 18px 0;
+  border-top: 1px solid rgba(0, 3, 89, 0.12);
+  margin: 14px 0;
 }
 
+/* Botón de logout dentro del sidebar (scope local) */
+.menujerar-sidebar .boton-logout {
+  padding: 0.65rem 1rem;
+  background-color: #000359; /* primario */
+  color: #ffffff;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 800;
+  width: calc(100% - 16px);
+  margin: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 14px rgba(0, 3, 89, 0.15);
+}
+.menujerar-sidebar .boton-logout:hover {
+  background-color: #c62828; /* rojo alerta al hover */
+  border-color: #c62828;
+  box-shadow: 0 8px 18px rgba(198, 40, 40, 0.25);
+}
+
+/* Responsive: sidebar compacto */
 @media (max-width: 600px) {
   .menujerar-sidebar {
     min-width: 60px;
     max-width: 60px;
-    padding: 8px 0;
+    padding: 10px 0;
+    align-items: center;
   }
-
   .menujerar-boton {
-    font-size: 0.98rem;
-    padding: 8px 10px;
+    font-size: 0.95rem;
+    padding: 10px;
+    margin: 4px;
+    justify-content: center;
   }
-}
-
-.boton-logout {
-  padding: 0.6rem 1.2rem;
-  background-color: #e53935;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  width: 100%;
-  transition: background-color 0.3s ease;
-}
-
-
-
-.menujerar-usuario {
-  padding: 16px 24px;
-  border-bottom: 1px solid #353535;
-}
-
-.menujerar-nombre {
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #ffffff;
-}
-
-.menujerar-rol {
-  font-size: 0.95rem;
-  color: #bdbdbd;
-  margin-top: 4px;
+  .menujerar-boton-hijo {
+    padding-left: 10px;
+  }
+  .menujerar-texto,
+  .menujerar-texto-padre,
+  .menujerar-rol,
+  .menujerar-nombre {
+    display: none; /* solo iconos en modo compacto */
+  }
+  .menujerar-hijos-seccion,
+  .menujerar-separador {
+    display: none;
+  }
 }
