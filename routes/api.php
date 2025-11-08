@@ -21,6 +21,9 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\ReportePDFController;
 
+use App\Http\Controllers\ComprobanteController;
+use App\Http\Controllers\PlanCuentaController;
+
 
 
 Route::post('/personas', [PersonaCrudController::class, 'store']);
@@ -32,6 +35,14 @@ Route::middleware([
     SubstituteBindings::class,
     ThrottleRequests::class,
 ])->group(function () {
+
+    
+    //comprobantes
+    Route::get('comprobantes', [ComprobanteController::class, 'index']); // 👈 esta faltaba
+    Route::post('comprobantes', [ComprobanteController::class, 'store']);
+    Route::get('comprobantes/{id}', [ComprobanteController::class, 'show']);
+    Route::get('cuentas', [PlanCuentaController::class, 'index']);
+
 
     
     Route::get('/reportes/usuarios/excel', [ReporteController::class, 'exportUsuarios']);
@@ -115,5 +126,6 @@ Route::middleware([
     Route::post('/plan-cuentas', [PlanCuentasCrudController::class, 'store']);
     Route::put('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'update']);
     Route::delete('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'destroy']);
+
     
 });

@@ -11,6 +11,7 @@ import Protocolos from '../components/Protocolos'
 import PlanCuentas from '../components/PlanCuentas'   // 👈 IMPORTAR AQUÍ
 import LayoutDashboard from '../components/LayoutDashboard'
 import PrivateRoute from './PrivateRoute'
+import Comprobante from '../components/Comprobante'
 
 import Registro from '../components/Registro'
 import Reportes from '../components/Reportes'
@@ -116,6 +117,18 @@ export default function Router() {
               allowedPermisos={["/reportes"]}
             >
               <Reportes />
+            </PrivateRoute>
+          } />
+        )}
+
+        {permisos.includes("/dashboard/comprobantes") && (
+          <Route path="comprobantes" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/comprobantes"]}
+            >
+              <Comprobante />
             </PrivateRoute>
           } />
         )}

@@ -67,6 +67,15 @@ class MenuItemsSeeder extends Seeder
             'id_padre' => $admin->id,
             'nivel' => 3,
             'orden' => 5,
-]);
+        ]);
+        
+        // Submenú: Comprobantes
+        MenuItem::create([
+            'item' => 'Comprobantes',
+            'ruta' => '/dashboard/comprobantes',
+            'id_padre' => $admin->id,
+            'nivel' => 3,
+            'orden' => 5,
+        ]);
     }
 }

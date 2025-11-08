@@ -16,7 +16,8 @@ class AccionMenuItemSeeder extends Seeder
             '/dashboard/roles',
             '/dashboard/personas',
             '/dashboard/protocolos',
-            '/dashboard/plan-cuentas'
+            '/dashboard/plan-cuentas',
+            '/dashboard/comprobantes'
         ];
 
         $menus = MenuItem::whereIn('ruta', $rutas)->get();

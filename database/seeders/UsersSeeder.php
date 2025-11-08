@@ -51,6 +51,16 @@ class UsersSeeder extends Seeder
                 'ci' => '45678901',
                 'telefono' => '77745678',
             ],
+             [
+                'name' => 'JoseRoberto',
+                'email' => 'jannyrobertooo224@gmail.com',
+                'rol' => 1,
+                'nombres' => 'Jose Roberto',
+                'apellido_paterno' => 'Macochapi',
+                'apellido_materno' => 'Suarez',
+                'ci' => '48946416',
+                'telefono' => '4894941616',
+            ],
             [
                 'name' => 'PianaKiro',
                 'email' => 'kiaritapino11@gmail.com',
