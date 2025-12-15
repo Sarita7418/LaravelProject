@@ -25,7 +25,7 @@ class MenuItemRolSeeder extends Seeder
 
 
         // ADMIN (ID 1) accede a todo
-        foreach ([$administracion, $usuarios, $roles, $personas, $protocolos] as $menuItem) {
+        foreach ([$administracion, $usuarios, $roles, $personas, $protocolos, $sucursales, $empresas, $reportes, $comprobantes] as $menuItem) {
             if ($menuItem) {
                 MenuItemRol::create([
                     'id_rol' => 1,

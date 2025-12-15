@@ -11,10 +11,11 @@ import Protocolos from '../components/Protocolos'
 import Empresas from '../components/Empresas'
 import Sucursales from '../components/Sucursales'
 import PlanCuentas from '../components/PlanCuentas'
-import PlanPresupuestarios from '../components/PlanPresupuestarios'   // 👈 IMPORTAR AQUÍ
+import PlanPresupuestarios from '../components/PlanPresupuestarios'
 import LayoutDashboard from '../components/LayoutDashboard'
 import PrivateRoute from './PrivateRoute'
 import Comprobante from '../components/Comprobante'
+import Reportes from '../components/Reportes'
 
 import Registro from '../components/Registro' 
 
