@@ -15,6 +15,7 @@ use App\Http\Controllers\Crud\UsuarioCrudController;
 use App\Http\Controllers\ProtocoloController;
 use App\Http\Controllers\Crud\PersonaCrudController;
 use App\Http\Controllers\Crud\PlanCuentasCrudController;
+use App\Http\Controllers\Crud\PlanPresupuestarioCrudController;
 use App\Http\Controllers\Navegacion\NavegacionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 
@@ -107,5 +108,22 @@ Route::middleware([
     Route::post('/plan-cuentas', [PlanCuentasCrudController::class, 'store']);
     Route::put('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'update']);
     Route::delete('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'destroy']);
+    // Plan Presupuestario - RUTAS CORREGIDAS (ORDEN IMPORTANTE)
+    // PRIMERO: Rutas específicas (más específicas primero)
+    Route::get('/plan-presupuestarios/todas', [PlanPresupuestarioCrudController::class, 'indexTodas']);
+    Route::get('/plan-presupuestarios/inactivas', [PlanPresupuestarioCrudController::class, 'inactivas']);
+    Route::get('/plan-presupuestarios/debug', [PlanPresupuestarioCrudController::class, 'debug']);
+    Route::get('/plan-presupuestarios/padres', [PlanPresupuestarioCrudController::class, 'getCuentasPadre']);
+    Route::get('/plan-presupuestarios/subdominios/{dominio}', [PlanPresupuestarioCrudController::class, 'getSubdominiosPorDominio']);
+    Route::get('/plan-presupuestarios/subdominios', [PlanPresupuestarioCrudController::class, 'getSubdominios']);
+    
+    // SEGUNDO: Rutas con parámetros variables
+    Route::put('/plan-presupuestarios/{id}/reactivar', [PlanPresupuestarioCrudController::class, 'reactivar']);
+    
+    // TERCERO: Rutas CRUD básicas
+    Route::get('/plan-presupuestarios', [PlanPresupuestarioCrudController::class, 'index']);
+    Route::post('/plan-presupuestarios', [PlanPresupuestarioCrudController::class, 'store']);
+    Route::put('/plan-presupuestarios/{id}', [PlanPresupuestarioCrudController::class, 'update']);
+    Route::delete('/plan-presupuestarios/{id}', [PlanPresupuestarioCrudController::class, 'destroy']);
     
 });

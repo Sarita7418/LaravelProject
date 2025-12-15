@@ -11,14 +11,15 @@ class MenuItemRolSeeder extends Seeder
     public function run(): void
     {
         $administracion = MenuItem::where('ruta', '/dashboard')->first();
-        $usuarios       = MenuItem::where('ruta', '/dashboard/usuarios')->first();
-        $roles          = MenuItem::where('ruta', '/dashboard/roles')->first();
-        $personas       = MenuItem::where('ruta', '/dashboard/personas')->first();
-        $protocolos     = MenuItem::where('ruta', '/dashboard/protocolos')->first();
-        $planCuentas = MenuItem::where('ruta', '/dashboard/plan-cuentas')->first(); 
+        $usuarios = MenuItem::where('ruta', '/dashboard/usuarios')->first();
+        $roles = MenuItem::where('ruta', '/dashboard/roles')->first();
+        $personas = MenuItem::where('ruta', '/dashboard/personas')->first();
+        $protocolos = MenuItem::where('ruta', '/dashboard/protocolos')->first();
+        $planCuentas = MenuItem::where('ruta', '/dashboard/plan-cuentas')->first();
+        $planPresupuestarios = MenuItem::where('ruta', '/dashboard/plan-presupuestarios')->first();
 
         // ADMIN (ID 1) accede a todo
-        foreach ([$administracion, $usuarios, $roles, $personas, $protocolos, $planCuentas] as $menuItem) {
+        foreach ([$administracion, $usuarios, $roles, $personas, $protocolos, $planCuentas, $planPresupuestarios] as $menuItem) {
             if ($menuItem) {
                 MenuItemRol::create([
                     'id_rol' => 1,
@@ -28,7 +29,7 @@ class MenuItemRolSeeder extends Seeder
         }
 
         // USER (ID 2) accede a Dashboard y algunos módulos
-        foreach ([$administracion, $usuarios, $personas, $planCuentas] as $menuItem) {
+        foreach ([$administracion, $usuarios, $personas, $planCuentas, $planPresupuestarios] as $menuItem) {
             if ($menuItem) {
                 MenuItemRol::create([
                     'id_rol' => 2,

@@ -34,6 +34,7 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 2,
         ]);
+
         // Submenú: Personas
         MenuItem::create([
             'item' => 'Personas',
@@ -51,13 +52,23 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 4,
         ]);
-        // Submenú: plan_cuentas
+
+        // Submenú: Plan de Cuentas
         MenuItem::create([
-            'item' => 'Plan de Cuentas',  
+            'item' => 'Plan de Cuentas',
             'ruta' => '/dashboard/plan-cuentas',
             'id_padre' => $admin->id,
             'nivel' => 3,
             'orden' => 5,
-]);
+        ]);
+
+        // Submenú: Plan Presupuestarios
+        MenuItem::create([
+            'item' => 'Plan Presupuestarios',
+            'ruta' => '/dashboard/plan-presupuestarios',
+            'id_padre' => $admin->id,
+            'nivel' => 3,
+            'orden' => 6,
+        ]);
     }
 }
