@@ -2,7 +2,7 @@
 :root {
   --brand-primary: #000359;   /* azul profundo */
   --brand-accent:  #FFFD55;   /* amarillo */
-  --bg:            #ffffff;
+  --bg:            #ffffff;   /* blanco predominante */
   --text:          #0a0a0a;
   --muted:         #6b7280;
   --ring:          0 0 0 4px rgba(255,253,85,0.35);
@@ -10,9 +10,9 @@
   --border:        1px solid rgba(0,3,89,0.12);
 }
 
-/* ===== Contenedor principal ===== */
-.usuarios-container {
-  max-width: 1000px;
+/* ===== Contenedor ===== */
+.sucursales-container {
+  width: 95%;
   margin: 40px auto;
   padding: 24px;
   background-color: var(--bg);
@@ -23,7 +23,7 @@
 }
 
 /* ===== Título ===== */
-.usuarios-title {
+.sucursales-title {
   font-size: 1.7rem;
   margin-bottom: 20px;
   text-align: center;
@@ -31,7 +31,7 @@
   color: var(--brand-primary);
 }
 
-/* ===== Filtros Activos / Inactivos ===== */
+/* ===== Filtros Activas/Inactivas ===== */
 .toggle-container {
   display: flex;
   gap: 10px;
@@ -59,7 +59,7 @@
 }
 
 /* ===== Tabla ===== */
-.usuarios-table {
+.sucursales-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 28px;
@@ -68,24 +68,24 @@
   overflow: hidden;
   border: var(--border);
 }
-.usuarios-table th,
-.usuarios-table td {
+.sucursales-table th,
+.sucursales-table td {
   padding: 12px 16px;
   text-align: left;
   border-bottom: 1px solid rgba(0,3,89,0.10);
   color: var(--text);
   font-size: 14px;
 }
-.usuarios-table th {
+.sucursales-table th {
   background: rgba(255,253,85,0.25);
   font-weight: 800;
   color: #000;
 }
-.usuarios-table tr:hover td {
+.sucursales-table tr:hover td {
   background: rgba(255,253,85,0.12);
 }
 
-/* ===== Estado ===== */
+/* ===== Chips de estado ===== */
 .status {
   padding: 6px 10px;
   border-radius: 999px;
@@ -106,7 +106,7 @@
   border-color: #ef4444;
 }
 
-/* ===== Botones ===== */
+/* ===== Botones (scope local) ===== */
 .delete-btn,
 .add-btn,
 .create-btn,
@@ -124,21 +124,16 @@
   box-shadow: 0 6px 14px rgba(0,3,89,0.08);
 }
 
-/* Primario */
+/* Primario (crear/editar) */
 .create-btn,
 .edit-btn {
   background-color: var(--brand-primary);
-  color: #fff;
+  color: #ffffff;
 }
 .create-btn:hover,
 .edit-btn:hover { background-color: #00023f; }
-.create-btn:disabled {
-  background-color: rgba(0,3,89,0.45);
-  cursor: not-allowed;
-  opacity: .7;
-}
 
-/* Secundario */
+/* Secundario (agregar/reactivar) con acento */
 .add-btn,
 .reactivate-btn {
   background-color: var(--brand-accent);
@@ -149,15 +144,18 @@
 .add-btn:hover,
 .reactivate-btn:hover { filter: brightness(0.95); }
 
-/* Peligro */
+/* Peligro (eliminar) */
 .delete-btn {
-  background: #fff;
+  background: #ffffff;
   color: #b91c1c;
   border-color: #b91c1c;
 }
-.delete-btn:hover { background: #b91c1c; color: #fff; }
+.delete-btn:hover {
+  background: #b91c1c;
+  color: #ffffff;
+}
 
-/* Neutro */
+/* Neutro (cancelar) */
 .cancel-btn {
   background: #e5e7eb;
   color: #111827;
@@ -165,25 +163,22 @@
 }
 .cancel-btn:hover { background: #d1d5db; }
 
-/* ===== Formularios ===== */
+/* ===== Formulario ===== */
 .form-container { margin-top: 24px; }
 .form-label {
   display: block;
   margin-bottom: 6px;
   font-weight: 700;
-  text-align: left;
   color: var(--text);
 }
-.required { color: #ef4444; font-weight: 800; }
-
 .form-input,
 .form-select {
   padding: 12px 14px;
   width: 100%;
   border-radius: 14px;
   border: 2px solid rgba(0,3,89,0.18);
-  margin-bottom: 10px;
-  background-color: #fff;
+  margin-bottom: 16px;
+  background-color: #ffffff;
   color: var(--text);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   font-size: 15px;
@@ -195,89 +190,15 @@
   border-color: var(--brand-primary);
   box-shadow: var(--ring);
 }
-.form-input.error,
-.form-select.error { border-color: #ef4444; }
-.form-select option {
-  background: #ffffff;
-  color: var(--text);
-}
 
-/* ===== Mensajes de error ===== */
-.error-message {
-  color: #b91c1c;
-  font-size: 14px;
-  margin-bottom: 16px;
-  padding: 6px 0;
-}
-
-/* ===== Acciones del formulario ===== */
+/* Acciones del formulario */
 .form-actions {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-/* ===== Modal ===== */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0,3,89,0.20);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 16px;
-  backdrop-filter: blur(1.5px);
-}
-.modal-content {
-  background-color: #fff;
-  padding: 24px;
-  border-radius: 20px;
-  max-width: 460px;
-  width: 92%;
-  color: var(--text);
-  box-shadow: var(--shadow);
-  border: var(--border);
-}
-.modal-title {
-  font-size: 1.25rem;
-  font-weight: 800;
-  margin-bottom: 12px;
-  color: var(--brand-primary);
-}
-.modal-message {
-  margin-bottom: 20px;
-  color: #111827;
-  line-height: 1.55;
-}
-.modal-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-}
-.modal-confirm-btn,
-.modal-cancel-btn {
-  border: none;
-  padding: 10px 16px;
-  border-radius: 14px;
-  cursor: pointer;
-  font-weight: 800;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-}
-.modal-confirm-btn {
-  background-color: var(--brand-primary);
-  color: #fff;
-}
-.modal-confirm-btn:hover { background-color: #00023f; }
-.modal-cancel-btn {
-  background: #e5e7eb;
-  color: #111827;
-  border-color: rgba(0,3,89,0.12);
-}
-.modal-cancel-btn:hover { background: #d1d5db; }
-
-/* ===== Accesibilidad ===== */
+/* ===== Accesibilidad: focus visible ===== */
 .toggle-btn:focus-visible,
 .delete-btn:focus-visible,
 .add-btn:focus-visible,
@@ -285,8 +206,6 @@
 .cancel-btn:focus-visible,
 .reactivate-btn:focus-visible,
 .edit-btn:focus-visible,
-.modal-confirm-btn:focus-visible,
-.modal-cancel-btn:focus-visible,
 .form-input:focus-visible,
 .form-select:focus-visible {
   outline: none;
@@ -295,8 +214,7 @@
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .usuarios-container { padding: 20px; }
-  .usuarios-title { font-size: 1.5rem; }
-  .usuarios-table th,
-  .usuarios-table td { padding: 10px 12px; }
+  .sucursales-container { padding: 20px; }
+  .sucursales-title { font-size: 1.5rem; }
+  .sucursales-table th, .sucursales-table td { padding: 10px 12px; }
 }

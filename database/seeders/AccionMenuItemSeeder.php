@@ -16,6 +16,8 @@ class AccionMenuItemSeeder extends Seeder
             '/dashboard/roles',
             '/dashboard/personas',
             '/dashboard/protocolos',
+            '/dashboard/empresas',
+            '/dashboard/sucursales',
             '/dashboard/plan-cuentas',
             '/dashboard/plan-presupuestarios'
         ];
