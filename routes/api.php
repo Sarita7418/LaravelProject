@@ -18,6 +18,13 @@ use App\Http\Controllers\Crud\PlanCuentasCrudController;
 use App\Http\Controllers\Crud\PlanPresupuestarioCrudController;
 use App\Http\Controllers\Navegacion\NavegacionController;
 use App\Http\Controllers\Auth\NewPasswordController;
+
+use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\ReportePDFController;
+
+use App\Http\Controllers\ComprobanteController;
+use App\Http\Controllers\PlanCuentaController;
+
 use App\Http\Controllers\Crud\EmpresaCrudController;
 use App\Http\Controllers\Crud\SucursalCrudController;
 use App\Http\Controllers\Crud\LogoCrudController;
@@ -32,6 +39,18 @@ Route::middleware([
     SubstituteBindings::class,
     ThrottleRequests::class,
 ])->group(function () {
+
+    
+    //comprobantes
+    Route::get('comprobantes', [ComprobanteController::class, 'index']); // 👈 esta faltaba
+    Route::post('comprobantes', [ComprobanteController::class, 'store']);
+    Route::get('comprobantes/{id}', [ComprobanteController::class, 'show']);
+    Route::get('cuentas', [PlanCuentaController::class, 'index']);
+
+
+    
+    Route::get('/reportes/usuarios/excel', [ReporteController::class, 'exportUsuarios']);
+    Route::get('/reportes/usuarios/pdf', [ReportePDFController::class, 'usuarios']);
 
 
     // Autenticación y permisos
@@ -153,5 +172,6 @@ Route::middleware([
     Route::post('/plan-presupuestarios', [PlanPresupuestarioCrudController::class, 'store']);
     Route::put('/plan-presupuestarios/{id}', [PlanPresupuestarioCrudController::class, 'update']);
     Route::delete('/plan-presupuestarios/{id}', [PlanPresupuestarioCrudController::class, 'destroy']);
+
     
 });

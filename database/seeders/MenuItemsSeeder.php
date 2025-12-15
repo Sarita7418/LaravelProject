@@ -53,6 +53,15 @@ class MenuItemsSeeder extends Seeder
             'orden' => 4,
         ]);
 
+        // Submenú: Reportes
+        MenuItem::create([
+            'item' => 'Reportes',
+            'ruta' => '/dashboard/reportes',
+            'id_padre' => $admin->id,
+            'nivel' => 3,
+            'orden' => 5,
+        ]);
+
         // Submenú: Empresas
         MenuItem::create([
             'item' => 'Empresas',
@@ -78,7 +87,7 @@ class MenuItemsSeeder extends Seeder
             'id_padre' => $admin->id,
             'nivel' => 3,
             'orden' => 5,
-        ]);
+                ]);
 
         // Submenú: Plan Presupuestarios
         MenuItem::create([
@@ -87,6 +96,15 @@ class MenuItemsSeeder extends Seeder
             'id_padre' => $admin->id,
             'nivel' => 3,
             'orden' => 6,
+        ]);
+        
+        // Submenú: Comprobantes
+        MenuItem::create([
+            'item' => 'Comprobantes',
+            'ruta' => '/dashboard/comprobantes',
+            'id_padre' => $admin->id,
+            'nivel' => 3,
+            'orden' => 5,
         ]);
     }
 }

@@ -19,6 +19,10 @@ class MenuItemRolSeeder extends Seeder
         $planPresupuestarios = MenuItem::where('ruta', '/dashboard/plan-presupuestarios')->first();
         $sucursales     = MenuItem::where('ruta', '/dashboard/sucursales')->first();
         $empresas       = MenuItem::where('ruta', '/dashboard/empresas')->first();
+        $reportes = MenuItem::where('ruta', '/dashboard/reportes')->first();
+        $comprobantes = MenuItem::where('ruta', '/dashboard/comprobantes')->first();
+
+
 
         // ADMIN (ID 1) accede a todo
         foreach ([$administracion, $usuarios, $roles, $personas, $protocolos] as $menuItem) {

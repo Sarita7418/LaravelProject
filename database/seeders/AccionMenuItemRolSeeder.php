@@ -23,6 +23,8 @@ class AccionMenuItemRolSeeder extends Seeder
         $menuEmpresas   = MenuItem::where('ruta', '/dashboard/empresas')->first();
         $menuSucursales = MenuItem::where('ruta', '/dashboard/sucursales')->first();
         $menuPlanCuentas = MenuItem::where('ruta', '/dashboard/plan-cuentas')->first();
+        $menuComprobantes = MenuItem::where('ruta', '/dashboard/comprobantes')->first();
+
         $menuPlanPresupuestarios = MenuItem::where('ruta', '/dashboard/plan-presupuestarios')->first();
         $acciones = Accion::all();
 

@@ -14,8 +14,9 @@ import PlanCuentas from '../components/PlanCuentas'
 import PlanPresupuestarios from '../components/PlanPresupuestarios'   // 👈 IMPORTAR AQUÍ
 import LayoutDashboard from '../components/LayoutDashboard'
 import PrivateRoute from './PrivateRoute'
+import Comprobante from '../components/Comprobante'
 
-import Registro from '../components/Registro'
+import Registro from '../components/Registro' 
 
 export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -111,6 +112,30 @@ export default function Router() {
             </PrivateRoute>
           } />
         )}
+        {permisos.includes("/dashboard/reportes") && (
+          <Route path="reportes" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/reportes"]}
+            >
+              <Reportes />
+            </PrivateRoute>
+          } />
+        )}
+
+        {permisos.includes("/dashboard/comprobantes") && (
+          <Route path="comprobantes" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/comprobantes"]}
+            >
+              <Comprobante />
+            </PrivateRoute>
+          } />
+        )}
+
         {permisos.includes("/dashboard/empresas") && (
           <Route path="empresas" element={
             <PrivateRoute

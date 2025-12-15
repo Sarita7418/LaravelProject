@@ -1,0 +1,13 @@
+[90m= [39m[34;4mApp\Models\User[39;24m {#5360
+    [34mid[39m: [35m5[39m,
+    [34mid_persona[39m: [35m5[39m,
+    [34mname[39m: "[32mJoseRoberto[39m",
+    [34memail[39m: "[32mjannyrobertooo224@gmail.com[39m",
+    #[33mpassword[39m: "[32m$2y$12$kzRX7CqkpCskYizCkcn.0uSQAQ5mqbHFtZw93yYfoNhQqdISQQulS[39m",
+    #[33mremember_token[39m: [36mnull[39m,
+    [34mid_rol[39m: [35m1[39m,
+    [34mestado[39m: [35m1[39m,
+    [34mcreated_at[39m: "[32m2025-09-22 04:18:54[39m",
+    [34mupdated_at[39m: "[32m2025-09-22 04:18:54[39m",
+  }
+
