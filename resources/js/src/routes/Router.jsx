@@ -8,7 +8,8 @@ import Usuarios from '../components/Usuarios'
 import Roles from '../components/Roles'
 import Personas from '../components/Personas'
 import Protocolos from '../components/Protocolos'
-import PlanCuentas from '../components/PlanCuentas'   // 👈 IMPORTAR AQUÍ
+import PlanCuentas from '../components/PlanCuentas'
+import PlanPresupuestarios from '../components/PlanPresupuestarios'   // 👈 IMPORTAR AQUÍ
 import LayoutDashboard from '../components/LayoutDashboard'
 import PrivateRoute from './PrivateRoute'
 
@@ -108,7 +109,7 @@ export default function Router() {
           } />
         )}
 
-        {permisos.includes("/dashboard/plan-cuentas") && (   // 👈 AÑADIR ESTE BLOQUE
+        {permisos.includes("/dashboard/plan-cuentas") && (
           <Route path="plan-cuentas" element={
             <PrivateRoute
               isAuthenticated={isAuthenticated}
@@ -116,6 +117,18 @@ export default function Router() {
               allowedPermisos={["/plan-cuentas"]}
             >
               <PlanCuentas />
+            </PrivateRoute>
+          } />
+        )}
+
+        {permisos.includes("/dashboard/plan-presupuestarios") && (   // 👈 AÑADIR ESTE BLOQUE
+          <Route path="plan-presupuestarios" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/plan-presupuestarios"]}
+            >
+              <PlanPresupuestarios />
             </PrivateRoute>
           } />
         )}
