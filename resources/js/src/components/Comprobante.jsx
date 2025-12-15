@@ -3,6 +3,135 @@ import React, { useEffect, useState } from 'react';
 import axios from '../lib/axios';
 import Select from 'react-select';
 
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+
+
+const generarPDF = (comprobante) => {
+  import('jspdf').then(({ jsPDF }) => {
+    import('jspdf-autotable').then(({ default: autoTable }) => {
+
+      const doc = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const marginLeft = 15;
+      let y = 20;
+
+      // --- Encabezado del comprobante ---
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text("COMPROBANTE CONTABLE", pageWidth / 2, y, { align: "center" });
+      y += 8;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      const fechaTexto = `Fecha: ${comprobante.fecha ? comprobante.fecha : ""}`;
+      doc.text(`Tipo: ${comprobante.tipo || ""}`, marginLeft, y);
+      doc.text(fechaTexto, pageWidth - marginLeft - doc.getTextWidth(fechaTexto), y);
+      y += 8;
+
+      doc.text(`Glosa general: ${comprobante.glosa_general || ""}`, marginLeft, y);
+      y += 8;
+
+      // --- Construcción de tabla ---
+      const head = [["Código", "Glosa detalle", "Debe", "Haber"]];
+      const body = [];
+      const rowLevels = [];
+
+      (comprobante.detalles || []).forEach((d) => {
+        const cuenta = d.cuenta || {}; // en caso de que falte la relación
+        const codigo = cuenta.codigo || "";
+        const descripcion = cuenta.descripcion || d.glosa_detalle || "";
+        const nivel = codigo.split(".").length; // determina jerarquía por puntos
+
+        body.push([
+          codigo,
+          descripcion,
+          (parseFloat(d.debe) || 0).toFixed(2),
+          (parseFloat(d.haber) || 0).toFixed(2)
+        ]);
+        rowLevels.push(nivel);
+      });
+
+      // --- Totales ---
+      const totalDebe = (comprobante.detalles || [])
+        .reduce((acc, d) => acc + (parseFloat(d.debe) || 0), 0)
+        .toFixed(2);
+      const totalHaber = (comprobante.detalles || [])
+        .reduce((acc, d) => acc + (parseFloat(d.haber) || 0), 0)
+        .toFixed(2);
+
+      body.push(["", "TOTALES", totalDebe, totalHaber]);
+      rowLevels.push(1);
+
+      // --- Render de la tabla ---
+      autoTable(doc, {
+        startY: y,
+        head,
+        body,
+        styles: { fontSize: 10, cellPadding: 3 },
+        headStyles: { fillColor: [52, 73, 94], textColor: 255, halign: "center" },
+        didParseCell: function (data) {
+          const rowIndex = data.row.index;
+          const colIndex = data.column.index;
+
+          // Formato de la última fila (totales)
+          if (rowIndex === body.length - 1) {
+            data.cell.styles.fontStyle = "bold";
+            data.cell.styles.fillColor = [230, 230, 230];
+          }
+
+          // Sangría jerárquica
+          if (colIndex === 0) {
+            const nivel = rowLevels[rowIndex] || 1;
+            const pad = Math.max(0, (nivel - 1) * 5); // sangría por nivel
+            data.cell.styles.cellPadding = [3, 3, 3, pad];
+            if (nivel <= 2) data.cell.styles.fontStyle = "bold";
+          }
+
+          // Alineación numérica
+          if (colIndex === 2 || colIndex === 3) {
+            data.cell.styles.halign = "right";
+          }
+        },
+        columnStyles: {
+          0: { cellWidth: 35 },  // Código
+          1: { cellWidth: 85 },  // Glosa
+          2: { cellWidth: 35 },  // Debe
+          3: { cellWidth: 35 }   // Haber
+        },
+        margin: { left: 10, right: 10 },
+        tableWidth: 'auto',
+        overflow: 'linebreak',
+        pageBreak: 'auto'
+      });
+
+      y = doc.lastAutoTable.finalY + 10;
+
+      // --- Firmas ---
+      const seccionFirmas = [
+        { label: "Elaborado por:", x: marginLeft },
+        { label: "Verificado por:", x: pageWidth / 2 - 20 },
+        { label: "Aprobado por:", x: pageWidth - marginLeft - 60 }
+      ];
+
+      y += 10;
+      seccionFirmas.forEach(f => {
+        doc.text(f.label, f.x, y);
+        doc.line(f.x, y + 15, f.x + 50, y + 15);
+      });
+
+      // --- Guardar PDF ---
+      const nombreArchivo = `Comprobante_${comprobante.tipo}_${comprobante.id}.pdf`;
+      doc.save(nombreArchivo);
+    });
+  });
+};
+
+
+
+
+
 const Comprobante = () => {
   const [comprobantes, setComprobantes] = useState([]);
   const [planCuentas, setPlanCuentas] = useState([]);
@@ -311,7 +440,7 @@ const Comprobante = () => {
                     cursor: 'pointer',
                     padding: '5px 10px'
                   }}
-                  onClick={() => alert(`🔹 Función de generar PDF para comprobante #${c.id} aún no implementada.`)}
+                  onClick={() => generarPDF(c)}
                 >
                   📄 Generar PDF
                 </button>
