@@ -20,6 +20,7 @@ class DominiosSeeder extends Seeder
             ['id' => 8, 'descripcion' => 'estado_compra'], 
             ['id' => 9, 'descripcion' => 'estado_lote'],    
             ['id' => 10, 'descripcion' => 'tipo_movimiento'],  
+            ['id' => 11, 'descripcion' => 'tipo_precio'],
         ]);
     }
 }
