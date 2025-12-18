@@ -8,6 +8,8 @@ use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class EmpresaCrudController extends Controller
 {
@@ -175,4 +177,29 @@ class EmpresaCrudController extends Controller
         $empresa->save();
         return response()->json(['message' => 'Empresa reactivada correctamente']);
     }
+
+    public function getListadoMunicipios(): JsonResponse
+    {
+        $ubicaciones = DB::table('politicos_ubicacion as m')
+            // 1. Unimos el Municipio (m) con su Padre Provincia (p)
+            ->join('politicos_ubicacion as p', 'm.id_padre', '=', 'p.id')
+            // 2. Unimos la Provincia (p) con su Padre Departamento (d)
+            ->join('politicos_ubicacion as d', 'p.id_padre', '=', 'd.id')
+            // 3. Filtros para asegurar la jerarquía
+            ->where('m.tipo', 'Municipio') // El registro base debe ser Municipio
+            // Opcional: validar que el abuelo sea Departamento (aunque la estructura ya lo dicta)
+            ->where('d.tipo', 'Departamento') 
+            // 4. Seleccionamos
+            ->select(
+                'd.descripcion as departamento',
+                'm.descripcion as municipio'
+            )
+            // 5. Ordenamos alfabéticamente
+            ->orderBy('d.descripcion')
+            ->orderBy('m.descripcion')
+            ->get();
+
+        return response()->json($ubicaciones);
+    }
+
 }

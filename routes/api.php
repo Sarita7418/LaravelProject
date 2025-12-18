@@ -105,7 +105,7 @@ Route::middleware([
     Route::put('/empresas/{id}', [EmpresaCrudController::class, 'update'])->middleware('auth:sanctum');
     Route::delete('/empresas/{id}', [EmpresaCrudController::class, 'destroy'])->middleware('auth:sanctum');
     Route::patch('/empresas/{id}/reactivar', [EmpresaCrudController::class, 'reactivar'])->middleware('auth:sanctum');
-
+    Route::get('/ubicaciones', [EmpresaCrudController::class, 'getListadoMunicipios']);
 
     // Sucursales
     Route::get('/sucursales', [SucursalCrudController::class, 'index'])->middleware('auth:sanctum');
