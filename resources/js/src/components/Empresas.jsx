@@ -119,9 +119,7 @@ function Empresas() {
   // --- NUEVO HANDLER ESPECÍFICO PARA DEPARTAMENTO ---
   const handleDepartamentoChange = (e) => {
     const nuevoDepto = e.target.value
-    
-    // 1. Actualizamos el departamento en el form
-    // 2. BORRAMOS el municipio (porque el municipio anterior no pertenece al nuevo depto)
+   
     setFormData(prev => ({
       ...prev,
       departamento: nuevoDepto,

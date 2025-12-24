@@ -136,8 +136,13 @@
   filter: brightness(0.95);
 }
 
+.form-container h2 {
+  margin: 0;
+  text-align: center;
+}
+
 /* ===== Overlay de formulario ===== */
-.form-overlay {
+.empresas-container .form-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 3, 89, 0.20);
@@ -148,49 +153,53 @@
 }
 
 /* ===== Contenedor del formulario ===== */
-.form-container {
+.empresas-container .form-container {
   background-color: var(--bg);
-  padding: 28px;
+  padding: 32px;
   border-radius: 20px;
   width: 420px;
   max-width: 92vw;
   box-shadow: var(--shadow);
   color: var(--text);
-  border: 1px solid rgba(0, 3, 89, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
 }
 
 /* ===== Campos ===== */
-.form-label {
-  display: block;
-  margin: 8px 0 6px;
-  font-weight: 600;
+.empresas-container .form-label {
+  display: flex;
+  margin: 0px 0;
+  font-weight: 800;
   color: var(--text);
 }
 
-.form-input,
-.form-select {
-  padding: 12px 14px;
+.empresas-container .form-container input,
+.empresas-container .form-container select {
+  padding: 4px 8px;
   width: 100%;
-  border-radius: 14px;
+  border-radius: 10px;
   border: 2px solid rgba(0, 3, 89, 0.18);
-  margin-bottom: 16px;
+  margin-bottom: 0px;
   background-color: #ffffff;
   color: var(--text);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   font-size: 15px;
+  box-sizing: border-box;
 }
-.form-input::placeholder {
+.empresas-container .form-input::placeholder {
   color: var(--muted);
 }
-.form-input:focus,
-.form-select:focus {
+.empresas-container .form-input:focus,
+.empresas-container .form-select:focus {
   outline: none;
   border-color: var(--brand-primary);
   box-shadow: 0 0 0 4px rgba(255, 253, 85, 0.35);
 }
 
 /* Archivo */
-.form-input[type="file"] {
+.empresas-container .form-input[type="file"] {
   padding: 8px;
   background-color: #ffffff;
   border: 2px dashed rgba(0, 3, 89, 0.25);
@@ -198,14 +207,15 @@
 }
 
 /* ===== Acciones del formulario ===== */
-.form-actions {
+.empresas-container .form-actions {
   display: flex;
   justify-content: space-between;
   gap: 10px;
+  margin-top: 20px;
 }
 
-.create-btn,
-.cancel-btn {
+.empresas-container .create-btn,
+.empresas-container .cancel-btn {
   padding: 10px 16px;
   color: #ffffff;
   border: 2px solid transparent;
@@ -216,21 +226,21 @@
 }
 
 /* Crear/Guardar: primario */
-.create-btn {
+.empresas-container .create-btn {
   background-color: var(--brand-primary);
   box-shadow: 0 6px 16px rgba(0, 3, 89, 0.18);
 }
-.create-btn:hover {
+.empresas-container .create-btn:hover {
   background-color: #00023f;
 }
 
 /* Cancelar: neutro */
-.cancel-btn {
+.empresas-container .cancel-btn {
   background-color: #e5e7eb;
   color: #111827;
   border-color: rgba(0, 3, 89, 0.12);
 }
-.cancel-btn:hover {
+.empresas-container .cancel-btn:hover {
   background-color: #d1d5db;
 }
 
@@ -243,3 +253,13 @@
     width: 92%;
   }
 }
+
+.empresa-card .card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  width: 70%;
+  margin-left: 15%;
+}
+
