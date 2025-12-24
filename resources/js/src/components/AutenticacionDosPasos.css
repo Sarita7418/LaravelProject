@@ -31,7 +31,7 @@
 /* Cuando el valor está lleno */
 .codigo-inputs input.filled {
   background-color: #FFFD55;
-  color: #000359;
+  color: hwb(238 0% 65%);
   border-color: #000359;
   box-shadow: 0 4px 12px rgba(0, 3, 89, 0.15);
 }
@@ -54,4 +54,26 @@
     font-size: 20px;
     border-radius: 12px;
   }
+}
+
+.dos-pasos-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg);
+  padding: 24px;
+  width: 50%;
+  border: hwb(238 0% 65%) 1px solid;
+  border-radius: 24px;
+  margin-left: 23%;
+  gap: 4px;
+  box-shadow: 0px 0px 50px rgb(35, 31, 62);
+}
+
+.dos-pasos-container h2{
+  margin-bottom: 0;
+}
+.dos-pasos-container button{
+  width: 50%;
 }
