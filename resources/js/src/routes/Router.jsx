@@ -8,13 +8,16 @@ import Usuarios from '../components/Usuarios'
 import Roles from '../components/Roles'
 import Personas from '../components/Personas'
 import Protocolos from '../components/Protocolos'
-import PlanCuentas from '../components/PlanCuentas'   // 👈 IMPORTAR AQUÍ
+import Empresas from '../components/Empresas'
+import Sucursales from '../components/Sucursales'
+import PlanCuentas from '../components/PlanCuentas'
+import PlanPresupuestarios from '../components/PlanPresupuestarios'
 import LayoutDashboard from '../components/LayoutDashboard'
 import PrivateRoute from './PrivateRoute'
 import Comprobante from '../components/Comprobante'
-
-import Registro from '../components/Registro'
 import Reportes from '../components/Reportes'
+
+import Registro from '../components/Registro' 
 
 export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -48,6 +51,7 @@ export default function Router() {
           setPendingTwoFactor={setPendingTwoFactor}
         />
       } />
+
 
       <Route path="/registro" element={<Registro />} />
 
@@ -133,6 +137,29 @@ export default function Router() {
           } />
         )}
 
+        {permisos.includes("/dashboard/empresas") && (
+          <Route path="empresas" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/empresas"]}
+            >
+              <Empresas />
+            </PrivateRoute>
+          } />
+        )}
+        {permisos.includes("/dashboard/sucursales") && (
+          <Route path="sucursales" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/sucursales"]}
+            >
+              <Sucursales />
+            </PrivateRoute>
+          } />
+        )}
+
         {permisos.includes("/dashboard/plan-cuentas") && (
           <Route path="plan-cuentas" element={
             <PrivateRoute
@@ -143,7 +170,19 @@ export default function Router() {
               <PlanCuentas />
             </PrivateRoute>
           } />
-        )}git add .
+        )}
+
+        {permisos.includes("/dashboard/plan-presupuestarios") && (   // 👈 AÑADIR ESTE BLOQUE
+          <Route path="plan-presupuestarios" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/plan-presupuestarios"]}
+            >
+              <PlanPresupuestarios />
+            </PrivateRoute>
+          } />
+        )}
       </Route>
 
       <Route path="/unauthorized" element={<h1>No autorizado</h1>} />

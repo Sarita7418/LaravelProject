@@ -15,6 +15,7 @@ use App\Http\Controllers\Crud\UsuarioCrudController;
 use App\Http\Controllers\ProtocoloController;
 use App\Http\Controllers\Crud\PersonaCrudController;
 use App\Http\Controllers\Crud\PlanCuentasCrudController;
+use App\Http\Controllers\Crud\PlanPresupuestarioCrudController;
 use App\Http\Controllers\Navegacion\NavegacionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 
@@ -24,6 +25,9 @@ use App\Http\Controllers\ReportePDFController;
 use App\Http\Controllers\ComprobanteController;
 use App\Http\Controllers\PlanCuentaController;
 
+use App\Http\Controllers\Crud\EmpresaCrudController;
+use App\Http\Controllers\Crud\SucursalCrudController;
+use App\Http\Controllers\Crud\LogoCrudController;
 
 
 Route::post('/personas', [PersonaCrudController::class, 'store']);
@@ -94,6 +98,31 @@ Route::middleware([
     Route::get('/usuarios/inactivos', [UsuarioCrudController::class, 'inactivos'])->middleware('auth:sanctum');
     Route::put('/usuarios/{id}/reactivar', [UsuarioCrudController::class, 'reactivar'])->middleware('auth:sanctum');
     Route::get('/usuario/verificar-username', [UsuarioCrudController::class, 'verificarUsername']);
+    // Empresas
+    Route::get('/empresas', [EmpresaCrudController::class, 'index'])->middleware('auth:sanctum');
+    Route::get('/empresas-inactivas', [EmpresaCrudController::class, 'inactivos'])->middleware('auth:sanctum');
+    Route::post('/empresas', [EmpresaCrudController::class, 'store'])->middleware('auth:sanctum');
+    Route::put('/empresas/{id}', [EmpresaCrudController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/empresas/{id}', [EmpresaCrudController::class, 'destroy'])->middleware('auth:sanctum');
+    Route::patch('/empresas/{id}/reactivar', [EmpresaCrudController::class, 'reactivar'])->middleware('auth:sanctum');
+
+
+    // Sucursales
+    Route::get('/sucursales', [SucursalCrudController::class, 'index'])->middleware('auth:sanctum');
+    Route::get('/sucursales-inactivas', [SucursalCrudController::class, 'inactivos'])->middleware('auth:sanctum');
+    Route::post('/sucursales', [SucursalCrudController::class, 'store'])->middleware('auth:sanctum');
+    Route::get('/sucursales/{id}', [SucursalCrudController::class, 'show'])->middleware('auth:sanctum');
+    Route::put('/sucursales/{id}', [SucursalCrudController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/sucursales/{id}', [SucursalCrudController::class, 'destroy'])->middleware('auth:sanctum');
+    Route::patch('/sucursales/{id}/reactivar', [SucursalCrudController::class, 'reactivar'])->middleware('auth:sanctum');
+
+    // Logos
+    Route::get('/logos', [LogoCrudController::class, 'index'])->middleware('auth:sanctum');
+    Route::post('/logos', [LogoCrudController::class, 'store'])->middleware('auth:sanctum');
+    Route::put('/logos/{id}', [LogoCrudController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/logos/{id}', [LogoCrudController::class, 'destroy'])->middleware('auth:sanctum');
+
+
 
     // Protocolos
     Route::get('/protocolos', [ProtocoloController::class, 'index'])->middleware('auth:sanctum');
@@ -126,6 +155,23 @@ Route::middleware([
     Route::post('/plan-cuentas', [PlanCuentasCrudController::class, 'store']);
     Route::put('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'update']);
     Route::delete('/plan-cuentas/{id}', [PlanCuentasCrudController::class, 'destroy']);
+    // Plan Presupuestario - RUTAS CORREGIDAS (ORDEN IMPORTANTE)
+    // PRIMERO: Rutas específicas (más específicas primero)
+    Route::get('/plan-presupuestarios/todas', [PlanPresupuestarioCrudController::class, 'indexTodas']);
+    Route::get('/plan-presupuestarios/inactivas', [PlanPresupuestarioCrudController::class, 'inactivas']);
+    Route::get('/plan-presupuestarios/debug', [PlanPresupuestarioCrudController::class, 'debug']);
+    Route::get('/plan-presupuestarios/padres', [PlanPresupuestarioCrudController::class, 'getCuentasPadre']);
+    Route::get('/plan-presupuestarios/subdominios/{dominio}', [PlanPresupuestarioCrudController::class, 'getSubdominiosPorDominio']);
+    Route::get('/plan-presupuestarios/subdominios', [PlanPresupuestarioCrudController::class, 'getSubdominios']);
+    
+    // SEGUNDO: Rutas con parámetros variables
+    Route::put('/plan-presupuestarios/{id}/reactivar', [PlanPresupuestarioCrudController::class, 'reactivar']);
+    
+    // TERCERO: Rutas CRUD básicas
+    Route::get('/plan-presupuestarios', [PlanPresupuestarioCrudController::class, 'index']);
+    Route::post('/plan-presupuestarios', [PlanPresupuestarioCrudController::class, 'store']);
+    Route::put('/plan-presupuestarios/{id}', [PlanPresupuestarioCrudController::class, 'update']);
+    Route::delete('/plan-presupuestarios/{id}', [PlanPresupuestarioCrudController::class, 'destroy']);
 
     
 });

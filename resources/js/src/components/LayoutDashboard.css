@@ -1,20 +1,70 @@
+/* ===== Layout principal ===== */
 .layout-dashboard {
   display: flex;
   height: 100vh;
   overflow: hidden; /* Evita scroll general */
+  background-color: #ffffff;
+  color: #000359;
 }
 
-
+/* ===== Contenido principal ===== */
 .contenido {
   flex-grow: 1;
   padding: 2rem;
-  overflow-y: auto; /* Scroll vertical SOLO aquí */
-  height: 100vh; /* Igual altura que sidebar */
+  overflow-y: auto; /* Scroll vertical solo aquí */
+  height: 100vh;
+  background-color: #ffffff;
+  border-top-left-radius: 28px;
+  border-bottom-left-radius: 28px;
+  box-shadow: inset 0 0 8px rgba(0, 3, 89, 0.08);
 }
 
-
-
+/* ===== Botón de cerrar sesión ===== */
+.boton-logout {
+  background-color: #000359;
+  color: #ffffff;
+  border: none;
+  border-radius: 18px;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 14px rgba(0, 3, 89, 0.15);
+}
 
 .boton-logout:hover {
   background-color: #c62828;
+  box-shadow: 0 8px 18px rgba(198, 40, 40, 0.35);
+}
+
+/* ===== Scrollbar personalizado ===== */
+.contenido::-webkit-scrollbar {
+  width: 10px;
+}
+
+.contenido::-webkit-scrollbar-thumb {
+  background-color: #000359;
+  border-radius: 10px;
+}
+
+.contenido::-webkit-scrollbar-thumb:hover {
+  background-color: #FFFD55;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .layout-dashboard {
+    flex-direction: column;
+  }
+
+  .contenido {
+    border-radius: 0;
+    padding: 1.2rem;
+  }
+
+  .boton-logout {
+    width: 100%;
+    text-align: center;
+  }
 }

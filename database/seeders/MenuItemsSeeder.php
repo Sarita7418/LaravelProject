@@ -34,6 +34,7 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 2,
         ]);
+
         // Submenú: Personas
         MenuItem::create([
             'item' => 'Personas',
@@ -60,13 +61,41 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 5,
         ]);
-        // Submenú: plan_cuentas
+
+        // Submenú: Empresas
         MenuItem::create([
-            'item' => 'Plan de Cuentas',  
+            'item' => 'Empresas',
+            'ruta' => '/dashboard/empresas',
+            'id_padre' => 1,
+            'nivel' => 3,
+            'orden' => 5,
+        ]);
+
+        // Submenú: Sucursales
+        MenuItem::create([
+            'item' => 'Sucursales',
+            'ruta' => '/dashboard/sucursales',
+            'id_padre' => 1,
+            'nivel' => 3,
+            'orden' => 6,
+        ]);
+
+        // Submenú: Plan de Cuentas
+        MenuItem::create([
+            'item' => 'Plan de Cuentas',
             'ruta' => '/dashboard/plan-cuentas',
             'id_padre' => $admin->id,
             'nivel' => 3,
             'orden' => 5,
+                ]);
+
+        // Submenú: Plan Presupuestarios
+        MenuItem::create([
+            'item' => 'Plan Presupuestarios',
+            'ruta' => '/dashboard/plan-presupuestarios',
+            'id_padre' => $admin->id,
+            'nivel' => 3,
+            'orden' => 6,
         ]);
         
         // Submenú: Comprobantes

@@ -16,8 +16,10 @@ class AccionMenuItemSeeder extends Seeder
             '/dashboard/roles',
             '/dashboard/personas',
             '/dashboard/protocolos',
+            '/dashboard/empresas',
+            '/dashboard/sucursales',
             '/dashboard/plan-cuentas',
-            '/dashboard/comprobantes'
+            '/dashboard/plan-presupuestarios'
         ];
 
         $menus = MenuItem::whereIn('ruta', $rutas)->get();
@@ -31,7 +33,7 @@ class AccionMenuItemSeeder extends Seeder
                 DB::table('accion_menu_item')->updateOrInsert(
                     [
                         'id_menu_item' => $menu->id,
-                        'id_accion'    => $accion->id
+                        'id_accion' => $accion->id
                     ],
                     [
                         'created_at' => now(),
