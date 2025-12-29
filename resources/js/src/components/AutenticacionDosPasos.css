@@ -2,6 +2,7 @@
 .codigo-inputs {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 12px;
   margin: 24px 0;
 }
@@ -54,4 +55,21 @@
     font-size: 20px;
     border-radius: 12px;
   }
+}
+.dos-pasos-container {
+  min-height: 100vh;          /* ocupa toda la pantalla */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    /* centra vertical */
+  align-items: center;        /* centra horizontal */
+  text-align: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+.btn-enviar {
+  margin-top: 16px;
+}
+
+.btn-cancelar {
+  margin-top: 10px;
 }
