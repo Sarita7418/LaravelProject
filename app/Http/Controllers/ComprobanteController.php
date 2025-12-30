@@ -91,14 +91,14 @@ class ComprobanteController extends Controller
         $com = Comprobante::with('detalles.cuenta')->findOrFail($id);
         return response()->json($com);
     }
-    public function index()
-{
-    // devolvemos todos los comprobantes con detalles, si quieres
-    $comprobantes = Comprobante::with('detalles.cuenta')
-        ->orderBy('fecha','desc')
-        ->get();
+   public function index()
+    {
+        // CAMBIO: Ordenamos por ID descendente (el ID más alto arriba)
+        $comprobantes = Comprobante::with('detalles.cuenta')
+            ->orderBy('id', 'desc') 
+            ->get();
 
-    return response()->json($comprobantes);
-}
+        return response()->json($comprobantes);
+    }
 
 }
