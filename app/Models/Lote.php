@@ -200,7 +200,7 @@ class Lote extends Model
 
     public function getCompraNroDocumentoAttribute()
     {
-        return $this->compra?->nro_documento ?? 'N/A';
+        return $this->compra?->nro_factura ?? 'N/A';
     }
 
     public function getCantidadDisponibleAttribute()

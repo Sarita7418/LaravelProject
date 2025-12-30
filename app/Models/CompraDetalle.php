@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CompraDetalle extends Model
 {
-    protected $table = 'compra_detalle';
+    protected $table = 'compras_detalle';
     
     protected $fillable = [
         'id_compra',
@@ -64,9 +64,9 @@ class CompraDetalle extends Model
 
     public function scopeOrdenadoPorProducto($query)
     {
-        return $query->join('productos', 'compra_detalle.id_producto', '=', 'productos.id')
+        return $query->join('productos', 'compras_detalle.id_producto', '=', 'productos.id')
                     ->orderBy('productos.nombre')
-                    ->select('compra_detalle.*');
+                    ->select('compras_detalle.*');
     }
 
     // Accessors para obtener información relacionada

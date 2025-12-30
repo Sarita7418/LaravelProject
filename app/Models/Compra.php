@@ -7,19 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Compra extends Model
 {
     protected $table = 'compras';
-    
     protected $fillable = [
         'id_empresa',
         'id_sucursal',
         'id_proveedor',
         'id_usuario',
         'fecha_compra',
-        'nro_documento',
         'observacion',
         'subtotal',
         'descuento_total',
         'total_compra',
-        'id_estado_compra'
+        'id_estado_compra',
+        'nro_documento',
+        'fecha_limite_emision',
+        'id_sucursal_proveedor'
     ];
 
     protected $casts = [
@@ -28,6 +29,7 @@ class Compra extends Model
         'id_proveedor' => 'integer',
         'id_usuario' => 'integer',
         'fecha_compra' => 'date',
+        'fecha_limite_emision' => 'date',
         'subtotal' => 'decimal:2',
         'descuento_total' => 'decimal:2',
         'total_compra' => 'decimal:2',
@@ -35,8 +37,6 @@ class Compra extends Model
     ];
 
     public $timestamps = true;
-
-    // Relaciones
     public function empresa()
     {
         return $this->belongsTo(Empresa::class, 'id_empresa');
@@ -46,15 +46,18 @@ class Compra extends Model
     {
         return $this->belongsTo(Sucursal::class, 'id_sucursal');
     }
-
     public function proveedor()
     {
-        return $this->belongsTo(Persona::class, 'id_proveedor');
+        return $this->belongsTo(Empresa::class, 'id_proveedor');
+    }
+    public function sucursalProveedor()
+    {
+        return $this->belongsTo(Sucursal::class, 'id_sucursal_proveedor');
     }
 
     public function usuario()
     {
-        return $this->belongsTo(Usuario::class, 'id_usuario');
+        return $this->belongsTo(User::class, 'id_usuario');
     }
 
     public function estadoCompra()
@@ -67,20 +70,19 @@ class Compra extends Model
         return $this->hasMany(CompraDetalle::class, 'id_compra');
     }
 
-    // Scopes para filtros comunes
     public function scopeBorradores($query)
     {
-        return $query->where('id_estado_compra', 24); // ID 24 = BORRADOR
+        return $query->where('id_estado_compra', 24); 
     }
 
     public function scopeConfirmadas($query)
     {
-        return $query->where('id_estado_compra', 25); // ID 25 = CONFIRMADO
+        return $query->where('id_estado_compra', 25); 
     }
 
     public function scopeAnuladas($query)
     {
-        return $query->where('id_estado_compra', 26); // ID 26 = ANULADO
+        return $query->where('id_estado_compra', 26); 
     }
 
     public function scopePorEmpresa($query, $empresaId)
@@ -134,20 +136,19 @@ class Compra extends Model
         ]);
     }
 
-    // Métodos helper para verificar estados
     public function esBorrador()
     {
-        return $this->id_estado_compra === 24; // ID 24 = BORRADOR
+        return $this->id_estado_compra === 24; 
     }
 
     public function estaConfirmada()
     {
-        return $this->id_estado_compra === 25; // ID 25 = CONFIRMADO
+        return $this->id_estado_compra === 25; 
     }
 
     public function estaAnulada()
     {
-        return $this->id_estado_compra === 26; // ID 26 = ANULADO
+        return $this->id_estado_compra === 26; 
     }
 
     public function puedeEditarse()
@@ -165,7 +166,6 @@ class Compra extends Model
         return $this->esBorrador() && $this->detalles()->count() > 0;
     }
 
-    // Accessors para obtener descripciones
     public function getEstadoTextoAttribute()
     {
         return $this->estadoCompra?->descripcion ?? 'N/A';
@@ -196,7 +196,6 @@ class Compra extends Model
         return $this->usuario?->name ?? 'N/A';
     }
 
-    // Accessor para mostrar información completa de la compra
     public function getInfoCompletaAttribute()
     {
         return [
@@ -218,7 +217,6 @@ class Compra extends Model
         ];
     }
 
-    // Métodos de cálculo
     public function calcularTotales()
     {
         $detalles = $this->detalles;
@@ -241,19 +239,13 @@ class Compra extends Model
         return $this->detalles()->sum('cantidad');
     }
 
-    // Métodos de cambio de estado
     public function confirmar()
     {
         if (!$this->puedeConfirmarse()) {
             throw new \Exception('No se puede confirmar esta compra');
         }
 
-        $this->update(['id_estado_compra' => 25]); // ID 25 = CONFIRMADO
-        
-        // Aquí puedes agregar lógica adicional como:
-        // - Generar movimientos de inventario
-        // - Crear registros contables
-        // - Enviar notificaciones
+        $this->update(['id_estado_compra' => 25]); 
         
         return $this;
     }
@@ -270,18 +262,13 @@ class Compra extends Model
         }
 
         $this->update([
-            'id_estado_compra' => 26, // ID 26 = ANULADO
+            'id_estado_compra' => 26, 
             'observacion' => $this->observacion . "\n" . $observacionAnulacion
         ]);
-
-        // Aquí puedes agregar lógica adicional como:
-        // - Revertir movimientos de inventario
-        // - Crear asientos de anulación
         
         return $this;
     }
 
-    // Métodos estáticos útiles
     public static function obtenerComprasPorEstado($estadoId)
     {
         return self::where('id_estado_compra', $estadoId)
@@ -336,7 +323,6 @@ class Compra extends Model
         ];
     }
 
-    // Método para generar número de documento automático
     public static function generarNumeroDocumento($empresaId, $sucursalId)
     {
         $ultimaCompra = self::where('id_empresa', $empresaId)

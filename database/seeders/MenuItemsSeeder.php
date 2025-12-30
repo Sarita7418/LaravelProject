@@ -9,7 +9,7 @@ class MenuItemsSeeder extends Seeder
 {
     public function run(): void
     {
-        // Menú raíz: Dashboard (requerido para acceso general)
+        // Menú raíz: Administración (Dashboard principal)
         $admin = MenuItem::create([
             'item' => 'Administración',
             'ruta' => '/dashboard',
@@ -22,7 +22,7 @@ class MenuItemsSeeder extends Seeder
             'item' => 'Usuarios',
             'ruta' => '/dashboard/usuarios',
             'id_padre' => $admin->id,
-            'nivel' => 3,
+            'nivel' => 2,
             'orden' => 1,
         ]);
 
@@ -31,7 +31,7 @@ class MenuItemsSeeder extends Seeder
             'item' => 'Roles',
             'ruta' => '/dashboard/roles',
             'id_padre' => $admin->id,
-            'nivel' => 3,
+            'nivel' => 2,
             'orden' => 2,
         ]);
 
@@ -40,7 +40,7 @@ class MenuItemsSeeder extends Seeder
             'item' => 'Personas',
             'ruta' => '/dashboard/personas',
             'id_padre' => $admin->id,
-            'nivel' => 3,
+            'nivel' => 2,
             'orden' => 3,
         ]);
 
@@ -49,7 +49,7 @@ class MenuItemsSeeder extends Seeder
             'item' => 'Protocolos',
             'ruta' => '/dashboard/protocolos',
             'id_padre' => $admin->id,
-            'nivel' => 3,
+            'nivel' => 2,
             'orden' => 4,
         ]);
 
@@ -58,7 +58,7 @@ class MenuItemsSeeder extends Seeder
             'item' => 'Reportes',
             'ruta' => '/dashboard/reportes',
             'id_padre' => $admin->id,
-            'nivel' => 3,
+            'nivel' => 2,
             'orden' => 5,
         ]);
 
@@ -66,18 +66,18 @@ class MenuItemsSeeder extends Seeder
         MenuItem::create([
             'item' => 'Empresas',
             'ruta' => '/dashboard/empresas',
-            'id_padre' => 1,
-            'nivel' => 3,
-            'orden' => 5,
+            'id_padre' => $admin->id,
+            'nivel' => 2,
+            'orden' => 6,
         ]);
 
         // Submenú: Sucursales
         MenuItem::create([
             'item' => 'Sucursales',
             'ruta' => '/dashboard/sucursales',
-            'id_padre' => 1,
-            'nivel' => 3,
-            'orden' => 6,
+            'id_padre' => $admin->id,
+            'nivel' => 2,
+            'orden' => 7,
         ]);
 
         // Submenú: Plan de Cuentas
@@ -85,17 +85,17 @@ class MenuItemsSeeder extends Seeder
             'item' => 'Plan de Cuentas',
             'ruta' => '/dashboard/plan-cuentas',
             'id_padre' => $admin->id,
-            'nivel' => 3,
-            'orden' => 5,
-                ]);
+            'nivel' => 2,
+            'orden' => 8,
+        ]);
 
         // Submenú: Plan Presupuestarios
         MenuItem::create([
             'item' => 'Plan Presupuestarios',
             'ruta' => '/dashboard/plan-presupuestarios',
             'id_padre' => $admin->id,
-            'nivel' => 3,
-            'orden' => 6,
+            'nivel' => 2,
+            'orden' => 9,
         ]);
         
         // Submenú: Comprobantes
@@ -103,8 +103,28 @@ class MenuItemsSeeder extends Seeder
             'item' => 'Comprobantes',
             'ruta' => '/dashboard/comprobantes',
             'id_padre' => $admin->id,
-            'nivel' => 3,
-            'orden' => 5,
+            'nivel' => 2,
+            'orden' => 10,
         ]);
+
+ 
+        $inventarios = MenuItem::create([
+            'item' => 'Inventarios',
+            'ruta' => '#', // Categoría padre sin enlace directo
+            'id_padre' => $admin->id,
+            'nivel' => 2,
+            'orden' => 11,
+        ]);
+
+        // Submenú: Compras
+        MenuItem::create([
+            'item' => 'Compras',
+            'ruta' => '/dashboard/compras',
+            'id_padre' => $inventarios->id,
+            'nivel' => 3,
+            'orden' => 1,
+        ]);
+
+
     }
 }
