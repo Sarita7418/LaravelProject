@@ -1,159 +1,207 @@
-/* ===== Sidebar jerárquico (base blanca + detalles de marca) ===== */
 .menujerar-sidebar {
   background: #ffffff;
   min-width: 260px;
   max-width: 300px;
   height: 100vh;
-  padding: 24px 0;
+  padding: 0;
   border-right: 1px solid rgba(0, 3, 89, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 18px;
   color: #000359;
+  overflow: hidden;
+  position: relative;
 }
 
-/* Usuario (encabezado del sidebar) */
-.menujerar-usuario {
-  padding: 16px 24px;
+.menujerar-usuario-fijo {
+  flex-shrink: 0;
+  background: #ffffff;
   border-bottom: 1px solid rgba(0, 3, 89, 0.12);
+  padding: 16px 24px;
+  z-index: 2;
+  height: auto;
+  overflow: hidden !important;
+  position: relative;
 }
+
+.menujerar-usuario {
+  margin: 0;
+  padding: 0;
+}
+
 .menujerar-nombre {
   font-weight: 700;
   font-size: 1.05rem;
   color: #000359;
+  margin: 0;
+  line-height: 1.2;
 }
+
 .menujerar-rol {
   font-size: 0.95rem;
   color: #6b7280;
   margin-top: 4px;
+  margin-bottom: 0;
+  line-height: 1.2;
 }
 
-/* Estructura de listas */
+.menujerar-menu-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0;
+  padding-right: 4px;
+  min-height: 0; 
+}
+
+.menujerar-footer-fijo {
+  flex-shrink: 0;
+  padding: 16px 0;
+  border-top: 1px solid rgba(0, 3, 89, 0.12);
+  background: #ffffff;
+  z-index: 2;
+  height: auto;
+  overflow: hidden !important;
+}
+
+.menujerar-menu-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menujerar-menu-scrollable::-webkit-scrollbar-track {
+  background: rgba(0, 3, 89, 0.05);
+  border-radius: 10px;
+}
+
+.menujerar-menu-scrollable::-webkit-scrollbar-thumb {
+  background: rgba(0, 3, 89, 0.2);
+  border-radius: 10px;
+}
+
+.menujerar-menu-scrollable::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 3, 89, 0.3);
+}
+
+.menujerar-menu-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 3, 89, 0.2) rgba(0, 3, 89, 0.05);
+}
+
 .menujerar-submenu {
   list-style: none;
   margin: 0;
   padding: 0;
 }
+
 .menujerar-li {
   margin: 0;
   padding: 0;
 }
 
-/* Botón/ítem genérico del menú */
 .menujerar-boton {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 16px;
+  padding: 8px 16px;
   color: #000359;
   font-size: 1.05rem;
   cursor: pointer;
-  border-radius: 14px;               /* más redondeado */
+  border-radius: 14px;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-  margin: 2px 8px;
+  margin: 1px 8px;
 }
 
-/* Variación para hijos (submenú) */
 .menujerar-boton-hijo {
   padding-left: 28px;
   font-size: 0.98rem;
-  color: #334155; /* gris azulado suave */
+  color: #334155;
 }
 
-/* Hover/activo */
 .menujerar-boton:hover {
   background: #FFFD55;
   color: #000359;
   box-shadow: 0 2px 10px rgba(0, 3, 89, 0.10);
 }
+
 .menujerar-boton.menujerar-activo {
   background: #FFFD55;
   color: #000359;
   box-shadow: 0 4px 14px rgba(0, 3, 89, 0.12);
 }
 
-/* Botón padre (sección) */
 .menujerar-boton.menujerar-padre {
   font-weight: 700;
   color: #000359;
   font-size: 1.12rem;
   padding-left: 20px;
-  margin: 8px 8px 6px;
-  border-left: 4px solid #000359;    /* detalle azul */
+  margin: 4px 8px 2px;
+  border-left: 4px solid #000359;
   background: #ffffff;
 }
 
-/* Flecha/ícono */
 .menujerar-arrow {
   margin-right: 2px;
   font-size: 1.05em;
   opacity: 0.85;
 }
 
-/* Contenedor de hijos (indentación y guía) */
 .menujerar-hijos-seccion {
   padding-left: 12px;
   border-left: 1px dashed rgba(0, 3, 89, 0.18);
   margin-left: 18px;
 }
 
-/* Texto y separadores */
-.menujerar-texto { user-select: none; }
+.menujerar-texto { 
+  user-select: none; 
+}
+
 .menujerar-texto-padre {
   font-size: 1.02rem;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
-.menujerar-separador {
-  border-top: 1px solid rgba(0, 3, 89, 0.12);
-  margin: 14px 0;
-}
 
-/* Botón de logout dentro del sidebar (scope local) */
-.menujerar-sidebar .boton-logout {
-  padding: 0.65rem 1rem;
-  background-color: #000359; /* primario */
-  color: #ffffff;
-  border: 2px solid transparent;
+.boton-logout {
+  padding: 10px 16px;
+  margin: 0 8px;
+  background-color: #f8f9fa;
+  color: #dc3545;
+  border: 1px solid #dc3545;
   border-radius: 14px;
   cursor: pointer;
-  font-weight: 800;
+  font-weight: 600;
+  font-size: 0.95rem;
   width: calc(100% - 16px);
-  margin: 8px;
   transition: all 0.2s ease;
-  box-shadow: 0 6px 14px rgba(0, 3, 89, 0.15);
-}
-.menujerar-sidebar .boton-logout:hover {
-  background-color: #c62828; /* rojo alerta al hover */
-  border-color: #c62828;
-  box-shadow: 0 8px 18px rgba(198, 40, 40, 0.25);
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: block;
 }
 
-/* Responsive: sidebar compacto */
-@media (max-width: 600px) {
-  .menujerar-sidebar {
-    min-width: 60px;
-    max-width: 60px;
-    padding: 10px 0;
-    align-items: center;
-  }
-  .menujerar-boton {
-    font-size: 0.95rem;
-    padding: 10px;
-    margin: 4px;
-    justify-content: center;
-  }
-  .menujerar-boton-hijo {
-    padding-left: 10px;
-  }
-  .menujerar-texto,
-  .menujerar-texto-padre,
-  .menujerar-rol,
-  .menujerar-nombre {
-    display: none; /* solo iconos en modo compacto */
-  }
-  .menujerar-hijos-seccion,
-  .menujerar-separador {
-    display: none;
-  }
+.boton-logout:hover {
+  background-color: #dc3545;
+  color: white;
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+}
+
+.menujerar-vacio {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  background: #ffffff;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.menujerar-usuario-fijo,
+.menujerar-footer-fijo {
+  overflow: hidden !important;
+  position: relative;
+}
+
+.menujerar-sidebar > div:first-child {
+  overflow: visible !important;
 }
