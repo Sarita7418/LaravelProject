@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -8,29 +9,43 @@ use App\Models\Sucursal;
 
 class LogosSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // Obtener la empresa con id = 1 (PIL Andina)
-        $empresa = Empresa::find(1);
+        $logos = [
+            'PIL Andina' => 'pil_andina_logo.png',
+            'Delizia'    => 'delizia_logo.png',
+            'EBA'        => 'eba_logo.png',
+            'SOBOCE'     => 'soboce_logo.png',
+            'CBN'        => 'cbn_logo.png',
+        ];
 
-        // Leer el archivo de logo desde la carpeta public/logos
-        $logoPath = public_path('logos/pil_andina_logo.png');  // Ruta del logo
-        $logoBinary = file_get_contents($logoPath);  // Convertir el archivo a binario
+        foreach ($logos as $empresaNombre => $logoFile) {
 
-        // Crear el logo para la empresa PIL Andina
-        Logo::create([
-            'id_entidad' => $empresa->id,
-            'tipo_entidad' => 'empresa',
-            'logo' => $logoBinary,  // Almacenamos el logo en binario
-        ]);
+            $empresa = Empresa::where('nombre_comercial', $empresaNombre)->first();
+            if (!$empresa) continue;
 
-        // Crear logo para una sucursal (por ejemplo, para la sucursal Cochabamba)
-        $sucursal = Sucursal::where('id_empresa', 1)->first();  // Obtener la primera sucursal de la empresa PIL Andina
+            $logoPath = public_path("logos/$logoFile");
+            if (!file_exists($logoPath)) continue;
 
-        Logo::create([
-            'id_entidad' => $sucursal->id,
-            'tipo_entidad' => 'sucursal',
-            'logo' => $logoBinary,  // Usamos el mismo logo para la sucursal
-        ]);
+            $binary = file_get_contents($logoPath);
+
+            Logo::create([
+                'id_entidad' => $empresa->id,
+                'tipo_entidad' => 'empresa',
+                'logo' => $binary,
+            ]);
+
+            $sucursal = Sucursal::where('id_empresa', $empresa->id)
+                ->whereNull('id_sucursal_padre')
+                ->first();
+
+            if ($sucursal) {
+                Logo::create([
+                    'id_entidad' => $sucursal->id,
+                    'tipo_entidad' => 'sucursal',
+                    'logo' => $binary,
+                ]);
+            }
+        }
     }
 }
