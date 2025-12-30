@@ -298,8 +298,7 @@ export default function LoginConDosPasos({ setAuth, setPermisos, setPendingTwoFa
           <label
             className="forgot-password-link"
             onClick={() => {
-              const userParam = encodeURIComponent(username)
-              navigate(`/cambiar-contrasena?user=${userParam}`)
+                navigate('/recuperar-contrasena')
             }}
           >
             ¿Olvidaste tu contraseña?
@@ -313,3 +312,4 @@ export default function LoginConDosPasos({ setAuth, setPermisos, setPendingTwoFa
     </div>
   )
 }
+

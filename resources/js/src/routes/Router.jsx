@@ -17,7 +17,7 @@ import PrivateRoute from './PrivateRoute'
 import Comprobante from '../components/Comprobante'
 import Reportes from '../components/Reportes'
 import Registro from '../components/Registro'
-
+import RecuperarContrasena from '../components/RecuperarContrasena'
 import Compras from '../components/inventarios/Compras'
 import CrearCompra from '../components/inventarios/CrearCompra'
 import VerCompra from '../components/inventarios/VerCompra'
@@ -55,8 +55,9 @@ export default function Router() {
         />
       } />
 
-      <Route path="/registro" element={<Registro />} />
+<Route path="/registro" element={<Registro />} />
 
+      <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
       <Route path="/cambiar-contrasena" element={<CambiarContrasena />} />
 
       <Route path="/dashboard" element={
