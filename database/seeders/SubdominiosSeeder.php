@@ -60,6 +60,9 @@ class SubdominiosSeeder extends Seeder
             ['id' => 30, 'id_dominio' => 10, 'descripcion' => 'COMPRA'],
             ['id' => 31, 'id_dominio' => 10, 'descripcion' => 'SALIDA'],
             ['id' => 32, 'id_dominio' => 10, 'descripcion' => 'AJUSTE'],
+            // Tipo Precio
+            ['id' => 33, 'id_dominio' => 11, 'descripcion' => 'ENTRADA'],
+            ['id' => 34, 'id_dominio' => 11, 'descripcion' => 'SALIDA'],
         ]);
     }
 }

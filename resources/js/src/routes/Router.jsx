@@ -16,8 +16,11 @@ import LayoutDashboard from '../components/LayoutDashboard'
 import PrivateRoute from './PrivateRoute'
 import Comprobante from '../components/Comprobante'
 import Reportes from '../components/Reportes'
-
-import Registro from '../components/Registro' 
+import Registro from '../components/Registro'
+import RecuperarContrasena from '../components/RecuperarContrasena'
+import Compras from '../components/inventarios/Compras'
+import CrearCompra from '../components/inventarios/CrearCompra'
+import VerCompra from '../components/inventarios/VerCompra'
 
 export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -52,9 +55,9 @@ export default function Router() {
         />
       } />
 
+<Route path="/registro" element={<Registro />} />
 
-      <Route path="/registro" element={<Registro />} />
-
+      <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
       <Route path="/cambiar-contrasena" element={<CambiarContrasena />} />
 
       <Route path="/dashboard" element={
@@ -71,7 +74,7 @@ export default function Router() {
             <PrivateRoute
               isAuthenticated={isAuthenticated}
               userPermisos={permisos}
-              allowedPermisos={["/usuarios"]}
+              allowedPermisos={["/dashboard/usuarios"]}
             >
               <Usuarios />
             </PrivateRoute>
@@ -83,7 +86,7 @@ export default function Router() {
             <PrivateRoute
               isAuthenticated={isAuthenticated}
               userPermisos={permisos}
-              allowedPermisos={["/roles"]}
+              allowedPermisos={["/dashboard/roles"]}
             >
               <Roles />
             </PrivateRoute>
@@ -95,7 +98,7 @@ export default function Router() {
             <PrivateRoute
               isAuthenticated={isAuthenticated}
               userPermisos={permisos}
-              allowedPermisos={["/personas"]}
+              allowedPermisos={["/dashboard/personas"]}
             >
               <Personas />
             </PrivateRoute>
@@ -107,18 +110,19 @@ export default function Router() {
             <PrivateRoute
               isAuthenticated={isAuthenticated}
               userPermisos={permisos}
-              allowedPermisos={["/protocolos"]}
+              allowedPermisos={["/dashboard/protocolos"]}
             >
               <Protocolos />
             </PrivateRoute>
           } />
         )}
+
         {permisos.includes("/dashboard/reportes") && (
           <Route path="reportes" element={
             <PrivateRoute
               isAuthenticated={isAuthenticated}
               userPermisos={permisos}
-              allowedPermisos={["/reportes"]}
+              allowedPermisos={["/dashboard/reportes"]}
             >
               <Reportes />
             </PrivateRoute>
@@ -130,7 +134,7 @@ export default function Router() {
             <PrivateRoute
               isAuthenticated={isAuthenticated}
               userPermisos={permisos}
-              allowedPermisos={["/comprobantes"]}
+              allowedPermisos={["/dashboard/comprobantes"]}
             >
               <Comprobante />
             </PrivateRoute>
@@ -142,18 +146,19 @@ export default function Router() {
             <PrivateRoute
               isAuthenticated={isAuthenticated}
               userPermisos={permisos}
-              allowedPermisos={["/empresas"]}
+              allowedPermisos={["/dashboard/empresas"]}
             >
               <Empresas />
             </PrivateRoute>
           } />
         )}
+
         {permisos.includes("/dashboard/sucursales") && (
           <Route path="sucursales" element={
             <PrivateRoute
               isAuthenticated={isAuthenticated}
               userPermisos={permisos}
-              allowedPermisos={["/sucursales"]}
+              allowedPermisos={["/dashboard/sucursales"]}
             >
               <Sucursales />
             </PrivateRoute>
@@ -165,24 +170,57 @@ export default function Router() {
             <PrivateRoute
               isAuthenticated={isAuthenticated}
               userPermisos={permisos}
-              allowedPermisos={["/plan-cuentas"]}
+              allowedPermisos={["/dashboard/plan-cuentas"]}
             >
               <PlanCuentas />
             </PrivateRoute>
           } />
         )}
 
-        {permisos.includes("/dashboard/plan-presupuestarios") && (   // 👈 AÑADIR ESTE BLOQUE
+        {permisos.includes("/dashboard/plan-presupuestarios") && (
           <Route path="plan-presupuestarios" element={
             <PrivateRoute
               isAuthenticated={isAuthenticated}
               userPermisos={permisos}
-              allowedPermisos={["/plan-presupuestarios"]}
+              allowedPermisos={["/dashboard/plan-presupuestarios"]}
             >
               <PlanPresupuestarios />
             </PrivateRoute>
           } />
         )}
+
+        {permisos.includes("/dashboard/compras") && (
+          <>
+            <Route path="compras" element={
+              <PrivateRoute 
+                isAuthenticated={isAuthenticated} 
+                userPermisos={permisos}
+                allowedPermisos={["/dashboard/compras"]}
+              >
+                <Compras />
+              </PrivateRoute>
+            } />
+            <Route path="compras/crear" element={
+              <PrivateRoute 
+                isAuthenticated={isAuthenticated} 
+                userPermisos={permisos}
+                allowedPermisos={["/dashboard/compras"]}
+              >
+                <CrearCompra />
+              </PrivateRoute>
+            } />
+            <Route path="compras/:id" element={
+              <PrivateRoute 
+                isAuthenticated={isAuthenticated} 
+                userPermisos={permisos}
+                allowedPermisos={["/dashboard/compras"]}
+              >
+                <VerCompra />
+              </PrivateRoute>
+            } />
+          </>
+        )}
+
       </Route>
 
       <Route path="/unauthorized" element={<h1>No autorizado</h1>} />

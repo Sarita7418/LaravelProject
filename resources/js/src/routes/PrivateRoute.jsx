@@ -7,7 +7,9 @@ export default function PrivateRoute({ isAuthenticated, userPermisos, children }
     return <Navigate to="/login" />
   }
 
-  const tienePermiso = userPermisos.includes(location.pathname);
+  const tienePermiso = userPermisos.some(permiso => 
+    location.pathname === permiso || location.pathname.startsWith(permiso + '/')
+  );
 
   if (!tienePermiso) {
     console.warn(`Ruta "${location.pathname}" no autorizada para el usuario.`);
