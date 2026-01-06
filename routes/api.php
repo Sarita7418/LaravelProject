@@ -29,8 +29,17 @@ use App\Http\Controllers\Crud\EmpresaCrudController;
 use App\Http\Controllers\Crud\SucursalCrudController;
 use App\Http\Controllers\Crud\LogoCrudController;
 
+use App\Http\Controllers\FacturaController;
+
 
 Route::post('/personas', [PersonaCrudController::class, 'store']);
+
+// ... imports ...
+Route::post('/personas', [PersonaCrudController::class, 'store']);
+
+// 👇 PONLA AQUÍ (Temporalmente pública para probar)
+Route::post('/facturas', [FacturaController::class, 'store']);
+
 
 Route::middleware([
     EnsureFrontendRequestsAreStateful::class,
