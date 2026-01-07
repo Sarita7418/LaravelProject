@@ -29,6 +29,9 @@ use App\Http\Controllers\Crud\EmpresaCrudController;
 use App\Http\Controllers\Crud\SucursalCrudController;
 use App\Http\Controllers\Crud\LogoCrudController;
 
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\CompraController;
 
 Route::post('/personas', [PersonaCrudController::class, 'store']);
 
@@ -173,5 +176,38 @@ Route::middleware([
     Route::put('/plan-presupuestarios/{id}', [PlanPresupuestarioCrudController::class, 'update']);
     Route::delete('/plan-presupuestarios/{id}', [PlanPresupuestarioCrudController::class, 'destroy']);
 
-    
+    //COMPRAS
+    Route::get('/compras', [CompraController::class, 'index'])->middleware('auth:sanctum');
+    Route::post('/compras', [CompraController::class, 'store'])->middleware('auth:sanctum');
+    Route::get('/compras/{id}', [CompraController::class, 'show'])->middleware('auth:sanctum');
+    Route::put('/compras/{id}/confirmar', [CompraController::class, 'confirmar'])->middleware('auth:sanctum'); 
+    Route::put('/compras/{id}/anular', [CompraController::class, 'anular'])->middleware('auth:sanctum'); 
+    Route::delete('/compras/{id}', [CompraController::class, 'destroy'])->middleware('auth:sanctum');
+    Route::get('/compras/generar-numero', [CompraController::class, 'generarNumeroDocumento'])->middleware('auth:sanctum');
+    Route::get('/compras/estados', [CompraController::class, 'getEstadosCompra'])->middleware('auth:sanctum');
+    Route::get('/compras/buscar-productos', [CompraController::class, 'buscarProductos'])->middleware('auth:sanctum');
+    Route::get('/compras/verificar-estructura', [CompraController::class, 'verificarEstructura'])->middleware('auth:sanctum');
+
+    // PROVEEDORES 
+    Route::get('/proveedores', [ProveedorController::class, 'index'])->middleware('auth:sanctum');
+    Route::post('/proveedores', [ProveedorController::class, 'store'])->middleware('auth:sanctum');
+    Route::get('/proveedores/select', [ProveedorController::class, 'getParaSelectCompras'])->middleware('auth:sanctum');
+    Route::post('/proveedores/crear-desde-compra', [ProveedorController::class, 'storeProveedorDesdeCompra'])->middleware('auth:sanctum');
+    Route::get('/proveedores/sucursales', [ProveedorController::class, 'getSucursalesPorProveedor'])->middleware('auth:sanctum');
+    Route::get('/proveedores/buscar', [ProveedorController::class, 'buscar'])->middleware('auth:sanctum');
+    Route::get('/proveedores/{id}', [ProveedorController::class, 'show'])->middleware('auth:sanctum');
+    Route::put('/proveedores/{id}', [ProveedorController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy'])->middleware('auth:sanctum');
+
+    // PRODUCTOS
+    Route::get('/productos/categorias', [ProductoController::class, 'getCategorias'])->middleware('auth:sanctum');
+    Route::get('/productos/unidades', [ProductoController::class, 'getUnidades'])->middleware('auth:sanctum');
+    Route::get('/productos/estados', [ProductoController::class, 'getEstados'])->middleware('auth:sanctum');
+    Route::get('/productos/catalogos/categorias', [ProductoController::class, 'getCategorias'])->middleware('auth:sanctum');
+    Route::get('/productos/catalogos/unidades', [ProductoController::class, 'getUnidades'])->middleware('auth:sanctum');
+    Route::get('/productos', [ProductoController::class, 'index'])->middleware('auth:sanctum');
+    Route::post('/productos', [ProductoController::class, 'store'])->middleware('auth:sanctum');
+    Route::get('/productos/{id}', [ProductoController::class, 'show'])->middleware('auth:sanctum');
+    Route::put('/productos/{id}', [ProductoController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->middleware('auth:sanctum');
 });

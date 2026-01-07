@@ -324,6 +324,7 @@ export default function LoginConDosPasos({
                         )}
                     </div>
 
+<<<<<<< HEAD
                     <button
                         type="submit"
                         className="login-btn"
@@ -332,6 +333,17 @@ export default function LoginConDosPasos({
                         {loading ? "Iniciando sesión..." : "Entrar"}
                     </button>
                 </form>
+=======
+        <div className="login-links">
+          <label
+            className="forgot-password-link"
+            onClick={() => {
+                navigate('/recuperar-contrasena')
+            }}
+          >
+            ¿Olvidaste tu contraseña?
+          </label>
+>>>>>>> 3285c9960249b3394b7fac2c78eddd598ea8080a
 
                 <div className="login-links">
                     <label
@@ -351,5 +363,13 @@ export default function LoginConDosPasos({
                 </div>
             </div>
         </div>
+<<<<<<< HEAD
     );
 }
+=======
+      </div>
+    </div>
+  )
+}
+
+>>>>>>> 3285c9960249b3394b7fac2c78eddd598ea8080a

@@ -107,18 +107,27 @@ const MenuJerarquico = () => {
 
   return (
     <nav className="menujerar-sidebar">
-      <div>
+      {/* SECCIÓN DE USUARIO FIJA - SIN SCROLL */}
+      <div className="menujerar-usuario-fijo">
         {usuario && (
           <div className="menujerar-usuario">
             <div className="menujerar-nombre">{usuario.nombre}</div>
             <div className="menujerar-rol">{usuario.rol}</div>
           </div>
         )}
+      </div>
+
+      {/* SOLO EL MENÚ TIENE SCROLL */}
+      <div className="menujerar-menu-scrollable">
         {renderMenu()}
       </div>
-      <button className="boton-logout" onClick={handleLogout}>
-        Cerrar sesión
-      </button>
+
+      {/* BOTÓN FIJO - SIN SCROLL */}
+      <div className="menujerar-footer-fijo">
+        <button className="boton-logout" onClick={handleLogout}>
+          Cerrar sesión
+        </button>
+      </div>
     </nav>
   )
 }

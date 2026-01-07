@@ -1,0 +1,356 @@
+/* Ver Compra (Vista detallada) */
+.ver-compra-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.compra-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.compra-info-header {
+    flex: 1;
+}
+
+.compra-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 10px 0;
+}
+
+.compra-subtitle {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.compra-acciones {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.compra-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.info-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.info-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #1f2937;
+    font-size: 1.125rem;
+    font-weight: 600;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.info-card p {
+    margin: 8px 0;
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.info-card p strong {
+    color: #1f2937;
+    min-width: 120px;
+    display: inline-block;
+}
+
+.info-card .total-final {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.observaciones-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 30px;
+}
+
+.observaciones-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #1f2937;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.observaciones-card p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.detalles-section {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.detalles-section h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #1f2937;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.detalles-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.detalles-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+}
+
+.detalles-table td {
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.detalles-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.detalles-table tfoot td {
+    font-weight: 600;
+    background-color: #f9fafb;
+    padding: 12px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Botones específicos de VerCompra */
+.ver-compra-container .btn-editar {
+    background-color: #f59e0b;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.ver-compra-container .btn-editar:hover {
+    background-color: #d97706;
+}
+
+.ver-compra-container .btn-eliminar {
+    background-color: #ef4444;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.ver-compra-container .btn-eliminar:hover {
+    background-color: #dc2626;
+}
+
+.ver-compra-container .btn-anular {
+    background-color: #ef4444;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.ver-compra-container .btn-anular:hover {
+    background-color: #dc2626;
+}
+
+.ver-compra-container .btn-volver {
+    background-color: #9ca3af;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.ver-compra-container .btn-volver:hover {
+    background-color: #6b7280;
+}
+
+/* Estados */
+.estado-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    display: inline-block;
+}
+
+/* Modal de anulación */
+.ver-compra-container .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.ver-compra-container .modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.ver-compra-container .modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #1f2937;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.ver-compra-container .modal-content p {
+    margin-bottom: 20px;
+    color: #4b5563;
+    font-size: 0.875rem;
+}
+
+.ver-compra-container .modal-content .form-group {
+    margin-bottom: 20px;
+}
+
+.ver-compra-container .modal-content .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #4b5563;
+    font-size: 0.875rem;
+}
+
+.ver-compra-container .modal-content .form-input {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    transition: border-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 100px;
+    resize: vertical;
+}
+
+.ver-compra-container .modal-content .form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.ver-compra-container .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.ver-compra-container .modal-actions .btn-cancelar {
+    background-color: #6b7280;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.ver-compra-container .modal-actions .btn-cancelar:hover {
+    background-color: #4b5563;
+}
+
+.ver-compra-container .modal-actions .btn-anular {
+    background-color: #ef4444;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.ver-compra-container .modal-actions .btn-anular:hover {
+    background-color: #dc2626;
+}
+
+/* Estados de carga y error */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+    font-size: 1.125rem;
+}
+
+.error {
+    text-align: center;
+    padding: 40px;
+    color: #ef4444;
+    font-size: 1.125rem;
+}
