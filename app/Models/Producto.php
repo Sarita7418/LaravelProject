@@ -33,7 +33,6 @@ class Producto extends Model
 
     public $timestamps = true;
 
-    // Relaciones con subdominios
     public function categoria()
     {
         return $this->belongsTo(Subdominio::class, 'id_categoria');
@@ -49,48 +48,27 @@ class Producto extends Model
         return $this->belongsTo(Subdominio::class, 'id_estado_producto');
     }
 
-    // ========== NUEVAS RELACIONES CON PRECIOS ==========
-    
     public function precios()
     {
         return $this->hasMany(ProductoPrecio::class, 'id_producto');
     }
 
-    public function preciosVigentes()
-    {
-        return $this->hasMany(ProductoPrecio::class, 'id_producto')
-                    ->vigentes();
-    }
-
     public function precioEntradaVigente()
     {
         return $this->hasOne(ProductoPrecio::class, 'id_producto')
-                    ->where('id_tipo_precio', 33) // ID 33 = ENTRADA
-                    ->vigentes()
-                    ->ordenadoPorFecha('desc');
+                    ->where('id_tipo_precio', 33)
+                    ->where('activo', true)
+                    ->latest('fecha_inicio');
     }
 
     public function precioSalidaVigente()
     {
         return $this->hasOne(ProductoPrecio::class, 'id_producto')
-                    ->where('id_tipo_precio', 34) // ID 34 = SALIDA
-                    ->vigentes()
-                    ->ordenadoPorFecha('desc');
+                    ->where('id_tipo_precio', 34)
+                    ->where('activo', true)
+                    ->latest('fecha_inicio');
     }
 
-    public function preciosEntrada()
-    {
-        return $this->hasMany(ProductoPrecio::class, 'id_producto')
-                    ->where('id_tipo_precio', 33);
-    }
-
-    public function preciosSalida()
-    {
-        return $this->hasMany(ProductoPrecio::class, 'id_producto')
-                    ->where('id_tipo_precio', 34);
-    }
-
-    // Relaciones de inventario (mantener las que ya tenías)
     public function stocks()
     {
         return $this->hasMany(StockActual::class, 'id_producto');
@@ -101,92 +79,6 @@ class Producto extends Model
         return $this->hasMany(Lote::class, 'id_producto');
     }
 
-    public function movimientos()
-    {
-        return $this->hasMany(MovimientoInventario::class, 'id_producto');
-    }
-
-    // Scopes para filtros comunes
-    public function scopeActivos($query)
-    {
-        return $query->where('id_estado_producto', 22); // ID 22 = ACTIVO
-    }
-
-    public function scopeInactivos($query)
-    {
-        return $query->where('id_estado_producto', 23); // ID 23 = INACTIVO
-    }
-
-    public function scopeBienes($query)
-    {
-        return $query->where('id_categoria', 13); // ID 13 = BIEN
-    }
-
-    public function scopeServicios($query)
-    {
-        return $query->where('id_categoria', 14); // ID 14 = SERVICIO
-    }
-
-    public function scopeConInventario($query)
-    {
-        return $query->where('rastrea_inventario', true);
-    }
-
-    public function scopeSinInventario($query)
-    {
-        return $query->where('rastrea_inventario', false);
-    }
-
-    public function scopeBuscarPorCodigo($query, $codigo)
-    {
-        return $query->where('codigo_interno', $codigo)
-                    ->orWhere('codigo_barras', $codigo);
-    }
-
-    public function scopeBuscarPorNombre($query, $nombre)
-    {
-        return $query->where('nombre', 'LIKE', '%' . $nombre . '%');
-    }
-
-    public function scopeBajoStock($query)
-    {
-        return $query->whereHas('stocks', function($q) {
-            $q->whereRaw('cantidad <= stock_minimo');
-        });
-    }
-
-    public function scopeConPreciosVigentes($query)
-    {
-        return $query->with(['precioEntradaVigente', 'precioSalidaVigente']);
-    }
-
-    // Métodos helper para verificar estados
-    public function estaActivo()
-    {
-        return $this->id_estado_producto === 22; // ID 22 = ACTIVO
-    }
-
-    public function esInactivo()
-    {
-        return $this->id_estado_producto === 23; // ID 23 = INACTIVO
-    }
-
-    public function esBien()
-    {
-        return $this->id_categoria === 13; // ID 13 = BIEN
-    }
-
-    public function esServicio()
-    {
-        return $this->id_categoria === 14; // ID 14 = SERVICIO
-    }
-
-    public function rastreInventario()
-    {
-        return $this->rastrea_inventario === true;
-    }
-
-    // Accessors para obtener descripciones de subdominios
     public function getCategoriaTextoAttribute()
     {
         return $this->categoria?->descripcion ?? 'N/A';
@@ -200,20 +92,6 @@ class Producto extends Model
     public function getEstadoTextoAttribute()
     {
         return $this->estadoProducto?->descripcion ?? 'N/A';
-    }
-
-    // ========== NUEVOS ACCESSORS PARA PRECIOS ==========
-    
-    public function getPrecioEntradaActualAttribute()
-    {
-        $precioVigente = $this->precioEntradaVigente;
-        return $precioVigente?->precio ?? $this->precio_entrada;
-    }
-
-    public function getPrecioSalidaActualAttribute()
-    {
-        $precioVigente = $this->precioSalidaVigente;
-        return $precioVigente?->precio ?? $this->precio_salida;
     }
 
     public function getStockTotalAttribute()

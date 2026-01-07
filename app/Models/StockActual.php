@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class StockActual extends Model
 {
     protected $table = 'stock_actual';
-    
+    public $timestamps = false;
     protected $fillable = [
         'id_producto',
         'id_lote',
@@ -19,14 +19,9 @@ class StockActual extends Model
         'id_producto' => 'integer',
         'id_lote' => 'integer',
         'id_ubicacion' => 'integer',
-        'cantidad' => 'integer',
-        'updated_at' => 'datetime'
+        'cantidad' => 'integer'
     ];
 
-    // Desactivar created_at ya que solo usamos updated_at
-    const CREATED_AT = null;
-
-    // Relaciones
     public function producto()
     {
         return $this->belongsTo(Producto::class, 'id_producto');
@@ -42,154 +37,6 @@ class StockActual extends Model
         return $this->belongsTo(PoliticoUbicacion::class, 'id_ubicacion');
     }
 
-    // Scopes para filtros comunes
-    public function scopePorProducto($query, $productoId)
-    {
-        return $query->where('id_producto', $productoId);
-    }
-
-    public function scopePorLote($query, $loteId)
-    {
-        return $query->where('id_lote', $loteId);
-    }
-
-    public function scopePorUbicacion($query, $ubicacionId)
-    {
-        return $query->where('id_ubicacion', $ubicacionId);
-    }
-
-    public function scopeConStock($query)
-    {
-        return $query->where('cantidad', '>', 0);
-    }
-
-    public function scopeSinStock($query)
-    {
-        return $query->where('cantidad', '<=', 0);
-    }
-
-    public function scopeConRelaciones($query)
-    {
-        return $query->with(['producto', 'lote', 'ubicacion']);
-    }
-
-    public function scopeBajoStockMinimo($query)
-    {
-        return $query->whereHas('producto', function($q) {
-            $q->whereRaw('stock_actual.cantidad <= productos.stock_minimo');
-        });
-    }
-
-    public function scopeOrdenadoPorCantidad($query, $orden = 'desc')
-    {
-        return $query->orderBy('cantidad', $orden);
-    }
-
-    public function scopeOrdenadoPorProducto($query)
-    {
-        return $query->join('productos', 'stock_actual.id_producto', '=', 'productos.id')
-                    ->orderBy('productos.nombre')
-                    ->select('stock_actual.*');
-    }
-
-    // Métodos helper para verificar estado
-    public function tieneStock()
-    {
-        return $this->cantidad > 0;
-    }
-
-    public function estaSinStock()
-    {
-        return $this->cantidad <= 0;
-    }
-
-    public function estaBajoStockMinimo()
-    {
-        if (!$this->producto) {
-            return false;
-        }
-        return $this->cantidad <= $this->producto->stock_minimo;
-    }
-
-    public function puedeDespachar($cantidadRequerida)
-    {
-        return $this->cantidad >= $cantidadRequerida;
-    }
-
-    // Accessors para obtener información
-    public function getProductoNombreAttribute()
-    {
-        return $this->producto?->nombre ?? 'N/A';
-    }
-
-    public function getLoteNumeroAttribute()
-    {
-        return $this->lote?->numero_lote ?? 'N/A';
-    }
-
-    public function getUbicacionNombreAttribute()
-    {
-        return $this->ubicacion?->descripcion ?? 'N/A';
-    }
-
-    public function getStockMinimoProductoAttribute()
-    {
-        return $this->producto?->stock_minimo ?? 0;
-    }
-
-    public function getDiferenciaStockMinimoAttribute()
-    {
-        return $this->cantidad - $this->stockMinimoProducto;
-    }
-
-    public function getPorcentajeStockMinimoAttribute()
-    {
-        $stockMinimo = $this->stockMinimoProducto;
-        
-        if ($stockMinimo == 0) {
-            return 100;
-        }
-        
-        return ($this->cantidad / $stockMinimo) * 100;
-    }
-
-    public function getAlertaStockAttribute()
-    {
-        if ($this->estaSinStock()) {
-            return 'sin_stock';
-        }
-
-        $porcentaje = $this->porcentajeStockMinimo;
-
-        if ($porcentaje <= 50) {
-            return 'critico'; // 50% o menos del stock mínimo
-        } elseif ($porcentaje <= 100) {
-            return 'advertencia'; // Entre 51% y 100% del stock mínimo
-        } else {
-            return 'normal'; // Por encima del stock mínimo
-        }
-    }
-
-    // Accessor para mostrar información completa del stock
-    public function getInfoCompletaAttribute()
-    {
-        return [
-            'id' => $this->id,
-            'producto' => $this->productoNombre,
-            'lote' => $this->loteNumero,
-            'ubicacion' => $this->ubicacionNombre,
-            'cantidad' => $this->cantidad,
-            'stock_minimo' => $this->stockMinimoProducto,
-            'diferencia_stock_minimo' => $this->diferenciaStockMinimo,
-            'porcentaje_stock_minimo' => round($this->porcentajeStockMinimo, 2) . '%',
-            'alerta_stock' => $this->alertaStock,
-            'tiene_stock' => $this->tieneStock(),
-            'bajo_stock_minimo' => $this->estaBajoStockMinimo(),
-            'ultima_actualizacion' => $this->updated_at->format('d/m/Y H:i:s')
-        ];
-    }
-
-    // Métodos de gestión de stock
     public function incrementarStock($cantidad)
     {
         $this->cantidad += $cantidad;
@@ -208,100 +55,9 @@ class StockActual extends Model
         return $this;
     }
 
-    public function ajustarStock($nuevaCantidad, $motivo = null)
+    public static function obtenerStockProducto($productoId)
     {
-        $cantidadAnterior = $this->cantidad;
-        $this->cantidad = $nuevaCantidad;
-        $this->save();
-        
-        // Aquí puedes registrar el ajuste en una tabla de auditoría
-        // con el motivo y la diferencia
-        
-        return [
-            'cantidad_anterior' => $cantidadAnterior,
-            'cantidad_nueva' => $nuevaCantidad,
-            'diferencia' => $nuevaCantidad - $cantidadAnterior,
-            'motivo' => $motivo
-        ];
-    }
-
-    public function transferirStock($ubicacionDestinoId, $cantidad)
-    {
-        if (!$this->puedeDespachar($cantidad)) {
-            throw new \Exception('Stock insuficiente para transferir');
-        }
-
-        // Decrementar stock en ubicación origen
-        $this->decrementarStock($cantidad);
-
-        // Incrementar o crear stock en ubicación destino
-        $stockDestino = self::firstOrCreate(
-            [
-                'id_producto' => $this->id_producto,
-                'id_lote' => $this->id_lote,
-                'id_ubicacion' => $ubicacionDestinoId
-            ],
-            ['cantidad' => 0]
-        );
-
-        $stockDestino->incrementarStock($cantidad);
-
-        return [
-            'origen' => $this,
-            'destino' => $stockDestino,
-            'cantidad_transferida' => $cantidad
-        ];
-    }
-
-    // Event observers
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Después de actualizar, validar el estado del lote
-        static::updated(function ($stock) {
-            if ($stock->lote) {
-                $stock->lote->validarEstado();
-            }
-        });
-
-        // Antes de eliminar, validar que no tenga stock
-        static::deleting(function ($stock) {
-            if ($stock->cantidad > 0) {
-                throw new \Exception('No se puede eliminar un registro con stock disponible');
-            }
-        });
-    }
-
-    // Métodos estáticos útiles
-    public static function obtenerStockProducto($productoId, $ubicacionId = null)
-    {
-        $query = self::where('id_producto', $productoId)->conStock();
-        
-        if ($ubicacionId) {
-            $query->where('id_ubicacion', $ubicacionId);
-        }
-        
-        return $query->sum('cantidad');
-    }
-
-    public static function obtenerStockLote($loteId, $ubicacionId = null)
-    {
-        $query = self::where('id_lote', $loteId)->conStock();
-        
-        if ($ubicacionId) {
-            $query->where('id_ubicacion', $ubicacionId);
-        }
-        
-        return $query->sum('cantidad');
-    }
-
-    public static function obtenerStockUbicacion($ubicacionId)
-    {
-        return self::where('id_ubicacion', $ubicacionId)
-                  ->conStock()
-                  ->conRelaciones()
-                  ->get();
+        return self::where('id_producto', $productoId)->sum('cantidad');
     }
 
     public static function buscarStock($productoId, $loteId, $ubicacionId)
@@ -328,6 +84,7 @@ class StockActual extends Model
 
         return $stock;
     }
+
 
     public static function registrarEntrada($productoId, $loteId, $ubicacionId, $cantidad)
     {
