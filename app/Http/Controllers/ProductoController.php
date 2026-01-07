@@ -172,42 +172,33 @@ class ProductoController extends Controller
     public function getCategorias()
     {
         try {
-            // Usa DB facade para evitar problemas de relaciones
-            $categorias = DB::table('subdominios')
-                ->where('id_dominio', 5)
-                ->select('id', 'descripcion')
+            $categorias = Subdominio::where('id_dominio', 5)
+                ->select('id', 'descripcion as label', 'id as value')
                 ->orderBy('descripcion')
                 ->get();
-            
+                
             return response()->json([
                 'success' => true,
                 'data' => $categorias
             ]);
             
         } catch (\Exception $e) {
-            // Da más detalles para debug
             return response()->json([
                 'success' => false,
                 'message' => 'Error al cargar categorías',
-                'error' => $e->getMessage(),
-                'debug' => 'Tabla: subdominios, id_dominio: 5'
+                'error' => $e->getMessage()
             ], 500);
         }
     }
 
-    /**
-     * Obtener unidades de medida - VERSIÓN CORREGIDA (usa DB facade)
-     */
     public function getUnidades()
     {
         try {
-            // Usa DB facade para evitar problemas de relaciones
-            $unidades = DB::table('subdominios')
-                ->where('id_dominio', 6)
-                ->select('id', 'descripcion')
+            $unidades = Subdominio::where('id_dominio', 6)
+                ->select('id', 'descripcion as label', 'id as value')
                 ->orderBy('descripcion')
                 ->get();
-            
+                
             return response()->json([
                 'success' => true,
                 'data' => $unidades
@@ -217,25 +208,19 @@ class ProductoController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error al cargar unidades',
-                'error' => $e->getMessage(),
-                'debug' => 'Tabla: subdominios, id_dominio: 6'
+                'error' => $e->getMessage()
             ], 500);
         }
     }
 
-    /**
-     * Obtener estados de producto - VERSIÓN CORREGIDA (usa DB facade)
-     */
     public function getEstados()
     {
         try {
-            // Usa DB facade para evitar problemas de relaciones
-            $estados = DB::table('subdominios')
-                ->where('id_dominio', 7)
-                ->select('id', 'descripcion')
+            $estados = Subdominio::where('id_dominio', 7)
+                ->select('id', 'descripcion as label', 'id as value')
                 ->orderBy('descripcion')
                 ->get();
-            
+                
             return response()->json([
                 'success' => true,
                 'data' => $estados
@@ -245,8 +230,7 @@ class ProductoController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error al cargar estados',
-                'error' => $e->getMessage(),
-                'debug' => 'Tabla: subdominios, id_dominio: 7'
+                'error' => $e->getMessage()
             ], 500);
         }
     }
