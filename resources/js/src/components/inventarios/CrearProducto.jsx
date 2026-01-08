@@ -15,11 +15,7 @@ const CrearProducto = ({ isOpen, onClose, onProductoCreado }) => {
         id_categoria: '',
         id_unidad_medida: '',
         codigo_interno: '',
-        codigo_barras: '',
         stock_minimo: 0,
-        numero_lote: '',
-        stock_inicial: 0,
-        fecha_vencimiento: ''
     });
 
     useEffect(() => {
@@ -34,61 +30,63 @@ const CrearProducto = ({ isOpen, onClose, onProductoCreado }) => {
         setErrorCatalogos('');
         
         try {
-            console.log('Intentando cargar datos de la base de datos...');
+            // Cargar categorías (dominio 5 según tus datos)
             const responseCat = await axios.get('/api/productos/categorias');
-            console.log('Respuesta categorías:', responseCat);
             const responseUni = await axios.get('/api/productos/unidades');
-            console.log('Respuesta unidades:', responseUni);
             
             let datosCategorias = [];
             if (responseCat.data && responseCat.data.success === true && Array.isArray(responseCat.data.data)) {
                 datosCategorias = responseCat.data.data;
-                console.log('Categorías encontradas:', datosCategorias.length);
-            } else {
-                console.error('Formato inesperado en categorías:', responseCat.data);
-                setErrorCatalogos('Formato de respuesta inesperado para categorías');
+                console.log('Categorías cargadas:', datosCategorias); // Para depuración
             }
             
             let datosUnidades = [];
             if (responseUni.data && responseUni.data.success === true && Array.isArray(responseUni.data.data)) {
                 datosUnidades = responseUni.data.data;
-                console.log('Unidades encontradas:', datosUnidades.length);
-            } else {
-                console.error('Formato inesperado en unidades:', responseUni.data);
-                setErrorCatalogos(prev => prev + ' | Formato inesperado para unidades');
+                console.log('Unidades cargadas:', datosUnidades); // Para depuración
             }
             
-            // Guardar en estado
-            setCategorias(datosCategorias);
-            setUnidades(datosUnidades);
+            // Verificar y formatear los datos correctamente
+            const categoriasFormateadas = datosCategorias.map(cat => ({
+                id: cat.id,
+                value: cat.id,
+                label: cat.descripcion || cat.label || `Categoría ${cat.id}`,
+                descripcion: cat.descripcion || cat.label || `Categoría ${cat.id}`
+            }));
             
-            // Establecer valores por defecto si hay datos
-            if (datosCategorias.length > 0 && !formData.id_categoria) {
+            const unidadesFormateadas = datosUnidades.map(uni => ({
+                id: uni.id,
+                value: uni.id,
+                label: uni.descripcion || uni.label || `Unidad ${uni.id}`,
+                descripcion: uni.descripcion || uni.label || `Unidad ${uni.id}`
+            }));
+            
+            console.log('Categorías formateadas:', categoriasFormateadas); // Para depuración
+            console.log('Unidades formateadas:', unidadesFormateadas); // Para depuración
+            
+            setCategorias(categoriasFormateadas);
+            setUnidades(unidadesFormateadas);
+            
+            // Establecer valores por defecto si no hay selección actual
+            if (categoriasFormateadas.length > 0 && !formData.id_categoria) {
                 setFormData(prev => ({
                     ...prev,
-                    id_categoria: datosCategorias[0].id
+                    id_categoria: categoriasFormateadas[0].id
                 }));
             }
             
-            if (datosUnidades.length > 0 && !formData.id_unidad_medida) {
+            if (unidadesFormateadas.length > 0 && !formData.id_unidad_medida) {
                 setFormData(prev => ({
                     ...prev,
-                    id_unidad_medida: datosUnidades[0].id
+                    id_unidad_medida: unidadesFormateadas[0].id
                 }));
             }
             
         } catch (error) {
-            console.error('ERROR cargando catálogos:', error);
-            
+            console.error('Error cargando catálogos:', error);
             let mensajeError = 'Error al cargar los catálogos';
             
             if (error.response) {
-                console.error('Detalles del error:', {
-                    status: error.response.status,
-                    data: error.response.data,
-                    url: error.config?.url
-                });
-                
                 if (error.response.status === 404) {
                     mensajeError = 'Error 404: Rutas no encontradas';
                 } else if (error.response.status === 500) {
@@ -96,6 +94,8 @@ const CrearProducto = ({ isOpen, onClose, onProductoCreado }) => {
                 } else {
                     mensajeError = `Error ${error.response.status}: ${error.response.data?.message || 'Error desconocido'}`;
                 }
+                
+                console.error('Detalles del error:', error.response.data);
             } else if (error.request) {
                 mensajeError = 'Error de red: No se pudo conectar al servidor';
             } else {
@@ -105,6 +105,24 @@ const CrearProducto = ({ isOpen, onClose, onProductoCreado }) => {
             setErrorCatalogos(mensajeError);
             setCategorias([]);
             setUnidades([]);
+            
+            // Datos de prueba en caso de error (para desarrollo)
+            if (process.env.NODE_ENV === 'development') {
+                console.log('Usando datos de prueba para desarrollo');
+                setCategorias([
+                    { id: 13, value: 13, label: 'BIEN', descripcion: 'BIEN' },
+                    { id: 14, value: 14, label: 'SERVICIO', descripcion: 'SERVICIO' }
+                ]);
+                setUnidades([
+                    { id: 15, value: 15, label: 'UNIDAD', descripcion: 'UNIDAD' },
+                    { id: 16, value: 16, label: 'CAJA', descripcion: 'CAJA' },
+                    { id: 17, value: 17, label: 'KILOGRAMO', descripcion: 'KILOGRAMO' },
+                    { id: 18, value: 18, label: 'LITRO', descripcion: 'LITRO' },
+                    { id: 19, value: 19, label: 'METRO', descripcion: 'METRO' },
+                    { id: 20, value: 20, label: 'DOCENA', descripcion: 'DOCENA' },
+                    { id: 21, value: 21, label: 'PAQUETE', descripcion: 'PAQUETE' }
+                ]);
+            }
             
         } finally {
             setCargandoCatalogos(false);
@@ -125,11 +143,7 @@ const CrearProducto = ({ isOpen, onClose, onProductoCreado }) => {
             id_categoria: categorias[0]?.id || '',
             id_unidad_medida: unidades[0]?.id || '',
             codigo_interno: codigoGenerado,
-            codigo_barras: '',
             stock_minimo: 0,
-            numero_lote: '',
-            stock_inicial: 0,
-            fecha_vencimiento: ''
         });
     };
 
@@ -159,9 +173,10 @@ const CrearProducto = ({ isOpen, onClose, onProductoCreado }) => {
                 precio_entrada: 0,
                 precio_salida: 0,
                 stock_minimo: formData.stock_minimo || 0,
-                stock_inicial: formData.stock_inicial || 0
             };
 
+            console.log('Enviando payload:', payload); // Para depuración
+            
             const response = await axios.post('/api/productos', payload);
             
             onProductoCreado(response.data);
@@ -169,6 +184,7 @@ const CrearProducto = ({ isOpen, onClose, onProductoCreado }) => {
             resetForm();
             
         } catch (error) {
+            console.error('Error creando producto:', error);
             const errorMsg = error.response?.data?.message || 
                            error.response?.data?.error || 
                            "Error al guardar el producto";
@@ -256,7 +272,7 @@ const CrearProducto = ({ isOpen, onClose, onProductoCreado }) => {
                                         <option value="">Seleccione una categoría</option>
                                         {categorias.map(c => (
                                             <option key={c.id} value={c.id}>
-                                                {c.descripcion || c.nombre || `Categoría ${c.id}`}
+                                                {c.label}
                                             </option>
                                         ))}
                                     </>
@@ -282,7 +298,7 @@ const CrearProducto = ({ isOpen, onClose, onProductoCreado }) => {
                                         <option value="">Seleccione una unidad</option>
                                         {unidades.map(u => (
                                             <option key={u.id} value={u.id}>
-                                                {u.descripcion || u.nombre || `Unidad ${u.id}`}
+                                                {u.label}
                                             </option>
                                         ))}
                                     </>
@@ -291,67 +307,15 @@ const CrearProducto = ({ isOpen, onClose, onProductoCreado }) => {
                         </div>
                     </div>
 
-                    <div className="crear-producto-form-grid">
-                        <div className="crear-producto-form-group">
-                            <label>Código de Barras (Opcional)</label>
-                            <input 
-                                type="text" 
-                                className="crear-producto-form-input" 
-                                value={formData.codigo_barras}
-                                onChange={e => setFormData({...formData, codigo_barras: e.target.value})}
-                                placeholder="Ej: 123456789012"
-                            />
-                        </div>
-                        
-                        <div className="crear-producto-form-group">
-                            <label>Stock Mínimo</label>
-                            <input 
-                                type="number" 
-                                min="0"
-                                className="crear-producto-form-input" 
-                                value={formData.stock_minimo}
-                                onChange={e => setFormData({...formData, stock_minimo: parseInt(e.target.value) || 0})}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="crear-producto-lote-section">
-                        <div className="crear-producto-lote-title">Información de Lote (Opcional)</div>
-                        
-                        <div className="crear-producto-form-grid">
-                            <div className="crear-producto-form-group">
-                                <label>Número de Lote</label>
-                                <input 
-                                    type="text" 
-                                    className="crear-producto-form-input" 
-                                    value={formData.numero_lote}
-                                    onChange={e => setFormData({...formData, numero_lote: e.target.value})}
-                                    placeholder="Ej: L-101, BATCH-2024"
-                                />
-                            </div>
-                            
-                            <div className="crear-producto-form-group">
-                                <label>Fecha de Vencimiento</label>
-                                <input 
-                                    type="date" 
-                                    className="crear-producto-form-input" 
-                                    value={formData.fecha_vencimiento}
-                                    onChange={e => setFormData({...formData, fecha_vencimiento: e.target.value})}
-                                />
-                            </div>
-                        </div>
-                        
-                        <div className="crear-producto-form-group">
-                            <label>Stock Inicial</label>
-                            <input 
-                                type="number" 
-                                min="0"
-                                step="0"
-                                className="crear-producto-form-input" 
-                                value={formData.stock_inicial}
-                                onChange={e => setFormData({...formData, stock_inicial: parseFloat(e.target.value) })}
-                            />
-                        </div>
+                    <div className="crear-producto-form-group">
+                        <label>Stock Mínimo</label>
+                        <input 
+                            type="number" 
+                            min="0"
+                            className="crear-producto-form-input" 
+                            value={formData.stock_minimo}
+                            onChange={e => setFormData({...formData, stock_minimo: parseInt(e.target.value) || 0})}
+                        />
                     </div>
 
                     <div className="crear-producto-form-actions">

@@ -22,8 +22,11 @@ class ImportarPoliticos extends Command
         }
 
         if ($this->option('reset')) {
+            DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
             DB::table('politicos_ubicacion')->truncate();
-            $this->info(' Tabla limpiada');
+            DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
+            
+            $this->info(' Tabla limpiada exitosamente.');
         }
 
         $this->info(' Procesando datos... (Esto puede tomar unos minutos)');
