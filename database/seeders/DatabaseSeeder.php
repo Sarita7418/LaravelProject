@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             SucursalesSeeder::class,
             LogosSeeder::class,
             ProductosSeeder::class,
+            ClasificacionesLinameSeeder::class,
         ]);
     }
 }

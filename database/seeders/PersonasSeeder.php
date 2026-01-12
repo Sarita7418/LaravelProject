@@ -9,7 +9,6 @@ class PersonasSeeder extends Seeder
 {
     public function run(): void
     {
-<<<<<<< HEAD
         $representanteLegal = Persona::create([
             'nombres' => 'Juan',
             'apellido_paterno' => 'Pérez',
@@ -30,7 +29,6 @@ class PersonasSeeder extends Seeder
             'fecha_nacimiento' => '1980-01-01',  // Asignar una fecha de nacimiento
             'estado' => true,  // Activo
         ]);
-=======
         Persona::firstOrCreate(
             ['ci' => '12345678'],
             [
@@ -54,7 +52,6 @@ class PersonasSeeder extends Seeder
                 'estado' => true,
             ]
         );
->>>>>>> 3285c9960249b3394b7fac2c78eddd598ea8080a
 
         Persona::firstOrCreate(
             ['ci' => '11223344'],
