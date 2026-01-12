@@ -20,7 +20,7 @@ class Producto extends Model
         'stock_minimo',
         'id_estado_producto'
     ];
-
+    protected $appends = ['stock_total'];
     protected $casts = [
         'id_categoria' => 'integer',
         'rastrea_inventario' => 'boolean',

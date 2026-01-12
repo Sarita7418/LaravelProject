@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Factura;
 use App\Models\DetalleFactura;
-use App\Models\Cliente;
 use App\Models\Producto;
 use App\Models\StockActual;
+use App\Models\MovimientoInventario; // Importante para el Kardex
+use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -15,9 +16,10 @@ class FacturaController extends Controller
 {
     public function store(Request $request)
     {
-        // 1. Validación inicial de datos
+        // 1. Cambiamos la validación: Pedimos NIT y Razón Social en lugar de ID
         $data = $request->validate([
-            'cliente_id' => 'required|exists:clientes,id', // O puedes recibir datos para crear cliente al vuelo
+            'nit' => 'required|string',            // El NIT/CI del cliente
+            'razon_social' => 'required|string',   // El nombre/razón social
             'detalles' => 'required|array|min:1',
             'detalles.*.producto_id' => 'required|exists:productos,id',
             'detalles.*.cantidad' => 'required|integer|min:1',
@@ -25,90 +27,132 @@ class FacturaController extends Controller
 
         try {
             return DB::transaction(function () use ($data) {
+                
                 // ---------------------------------------------------------
-                // PASO 1: VERIFICAR STOCK DE TODO EL PEDIDO ANTES DE CREAR NADA
+                // PASO 0: GESTIÓN INTELIGENTE DEL CLIENTE (Find or Create)
                 // ---------------------------------------------------------
+                // Buscamos al cliente por NIT. Si no existe, lo creamos.
+                $cliente = Cliente::firstOrCreate(
+                    ['nit_ci' => $data['nit']], // <--- AQUÍ ESTABA EL ERROR
+                    [
+                        'razon_social' => $data['razon_social'],
+                        'email' => null, // Opcional, según tu tabla
+                        'complemento' => null // Opcional
+                    ] 
+                );
+
+                // Si el cliente ya existía pero cambió de Razón Social, podríamos actualizarlo (Opcional)
+                // $cliente->update(['razon_social' => $data['razon_social']]);
+
+                // ---------------------------------------------------------
+                // FASE 1: VALIDACIÓN Y CÁLCULO
+                // ---------------------------------------------------------
+                $itemsProcesados = []; 
                 $totalVenta = 0;
-                $itemsProcesados = []; // Guardamos info para no consultar DB doble vez
 
                 foreach ($data['detalles'] as $item) {
-                    $producto = Producto::findOrFail($item['producto_id']);
+                    $producto = Producto::with(['precioSalidaVigente'])->findOrFail($item['producto_id']);
                     
-                    // Usamos la función mágica de tu compañero
                     $validacion = StockActual::validarDisponibilidadParaVenta($producto->id, $item['cantidad']);
-
                     if (!$validacion['disponible']) {
-                        throw new \Exception("Stock insuficiente para el producto: {$producto->nombre}. Solicitado: {$item['cantidad']}, Disponible: {$validacion['stock_actual']}");
+                        throw new \Exception("Stock insuficiente para: {$producto->nombre}");
                     }
 
-                    $subtotal = $item['cantidad'] * $producto->precio_salida; // Asumiendo que precio_salida es el precio venta
+                    $precioVenta = $producto->precioSalidaActual; 
+                    $subtotal = $item['cantidad'] * $precioVenta;
                     $totalVenta += $subtotal;
 
                     $itemsProcesados[] = [
                         'producto' => $producto,
                         'cantidad' => $item['cantidad'],
-                        'precio' => $producto->precio_salida,
+                        'precio_venta' => $precioVenta,
                         'subtotal' => $subtotal
                     ];
                 }
 
                 // ---------------------------------------------------------
-                // PASO 2: CREAR LA FACTURA (CABECERA)
+                // FASE 2: CREAR FACTURA
                 // ---------------------------------------------------------
-                // Generar número correlativo simple (luego lo mejoras con lógica fiscal)
                 $ultimoNumero = Factura::max('numero_factura') ?? 0;
-                
+
                 $factura = Factura::create([
-                    'cliente_id' => $data['cliente_id'],
-                    'user_id' => Auth::id() ?? 1, // Usuario logueado o default 1 para pruebas
+                    'cliente_id' => $cliente->id,
+                    'user_id' => Auth::id() ?? 1,
                     'numero_factura' => $ultimoNumero + 1,
                     'fecha_emision' => now(),
                     'monto_total' => $totalVenta,
                     'estado' => 'VALIDA',
-                    'cuf' => '123456789' // Aquí iría la lógica de Impuestos (SIAT) luego
+                    'cuf' => 'GEN-' . time()
                 ]);
 
                 // ---------------------------------------------------------
-                // PASO 3: GUARDAR DETALLES Y DESCONTAR STOCK (La parte Hardcore)
+                // FASE 3: DETALLES Y KARDEX (Igual que antes)
                 // ---------------------------------------------------------
                 foreach ($itemsProcesados as $item) {
-                    // A. Guardar en tabla detalle_facturas
                     DetalleFactura::create([
                         'factura_id' => $factura->id,
                         'producto_id' => $item['producto']->id,
                         'cantidad' => $item['cantidad'],
-                        'precio_unitario' => $item['precio'],
+                        'precio_unitario' => $item['precio_venta'],
                         'subtotal' => $item['subtotal']
                     ]);
 
-                    // B. DESCONTAR DEL INVENTARIO (Lógica FEFO automática)
-                    // Obtenemos los lotes disponibles ordenados por vencimiento (tu compañero ya hizo esto)
-                    $lotesDisponibles = StockActual::obtenerStockDisponibleParaVenta($item['producto']->id);
-                    
                     $cantidadPendiente = $item['cantidad'];
+                    $lotesDisponibles = StockActual::obtenerStockDisponibleParaVenta($item['producto']->id);
 
                     foreach ($lotesDisponibles as $stockLote) {
-                        if ($cantidadPendiente <= 0) break; // Ya terminamos con este producto
-
-                        // Cuánto podemos sacar de este lote específico
+                        if ($cantidadPendiente <= 0) break;
                         $cantidadA_Tomar = min($cantidadPendiente, $stockLote->cantidad);
-
-                        // Restamos
-                        $stockLote->decrementarStock($cantidadA_Tomar);
                         
-                        // Reducimos lo que falta por sacar
+                        $stockLote->decrementarStock($cantidadA_Tomar);
+
+                        MovimientoInventario::create([
+                            'fecha' => now(),
+                            'id_tipo_movimiento' => 35, // SALIDA POR VENTA
+                            'referencia' => 'Venta Factura #' . $factura->numero_factura,
+                            'id_producto' => $item['producto']->id,
+                            'id_lote' => $stockLote->id_lote,
+                            'cantidad_entrada' => 0,
+                            'cantidad_salida' => $cantidadA_Tomar,
+                            'costo_unitario' => $item['producto']->precioEntradaActual, 
+                            'costo_total' => $cantidadA_Tomar * $item['producto']->precioEntradaActual,
+                            'id_ubicacion_origen' => $stockLote->id_ubicacion,
+                            'id_usuario' => Auth::id() ?? 1,
+                        ]);
+
                         $cantidadPendiente -= $cantidadA_Tomar;
                     }
                 }
 
                 return response()->json([
-                    'message' => 'Venta realizada con éxito',
-                    'factura_id' => $factura->id
+                    'success' => true,
+                    'message' => 'Venta registrada correctamente',
+                    'factura_id' => $factura->id,
+                    'cliente' => $cliente->razon_social
                 ], 201);
             });
 
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al procesar la venta',
+                'error' => $e->getMessage()
+            ], 400);
         }
+    }
+    // Método para autocompletar cliente
+    public function buscarCliente($nit)
+    {
+        // Buscamos en la columna correcta 'nit_ci'
+        $cliente = \App\Models\Cliente::where('nit_ci', $nit)->first();
+
+        if ($cliente) {
+            return response()->json([
+                'encontrado' => true,
+                'cliente' => $cliente
+            ]);
+        }
+
+        return response()->json(['encontrado' => false]);
     }
 }
