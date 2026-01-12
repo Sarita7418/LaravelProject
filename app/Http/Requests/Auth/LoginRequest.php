@@ -41,11 +41,20 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('name', 'password'), $this->boolean('remember'))) { // Cambiado de 'email'
+        // 1. Capturamos lo que el usuario escribió en el campo 'name'
+        $input = $this->input('name');
+
+        // 2. Comprobamos: ¿Es un formato de email válido?
+        // Si sí -> usamos la columna 'email'. Si no -> usamos la columna 'name'.
+        // OJO: Si en tu base de datos la columna de usuario se llama 'username', cambia 'name' por 'username' en la parte del else.
+        $field = filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
+
+        // 3. Intentamos loguear con ese campo dinámico ($field)
+        if (! Auth::attempt([$field => $input, 'password' => $this->input('password')], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'name' => __('auth.failed'), // Cambiado de 'email'
+                'name' => trans('auth.failed'),
             ]);
         }
 
@@ -80,6 +89,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->input('name')).'|'.$this->ip()); // Cambiado de 'email'
+        return Str::transliterate(Str::lower($this->input('name')) . '|' . $this->ip()); // Cambiado de 'email'
     }
 }

@@ -7,7 +7,6 @@
   justify-content: center;
   align-items: center;
   background-color: var(--bg);
-  padding: 24px;
 }
 
 /* ====== Tarjeta ====== */
@@ -18,21 +17,11 @@
   max-width: 420px;
   width: 100%;
   color: var(--text);
-  box-shadow: var(--shadow);
+  box-shadow: 0px 0px 50px rgb(35, 31, 62); 
   border: 1px solid rgba(0,3,89,0.10); /* sutil borde azul */
   position: relative;
 }
 
-/* Detalle superior con acento */
-.login-card::before{
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 6px;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  background: var(--brand-accent);
-}
 
 /* ====== Título ====== */
 .login-title {
@@ -48,7 +37,7 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 0px;
 }
 
 .form-group {
@@ -91,6 +80,7 @@
 
 .form-input.error {
   border-color: var(--error);
+  text-align: left;
 }
 
 /* ====== Mensajes de error ====== */
