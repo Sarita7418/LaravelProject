@@ -106,6 +106,13 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 2,
             'orden' => 10,
         ]);
+         MenuItem::create([
+            'item' => 'Facturas',
+            'ruta' => '/dashboard/facturas',
+            'id_padre' => $admin->id,
+            'nivel' => 2,
+            'orden' => 11,
+        ]);
 
  
         $inventarios = MenuItem::create([
@@ -113,7 +120,7 @@ class MenuItemsSeeder extends Seeder
             'ruta' => '#', // Categoría padre sin enlace directo
             'id_padre' => $admin->id,
             'nivel' => 2,
-            'orden' => 11,
+            'orden' => 12,
         ]);
 
         // Submenú: Compras
@@ -121,6 +128,24 @@ class MenuItemsSeeder extends Seeder
             'item' => 'Compras',
             'ruta' => '/dashboard/compras',
             'id_padre' => $inventarios->id,
+            'nivel' => 3,
+            'orden' => 1,
+        ]);
+
+
+        
+        $ventasfacturacion = MenuItem::create([
+            'item' => 'Ventas y Facturación',
+            'ruta' => '#', // Categoría padre sin enlace directo
+            'id_padre' => $admin->id,
+            'nivel' => 2,
+            'orden' => 13,
+        ]);
+
+        MenuItem::create([
+            'item' => 'Ventas',
+            'ruta' => '/dashboard/ventas',
+            'id_padre' => $ventasfacturacion->id,
             'nivel' => 3,
             'orden' => 1,
         ]);
