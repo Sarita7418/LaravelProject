@@ -22,7 +22,8 @@ class ProductoController extends Controller
 
             // Listado normal
             $query = Producto::with(['categoria', 'unidadMedida', 'estadoProducto'])
-                ->where('id_estado_producto', 22); // Solo activos
+                ->withSum('stocks', 'cantidad') // <--- ESTO SUMA EN SQL DIRECTO
+    ->where('id_estado_producto', 22);
 
             if ($request->filled('search')) {
                 $search = $request->search;

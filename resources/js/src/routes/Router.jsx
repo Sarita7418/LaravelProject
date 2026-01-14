@@ -21,6 +21,10 @@ import RecuperarContrasena from '../components/RecuperarContrasena'
 import Compras from '../components/inventarios/Compras'
 import CrearCompra from '../components/inventarios/CrearCompra'
 import VerCompra from '../components/inventarios/VerCompra'
+import Factura from '../components/Factura'
+import Ventas from '../components/Ventas'
+import HistorialVentas from '../components/HistorialVentas'
+
 
 export default function Router() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -55,7 +59,7 @@ export default function Router() {
         />
       } />
 
-<Route path="/registro" element={<Registro />} />
+      <Route path="/registro" element={<Registro />} />
 
       <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
       <Route path="/cambiar-contrasena" element={<CambiarContrasena />} />
@@ -141,6 +145,18 @@ export default function Router() {
           } />
         )}
 
+        {permisos.includes("/dashboard/facturas") && (
+          <Route path="facturas" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/dashboard/facturas"]}
+            >
+              <Factura />
+            </PrivateRoute>
+          } />
+        )}
+
         {permisos.includes("/dashboard/empresas") && (
           <Route path="empresas" element={
             <PrivateRoute
@@ -189,11 +205,37 @@ export default function Router() {
           } />
         )}
 
+        {permisos.includes("/dashboard/ventas") && (
+          <Route path="ventas" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/dashboard/ventas"]}
+            >
+              <Ventas />
+            </PrivateRoute>
+          } />
+        )}
+
+        
+        {permisos.includes("/dashboard/historial-ventas") && (
+          <Route path="historial-ventas" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/dashboard/historial-ventas"]}
+            >
+              <HistorialVentas />
+            </PrivateRoute>
+          } />
+        )}
+
+
         {permisos.includes("/dashboard/compras") && (
           <>
             <Route path="compras" element={
-              <PrivateRoute 
-                isAuthenticated={isAuthenticated} 
+              <PrivateRoute
+                isAuthenticated={isAuthenticated}
                 userPermisos={permisos}
                 allowedPermisos={["/dashboard/compras"]}
               >
@@ -201,8 +243,8 @@ export default function Router() {
               </PrivateRoute>
             } />
             <Route path="compras/crear" element={
-              <PrivateRoute 
-                isAuthenticated={isAuthenticated} 
+              <PrivateRoute
+                isAuthenticated={isAuthenticated}
                 userPermisos={permisos}
                 allowedPermisos={["/dashboard/compras"]}
               >
@@ -210,8 +252,8 @@ export default function Router() {
               </PrivateRoute>
             } />
             <Route path="compras/:id" element={
-              <PrivateRoute 
-                isAuthenticated={isAuthenticated} 
+              <PrivateRoute
+                isAuthenticated={isAuthenticated}
                 userPermisos={permisos}
                 allowedPermisos={["/dashboard/compras"]}
               >
