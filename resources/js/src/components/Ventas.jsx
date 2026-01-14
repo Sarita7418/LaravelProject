@@ -14,6 +14,7 @@ const Ventas = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  
   // --- NUEVOS ESTADOS PARA VALIDACIÓN VISUAL ---
   const [infoStock, setInfoStock] = useState({
     maximo: 0,
