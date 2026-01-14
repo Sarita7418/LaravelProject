@@ -65,7 +65,7 @@ const Ventas = () => {
         mensaje = `Cantidad seleccionada no disponible`;
       }
     } else {
-      mensaje = `Producto disponible.`;
+      mensaje = `${stockRealDisponible} Unidades disponibles.`;
     }
 
     setInfoStock({
@@ -152,7 +152,7 @@ const Ventas = () => {
 
     try {
       const res = await axios.post('/api/facturas', payload);
-      alert(`✅ Venta Exitosa! Factura #${res.data.factura_id}`);
+      alert(`Venta Exitosa! Factura Creada!`);
       setCarrito([]);
       setTotal(0);
       setNit('');
@@ -181,7 +181,7 @@ const Ventas = () => {
 
   return (
     <div className="ventas-container">
-      <h2 className="ventas-title">Punto de Venta</h2>
+      <h2 className="ventas-title">Ventas</h2>
 
       <div className="ventas-grid">
 

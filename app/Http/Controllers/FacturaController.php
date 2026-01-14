@@ -14,6 +14,18 @@ use Illuminate\Support\Facades\Auth;
 
 class FacturaController extends Controller
 {
+    public function index()
+    {
+        // Traemos todas las facturas, pero OJO: cargamos la relación 'cliente'
+        // para poder mostrar la Razón Social en la tabla.
+        // Ordenamos por 'created_at' descendente (las nuevas primero)
+         $facturas = Factura::with(['cliente', 'detalles.producto'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($facturas);
+    }
+    
     public function store(Request $request)
     {
         // 1. Cambiamos la validación: Pedimos NIT y Razón Social en lugar de ID
