@@ -21,16 +21,20 @@ class MenuItemRolSeeder extends Seeder
         $empresas = MenuItem::where('ruta', '/dashboard/empresas')->first();
         $reportes = MenuItem::where('ruta', '/dashboard/reportes')->first();
         $comprobantes = MenuItem::where('ruta', '/dashboard/comprobantes')->first();
+        $facturas = MenuItem::where('ruta', '/dashboard/facturas')->first();
         
         $inventarios = MenuItem::where('item', 'Inventarios')->first();
         $compras = MenuItem::where('ruta', '/dashboard/compras')->first();
+
+        $ventasfacturacion = MenuItem::where('item', 'Ventas y Facturación')->first();
+        $ventas = MenuItem::where('ruta', '/dashboard/ventas')->first();
 
         // ADMIN (ID 1) accede a todo
         foreach ([
             $administracion, $usuarios, $roles, $personas, $protocolos, 
             $sucursales, $empresas, $reportes, $comprobantes,
             $planCuentas, $planPresupuestarios,
-            $inventarios, $compras
+            $inventarios, $compras, $facturas, $ventas, $ventasfacturacion
         ] as $menuItem) {
             if ($menuItem) {
                 MenuItemRol::create([
@@ -42,7 +46,7 @@ class MenuItemRolSeeder extends Seeder
         foreach ([
             $administracion, $usuarios, $personas, 
             $planCuentas, $planPresupuestarios,
-            $inventarios, 
+            $inventarios,$ventasfacturacion
         ] as $menuItem) {
             if ($menuItem) {
                 MenuItemRol::create([

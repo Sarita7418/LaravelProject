@@ -29,11 +29,25 @@ use App\Http\Controllers\Crud\EmpresaCrudController;
 use App\Http\Controllers\Crud\SucursalCrudController;
 use App\Http\Controllers\Crud\LogoCrudController;
 
+use App\Http\Controllers\FacturaController;
+
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\CompraController;
 
 Route::post('/personas', [PersonaCrudController::class, 'store']);
+
+// ... imports ...
+Route::post('/personas', [PersonaCrudController::class, 'store']);
+
+
+Route::get('/facturas', function() {
+    return [
+        'conexion_actual' => DB::connection()->getConfig('host'), // Te dirá la IP real
+        'cantidad_facturas' => \App\Models\Factura::count(),
+        'datos' => \App\Models\Factura::with('detalles')->get()
+    ];
+});
 
 Route::middleware([
     EnsureFrontendRequestsAreStateful::class,
@@ -203,6 +217,15 @@ Route::middleware([
     Route::get('/productos/categorias', [ProductoController::class, 'getCategorias'])->middleware('auth:sanctum');
     Route::get('/productos/unidades', [ProductoController::class, 'getUnidades'])->middleware('auth:sanctum');
     Route::get('/productos/estados', [ProductoController::class, 'getEstados'])->middleware('auth:sanctum');
+
+    
+    Route::post('/facturas', [FacturaController::class, 'store']);
+    // Si quieres listar ventas también:
+    Route::get('/facturas', [FacturaController::class, 'index']);
+
+
+    Route::get('/clientes/buscar/{nit}', [FacturaController::class, 'buscarCliente']);
+
     Route::get('/productos/catalogos/categorias', [ProductoController::class, 'getCategorias'])->middleware('auth:sanctum');
     Route::get('/productos/catalogos/unidades', [ProductoController::class, 'getUnidades'])->middleware('auth:sanctum');
     Route::get('/productos', [ProductoController::class, 'index'])->middleware('auth:sanctum');
