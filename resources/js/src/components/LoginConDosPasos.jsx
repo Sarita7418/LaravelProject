@@ -323,17 +323,15 @@ export default function LoginConDosPasos({
                             </div>
                         )}
                     </div>
+          <button 
+            type="submit" 
+            className="login-btn"
+            disabled={loading || !isFormValid()}
+          >
+            {loading ? 'Iniciando sesión...' : 'Entrar'}
+          </button>
+        </form>
 
-<<<<<<< HEAD
-                    <button
-                        type="submit"
-                        className="login-btn"
-                        disabled={loading || !isFormValid()}
-                    >
-                        {loading ? "Iniciando sesión..." : "Entrar"}
-                    </button>
-                </form>
-=======
         <div className="login-links">
           <label
             className="forgot-password-link"
@@ -343,33 +341,12 @@ export default function LoginConDosPasos({
           >
             ¿Olvidaste tu contraseña?
           </label>
->>>>>>> 3285c9960249b3394b7fac2c78eddd598ea8080a
 
-                <div className="login-links">
-                    <label
-                        className="forgot-password-link"
-                        onClick={() => {
-                            const userParam = encodeURIComponent(username);
-                            navigate(`/cambiar-contrasena?user=${userParam}`);
-                        }}
-                    >
-                        ¿Olvidaste tu contraseña?
-                    </label>
-
-                    <p className="register-link">
-                        ¿No tienes cuenta?{" "}
-                        <Link to="/registro">Regístrate aquí</Link>
-                    </p>
-                </div>
-            </div>
+          <p className="register-link">
+            ¿No tienes cuenta? <Link to="/registro">Regístrate aquí</Link>
+          </p>
         </div>
-<<<<<<< HEAD
-    );
-}
-=======
       </div>
     </div>
   )
 }
-
->>>>>>> 3285c9960249b3394b7fac2c78eddd598ea8080a
