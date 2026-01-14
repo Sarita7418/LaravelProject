@@ -1,7 +1,7 @@
 /* CONTENEDOR PRINCIPAL */
 .ventas-container {
     background: #f3f6fb;
-    min-height: 100vh;
+    min-height:85%;
     padding: 25px;
     font-family: "Segoe UI", sans-serif;
 }

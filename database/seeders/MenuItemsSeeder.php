@@ -149,6 +149,13 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 1,
         ]);
+        MenuItem::create([
+            'item' => 'Historial Ventas',
+            'ruta' => '/dashboard/historial-ventas',
+            'id_padre' => $ventasfacturacion->id,
+            'nivel' => 3,
+            'orden' => 2,
+        ]);
 
 
     }
