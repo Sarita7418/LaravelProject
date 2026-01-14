@@ -32,7 +32,7 @@
 /* Cuando el valor está lleno */
 .codigo-inputs input.filled {
   background-color: #FFFD55;
-  color: hwb(238 0% 65%);
+  color: #000359;
   border-color: #000359;
   box-shadow: 0 4px 12px rgba(0, 3, 89, 0.15);
 }
@@ -56,29 +56,6 @@
     border-radius: 12px;
   }
 }
-<<<<<<< HEAD
-
-.dos-pasos-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: var(--bg);
-  padding: 24px;
-  width: 50%;
-  border: hwb(238 0% 65%) 1px solid;
-  border-radius: 24px;
-  margin-left: 23%;
-  gap: 4px;
-  box-shadow: 0px 0px 50px rgb(35, 31, 62);
-}
-
-.dos-pasos-container h2{
-  margin-bottom: 0;
-}
-.dos-pasos-container button{
-  width: 50%;
-=======
 .dos-pasos-container {
   min-height: 100vh;          /* ocupa toda la pantalla */
   display: flex;
@@ -95,5 +72,4 @@
 
 .btn-cancelar {
   margin-top: 10px;
->>>>>>> 3285c9960249b3394b7fac2c78eddd598ea8080a
 }
