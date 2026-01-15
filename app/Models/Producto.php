@@ -99,10 +99,6 @@ class Producto extends Model
         return $this->hasMany(Lote::class, 'id_producto');
     }
 
-    // ============================
-    // NUEVAS RELACIONES
-    // ============================
-
     public function liname()
     {
         return $this->belongsTo(MedicamentoLiname::class, 'id_medicamento_liname');
