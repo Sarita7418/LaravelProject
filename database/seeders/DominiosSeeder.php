@@ -9,6 +9,9 @@ class DominiosSeeder extends Seeder
 {
     public function run()
     {
+        // Es recomendable limpiar la tabla antes para evitar errores de duplicados
+        // DB::table('dominios')->truncate(); 
+
         DB::table('dominios')->insert([
             ['id' => 1, 'descripcion' => 'estado_protocolo'],
             ['id' => 2, 'descripcion' => 'tipo_cuenta'],
@@ -21,6 +24,8 @@ class DominiosSeeder extends Seeder
             ['id' => 9, 'descripcion' => 'estado_lote'],    
             ['id' => 10, 'descripcion' => 'tipo_movimiento'],  
             ['id' => 11, 'descripcion' => 'tipo_precio'],
+            ['id' => 12, 'descripcion' => 'tipo_conversion'],
+            ['id' => 13, 'descripcion' => 'categoria_farmacia'],
         ]);
     }
 }
