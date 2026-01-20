@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
             SucursalesSeeder::class,
             LogosSeeder::class,
             ClasificacionesLinameSeeder::class,
+            EspecialidadesMedicasSeeder::class,
+            MedicosSeeder::class,
         ]);
     }
 }

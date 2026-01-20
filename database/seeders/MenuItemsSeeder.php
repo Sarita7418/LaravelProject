@@ -114,13 +114,21 @@ class MenuItemsSeeder extends Seeder
             'orden' => 11,
         ]);
 
+        // Submenú: Catalogo Médicos
+        MenuItem::create([
+            'item' => 'Catálogo Médicos',
+            'ruta' => '/catalogo-medicos',
+            'id_padre' => $admin->id,
+            'nivel' => 2,
+            'orden' => 12,  
+        ]);
  
         $inventarios = MenuItem::create([
             'item' => 'Inventarios',
             'ruta' => '#', // Categoría padre sin enlace directo
             'id_padre' => $admin->id,
             'nivel' => 2,
-            'orden' => 12,
+            'orden' => 13,
         ]);
 
         // Submenú: Compras
@@ -139,7 +147,7 @@ class MenuItemsSeeder extends Seeder
             'ruta' => '#', // Categoría padre sin enlace directo
             'id_padre' => $admin->id,
             'nivel' => 2,
-            'orden' => 13,
+            'orden' => 14,
         ]);
 
         MenuItem::create([
