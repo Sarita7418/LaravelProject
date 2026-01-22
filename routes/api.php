@@ -34,6 +34,8 @@ use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\CompraController;
+use App\Http\Controllers\KardexController;
+
 
 Route::post('/personas', [PersonaCrudController::class, 'store']);
 
@@ -222,6 +224,10 @@ Route::middleware([
     Route::post('/facturas', [FacturaController::class, 'store']);
     // Si quieres listar ventas también:
     Route::get('/facturas', [FacturaController::class, 'index']);
+        
+    // Rutas de Kardex
+    Route::get('/kardex/{producto_id}', [KardexController::class, 'show']);
+        
 
 
     Route::get('/clientes/buscar/{nit}', [FacturaController::class, 'buscarCliente']);
