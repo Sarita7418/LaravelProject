@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Lote extends Model
 {
@@ -30,7 +29,6 @@ class Lote extends Model
 
     public $timestamps = true;
 
-    // Relaciones
     public function compra()
     {
         return $this->belongsTo(Compra::class, 'id_compra');

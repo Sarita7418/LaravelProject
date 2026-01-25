@@ -21,14 +21,17 @@ const CrearCompra = () => {
     const [loading, setLoading] = useState(false);
     const [cargandoDatos, setCargandoDatos] = useState(true);
     const [guardandoProducto, setGuardandoProducto] = useState(false);
-
-    // Estado para el producto que se está agregando/actualizando
     const [productoActual, setProductoActual] = useState({
         id_producto: '',
         nombre: '',
         cantidad: 1,
         precio_unitario: 0,
-        subtotal: 0
+        descuento_pct: 0,
+        descuento_monto: 0,
+        subtotal: 0,
+        codigo_barras: '',
+        numero_lote: '',
+        fecha_vencimiento: ''
     });
 
     const [formData, setFormData] = useState({
@@ -41,8 +44,8 @@ const CrearCompra = () => {
     });
 
     const [detalle, setDetalle] = useState([]);
+    const [descuentoHabilitado, setDescuentoHabilitado] = useState(false);
 
-    // Función para limpiar texto (remueve comillas y hace trim)
     const limpiarTexto = (texto) => {
         if (!texto && texto !== 0) return '';
         return texto.toString().replace(/['"]/g, '').trim();
@@ -61,23 +64,47 @@ const CrearCompra = () => {
         }
     }, [formData.id_proveedor]);
 
-    // Calcular subtotal cuando cambia cantidad o precio
+    const calcularSubtotal = (cantidad, precio, descuentoPct, descuentoMonto) => {
+        const cant = parseFloat(cantidad) || 0;
+        const precioUnit = parseFloat(precio) || 0;
+        const totalSinDescuento = cant * precioUnit;
+        
+        let descuento = 0;
+        if (descuentoPct > 0) {
+            descuento = (totalSinDescuento * descuentoPct) / 100;
+        } else if (descuentoMonto > 0) {
+            descuento = descuentoMonto;
+        }
+        
+        if (descuento > totalSinDescuento) {
+            descuento = totalSinDescuento;
+        }
+        
+        return {
+            totalSinDescuento: totalSinDescuento,
+            descuentoMonto: descuento,
+            subtotal: totalSinDescuento - descuento
+        };
+    };
+
     useEffect(() => {
-        const cantidad = parseFloat(productoActual.cantidad) || 0;
-        const precio = parseFloat(productoActual.precio_unitario) || 0;
-        const subtotal = cantidad * precio;
+        const { subtotal } = calcularSubtotal(
+            productoActual.cantidad,
+            productoActual.precio_unitario,
+            productoActual.descuento_pct,
+            productoActual.descuento_monto
+        );
         
         setProductoActual(prev => ({
             ...prev,
             subtotal: subtotal
         }));
-    }, [productoActual.cantidad, productoActual.precio_unitario]);
+    }, [productoActual.cantidad, productoActual.precio_unitario, productoActual.descuento_pct, productoActual.descuento_monto]);
 
     const cargarDatosIniciales = async () => {
         try {
             setCargandoDatos(true);
             
-            // Cargar datos secuencialmente
             try {
                 const resProv = await axios.get('/api/proveedores/select');
                 setProveedores(resProv.data?.data || []);
@@ -120,7 +147,6 @@ const CrearCompra = () => {
                 }
             } catch (error) {
                 console.error('Error generando número:', error);
-                // Generar número localmente
                 const numeroLocal = `CMP-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
                 setFormData(prev => ({
                     ...prev,
@@ -157,7 +183,6 @@ const CrearCompra = () => {
         }
     };
 
-    // Función para seleccionar producto del dropdown
     const seleccionarProducto = (seleccion) => {
         if (!seleccion || !seleccion.value) return;
         
@@ -168,31 +193,67 @@ const CrearCompra = () => {
             return;
         }
 
-        // Verificar si ya está en el detalle
         const productoExistente = detalle.find(item => item.id_producto === producto.id);
         
         if (productoExistente) {
-            // Si ya existe, cargarlo para editar
             setProductoActual({
                 id_producto: productoExistente.id_producto,
                 nombre: productoExistente.nombre,
                 cantidad: productoExistente.cantidad,
                 precio_unitario: productoExistente.precio_unitario,
-                subtotal: productoExistente.subtotal
+                descuento_pct: productoExistente.descuento_pct || 0,
+                descuento_monto: productoExistente.descuento_monto || 0,
+                subtotal: productoExistente.subtotal,
+                codigo_barras: productoExistente.codigo_barras || '',
+                numero_lote: productoExistente.numero_lote || '',
+                fecha_vencimiento: productoExistente.fecha_vencimiento || ''
             });
         } else {
-            // Nuevo producto
             setProductoActual({
                 id_producto: producto.id,
                 nombre: producto.nombre || `Producto ${producto.id}`,
                 cantidad: 1,
                 precio_unitario: parseFloat(producto.precio_entrada) || 0,
-                subtotal: parseFloat(producto.precio_entrada) || 0
+                descuento_pct: 0,
+                descuento_monto: 0,
+                subtotal: parseFloat(producto.precio_entrada) || 0,
+                codigo_barras: producto.codigo_barras || '',
+                numero_lote: '',
+                fecha_vencimiento: ''
             });
+        }
+        
+        setDescuentoHabilitado(false);
+    };
+
+    const calcularDescuentoDesdeMonto = () => {
+        const cantidad = parseFloat(productoActual.cantidad) || 0;
+        const precio = parseFloat(productoActual.precio_unitario) || 0;
+        const totalSinDescuento = cantidad * precio;
+        
+        if (totalSinDescuento > 0 && productoActual.descuento_monto > 0) {
+            const porcentaje = (productoActual.descuento_monto / totalSinDescuento) * 100;
+            setProductoActual(prev => ({
+                ...prev,
+                descuento_pct: porcentaje
+            }));
         }
     };
 
-    // Función para guardar/actualizar producto en la lista (detalle local)
+    const calcularDescuentoDesdePorcentaje = () => {
+        const cantidad = parseFloat(productoActual.cantidad) || 0;
+        const precio = parseFloat(productoActual.precio_unitario) || 0;
+        const totalSinDescuento = cantidad * precio;
+        
+        if (productoActual.descuento_pct > 0) {
+            const monto = (totalSinDescuento * productoActual.descuento_pct) / 100;
+            setProductoActual(prev => ({
+                ...prev,
+                descuento_monto: monto
+            }));
+        }
+    };
+
     const guardarProductoEnDetalle = () => {
         if (!productoActual.id_producto) {
             alert("Seleccione un producto primero");
@@ -209,46 +270,87 @@ const CrearCompra = () => {
             return;
         }
 
-        // Verificar si el producto ya existe en el detalle
+        if (productoActual.descuento_pct > 100) {
+            alert("El descuento no puede ser mayor al 100%");
+            return;
+        }
+
+        if (productoActual.descuento_monto < 0) {
+            alert("El descuento no puede ser negativo");
+            return;
+        }
+
+        const cantidad = parseFloat(productoActual.cantidad);
+        const precioUnitario = parseFloat(productoActual.precio_unitario);
+        const descuentoPct = parseFloat(productoActual.descuento_pct) || 0;
+        const descuentoMonto = parseFloat(productoActual.descuento_monto) || 0;
+        
+        const { totalSinDescuento, descuentoMonto: descuentoCalculado, subtotal } = calcularSubtotal(
+            cantidad,
+            precioUnitario,
+            descuentoPct,
+            descuentoMonto
+        );
+
+        if (descuentoCalculado > totalSinDescuento) {
+            alert("El descuento no puede ser mayor al total");
+            return;
+        }
+
         const indexExistente = detalle.findIndex(item => item.id_producto === productoActual.id_producto);
         
         if (indexExistente >= 0) {
-            // Actualizar producto existente
             const nuevoDetalle = [...detalle];
             nuevoDetalle[indexExistente] = {
-                ...productoActual,
-                cantidad: parseFloat(productoActual.cantidad),
-                precio_unitario: parseFloat(productoActual.precio_unitario),
-                subtotal: productoActual.subtotal
+                id_producto: productoActual.id_producto,
+                nombre: productoActual.nombre,
+                cantidad: cantidad,
+                precio_unitario: precioUnitario,
+                descuento_pct: descuentoPct,
+                descuento_monto: descuentoCalculado,
+                subtotal: subtotal,
+                codigo_barras: productoActual.codigo_barras || '',
+                numero_lote: productoActual.numero_lote || '',
+                fecha_vencimiento: productoActual.fecha_vencimiento || ''
             };
             setDetalle(nuevoDetalle);
         } else {
-            // Agregar nuevo producto
-            setDetalle(prev => [...prev, {
-                ...productoActual,
-                cantidad: parseFloat(productoActual.cantidad),
-                precio_unitario: parseFloat(productoActual.precio_unitario),
-                subtotal: productoActual.subtotal
-            }]);
+            const nuevoProducto = {
+                id_producto: productoActual.id_producto,
+                nombre: productoActual.nombre,
+                cantidad: cantidad,
+                precio_unitario: precioUnitario,
+                descuento_pct: descuentoPct,
+                descuento_monto: descuentoCalculado,
+                subtotal: subtotal,
+                codigo_barras: productoActual.codigo_barras || '',
+                numero_lote: productoActual.numero_lote || '',
+                fecha_vencimiento: productoActual.fecha_vencimiento || ''
+            };
+            setDetalle(prev => [...prev, nuevoProducto]);
         }
 
-        // Limpiar el formulario de producto actual
         setProductoActual({
             id_producto: '',
             nombre: '',
             cantidad: 1,
             precio_unitario: 0,
-            subtotal: 0
+            descuento_pct: 0,
+            descuento_monto: 0,
+            subtotal: 0,
+            codigo_barras: '',
+            numero_lote: '',
+            fecha_vencimiento: ''
         });
+        
+        setDescuentoHabilitado(false);
     };
 
     const manejarProductoCreado = (respuesta) => {
         if (!respuesta || !respuesta.success) return;
         
-        // Refrescar lista de productos
         cargarDatosIniciales();
         
-        // Cargar el nuevo producto en el formulario actual
         if (respuesta.data) {
             const producto = respuesta.data;
             setProductoActual({
@@ -256,7 +358,12 @@ const CrearCompra = () => {
                 nombre: producto.nombre || `Producto ${producto.id}`,
                 cantidad: 1,
                 precio_unitario: parseFloat(producto.precio_entrada) || 0,
-                subtotal: parseFloat(producto.precio_entrada) || 0
+                descuento_pct: 0,
+                descuento_monto: 0,
+                subtotal: parseFloat(producto.precio_entrada) || 0,
+                codigo_barras: '',
+                numero_lote: '',
+                fecha_vencimiento: ''
             });
         }
     };
@@ -264,10 +371,8 @@ const CrearCompra = () => {
     const manejarProveedorCreado = (respuesta) => {
         if (!respuesta || !respuesta.success) return;
         
-        // Refrescar lista de proveedores
         cargarDatosIniciales();
         
-        // Seleccionar el nuevo proveedor
         if (respuesta.data?.empresa?.id) {
             setFormData(prev => ({ 
                 ...prev, 
@@ -286,6 +391,20 @@ const CrearCompra = () => {
         }, 0);
     };
 
+    const calcularTotalDescuentos = () => {
+        return detalle.reduce((acc, item) => {
+            return acc + (parseFloat(item.descuento_monto) || 0);
+        }, 0);
+    };
+
+    const calcularTotalSinDescuentos = () => {
+        return detalle.reduce((acc, item) => {
+            const cantidad = parseFloat(item.cantidad) || 0;
+            const precio = parseFloat(item.precio_unitario) || 0;
+            return acc + (cantidad * precio);
+        }, 0);
+    };
+
     const validarFormulario = () => {
         if (!formData.id_proveedor) {
             alert("Seleccione un proveedor");
@@ -297,7 +416,6 @@ const CrearCompra = () => {
             return false;
         }
 
-        // Validar productos
         for (const item of detalle) {
             if (!item.cantidad || item.cantidad <= 0) {
                 alert(`La cantidad del producto "${item.nombre}" es inválida`);
@@ -319,7 +437,6 @@ const CrearCompra = () => {
 
         setLoading(true);
         try {
-            // Limpiar todos los datos de texto antes de enviar
             const payload = {
                 id_proveedor: formData.id_proveedor,
                 id_sucursal_proveedor: formData.id_sucursal_proveedor || null,
@@ -330,11 +447,16 @@ const CrearCompra = () => {
                 detalles: detalle.map(item => ({
                     id_producto: item.id_producto,
                     cantidad: parseFloat(item.cantidad),
-                    precio_unitario: parseFloat(item.precio_unitario)
+                    precio_unitario: parseFloat(item.precio_unitario),
+                    descuento_pct: parseFloat(item.descuento_pct) || 0,
+                    descuento_monto: parseFloat(item.descuento_monto) || 0,
+                    codigo_barras: limpiarTexto(item.codigo_barras) || '',
+                    numero_lote: limpiarTexto(item.numero_lote) || '',
+                    fecha_vencimiento: item.fecha_vencimiento || null
                 }))
             };
             
-            console.log('Enviando compra:', payload);
+            console.log('Payload enviado:', JSON.stringify(payload, null, 2));
             
             const response = await axios.post('/api/compras', payload);
             
@@ -345,25 +467,29 @@ const CrearCompra = () => {
                 alert(response.data?.message || "Error al registrar la compra");
             }
         } catch (error) {
-            console.error('Error al registrar compra:', error);
+            console.error('Error detallado:', error);
             
             let errorMessage = "Error al registrar la compra";
             
             if (error.response) {
+                console.error('Respuesta del servidor:', error.response.data);
+                
                 if (error.response.data?.message) {
                     errorMessage = error.response.data.message;
                 } else if (error.response.data?.error) {
                     errorMessage = error.response.data.error;
                 }
                 
-                // Mostrar errores de validación específicos
                 if (error.response.status === 422 && error.response.data.errors) {
                     const validationErrors = error.response.data.errors;
                     const errorList = Object.values(validationErrors).flat().join('\n');
                     errorMessage = `Errores de validación:\n${errorList}`;
                 }
-                
-                console.error('Detalles del error:', error.response.data);
+            } else if (error.request) {
+                console.error('No hubo respuesta:', error.request);
+                errorMessage = "No se pudo conectar con el servidor. Verifica tu conexión a internet.";
+            } else {
+                console.error('Error de configuración:', error.message);
             }
             
             alert(errorMessage);
@@ -372,7 +498,6 @@ const CrearCompra = () => {
         }
     };
 
-    // Formatear productos para Select
     const productosOptions = productos.map(p => ({
         value: p.id,
         label: `${p.nombre} - Bs. ${p.precio_entrada || 0}`
@@ -420,7 +545,6 @@ const CrearCompra = () => {
                                         menuPosition="fixed"
                                         menuShouldScrollIntoView={false}
                                     />
-
                                 </div>
                                 <button 
                                     type="button" 
@@ -446,7 +570,6 @@ const CrearCompra = () => {
                                 menuPosition="fixed"
                                 menuShouldScrollIntoView={false}
                             />
-
                             {sucursalesProveedor.length === 0 && formData.id_proveedor && (
                                 <small className="text-muted">
                                     Este proveedor no tiene sucursales registradas
@@ -531,7 +654,6 @@ const CrearCompra = () => {
                         </button>
                     </div>
 
-                    {/* Formulario para agregar/editar producto actual */}
                     {productoActual.id_producto && (
                         <div className="agregar-producto-form">
                             <h4>Agregar/Editar Producto</h4>
@@ -592,7 +714,42 @@ const CrearCompra = () => {
                                     />
                                 </div>
                             </div>
+                            
                             <div className="form-grid-2">
+                                <div className="form-group">
+                                    <label>Código de Barras (Opcional)</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-input" 
+                                        value={productoActual.codigo_barras}
+                                        onChange={e => setProductoActual({...productoActual, codigo_barras: e.target.value})}
+                                        placeholder="Ej: 123456789012"
+                                    />
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label>Número de Lote (Opcional)</label>
+                                    <input 
+                                        type="text" 
+                                        className="form-input" 
+                                        value={productoActual.numero_lote}
+                                        onChange={e => setProductoActual({...productoActual, numero_lote: e.target.value})}
+                                        placeholder="Ej: L-101, BATCH-2024"
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="form-grid-2">
+                                <div className="form-group">
+                                    <label>Fecha de Vencimiento (Opcional)</label>
+                                    <input 
+                                        type="date" 
+                                        className="form-input" 
+                                        value={productoActual.fecha_vencimiento}
+                                        onChange={e => setProductoActual({...productoActual, fecha_vencimiento: e.target.value})}
+                                    />
+                                </div>
+                                
                                 <div className="form-group">
                                     <label>Subtotal</label>
                                     <input 
@@ -602,21 +759,106 @@ const CrearCompra = () => {
                                         readOnly
                                     />
                                 </div>
-                                <div className="form-group btn-agregar-container">
-                                    <button 
-                                        type="button" 
-                                        className="btn-primary btn-agregar"
-                                        onClick={guardarProductoEnDetalle}
-                                        disabled={guardandoProducto}
-                                    >
-                                        {guardandoProducto ? 'Guardando...' : 'Aceptar y Agregar'}
-                                    </button>
+                            </div>
+                            
+                            <div className="descuento-section">
+                                <div className="descuento-header">
+                                    <div className="checkbox-container">
+                                        <input 
+                                            type="checkbox" 
+                                            id="aplicarDescuento"
+                                            checked={descuentoHabilitado}
+                                            onChange={(e) => setDescuentoHabilitado(e.target.checked)}
+                                        />
+                                        <label htmlFor="aplicarDescuento" className="descuento-label">
+                                            Aplicar Descuento (Opcional)
+                                        </label>
+                                    </div>
                                 </div>
+                                
+                                {descuentoHabilitado && (
+                                    <div className="descuento-options">
+                                        <div className="form-grid-2">
+                                            <div className="form-group">
+                                                <label>Descuento Porcentaje (%)</label>
+                                                <input 
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    max="100"
+                                                    className="form-input"
+                                                    value={productoActual.descuento_pct}
+                                                    onChange={e => {
+                                                        const valor = e.target.value;
+                                                        setProductoActual({
+                                                            ...productoActual,
+                                                            descuento_pct: valor
+                                                        });
+                                                    }}
+                                                    onBlur={() => {
+                                                        if (productoActual.descuento_pct > 100) {
+                                                            alert("El descuento no puede ser mayor al 100%");
+                                                            setProductoActual(prev => ({
+                                                                ...prev,
+                                                                descuento_pct: 100
+                                                            }));
+                                                        }
+                                                        calcularDescuentoDesdePorcentaje();
+                                                    }}
+                                                />
+                                            </div>
+                                            
+                                            <div className="form-group">
+                                                <label>Descuento Monto (Bs)</label>
+                                                <input 
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    className="form-input"
+                                                    value={productoActual.descuento_monto}
+                                                    onChange={e => {
+                                                        const valor = e.target.value;
+                                                        setProductoActual({
+                                                            ...productoActual,
+                                                            descuento_monto: valor
+                                                        });
+                                                    }}
+                                                    onBlur={calcularDescuentoDesdeMonto}
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="descuento-info">
+                                            <div className="descuento-info-item">
+                                                <span>Total sin descuento:</span>
+                                                <span>Bs. {(parseFloat(productoActual.cantidad) * parseFloat(productoActual.precio_unitario)).toFixed(2)}</span>
+                                            </div>
+                                            <div className="descuento-info-item">
+                                                <span>Descuento aplicado:</span>
+                                                <span className="descuento-monto">- Bs. {parseFloat(productoActual.descuento_monto).toFixed(2)} ({parseFloat(productoActual.descuento_pct).toFixed(2)}%)</span>
+                                            </div>
+                                            <div className="descuento-info-item total">
+                                                <span>Total con descuento:</span>
+                                                <span className="total-final">Bs. {productoActual.subtotal.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            <div className="form-group btn-agregar-container">
+                                <button 
+                                    type="button" 
+                                    className="btn-primary btn-agregar"
+                                    onClick={guardarProductoEnDetalle}
+                                    disabled={guardandoProducto}
+                                >
+                                    {guardandoProducto ? 'Guardando...' : 'Aceptar y Agregar'}
+                                </button>
                             </div>
                         </div>
                     )}
 
-                    {/* Lista de productos ya agregados */}
                     {detalle.length > 0 ? (
                         <>
                             <h4>Productos Agregados a la Compra</h4>
@@ -626,6 +868,7 @@ const CrearCompra = () => {
                                         <th>Producto</th>
                                         <th>Cantidad</th>
                                         <th>Costo Unit. (Bs)</th>
+                                        <th>Descuento</th>
                                         <th>Subtotal (Bs)</th>
                                         <th>Acciones</th>
                                     </tr>
@@ -636,6 +879,16 @@ const CrearCompra = () => {
                                             <td>{item.nombre}</td>
                                             <td className="text-center">{item.cantidad}</td>
                                             <td className="text-right">Bs. {parseFloat(item.precio_unitario).toFixed(2)}</td>
+                                            <td className="text-right">
+                                                {item.descuento_monto > 0 ? (
+                                                    <div className="descuento-celda">
+                                                        <div className="descuento-monto">Bs. {parseFloat(item.descuento_monto).toFixed(2)}</div>
+                                                        <div className="descuento-porcentaje">({parseFloat(item.descuento_pct).toFixed(2)}%)</div>
+                                                    </div>
+                                                ) : (
+                                                    <span className="sin-descuento">Sin descuento</span>
+                                                )}
+                                            </td>
                                             <td className="text-right">Bs. {parseFloat(item.subtotal).toFixed(2)}</td>
                                             <td className="text-center">
                                                 <button 
@@ -661,6 +914,14 @@ const CrearCompra = () => {
                             </table>
 
                             <div className="totales-section">
+                                <div className="total-item">
+                                    <span>Total sin descuentos:</span>
+                                    <span>Bs. {calcularTotalSinDescuentos().toFixed(2)}</span>
+                                </div>
+                                <div className="total-item">
+                                    <span>Total descuentos:</span>
+                                    <span className="descuento-total">- Bs. {calcularTotalDescuentos().toFixed(2)}</span>
+                                </div>
                                 <div className="total-item total-final">
                                     <span>TOTAL COMPRA:</span>
                                     <span className="total-monto">

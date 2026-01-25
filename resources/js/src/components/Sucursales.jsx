@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import axios from '../lib/axios'
-import './Empresas.css' // reutilizo estilos; cambia si tienes Sucursales.css
+import './Empresas.css' // Reutilizamos los estilos
 
 function Sucursales() {
   const [sucursales, setSucursales] = useState([])
@@ -23,7 +23,7 @@ function Sucursales() {
     email: '',
     id_sucursal_padre: '',
     id_representante_legal: '',
-    logo: null // File | null (logo de la sucursal)
+    logo: null 
   })
 
   // --- utils logs
@@ -303,7 +303,7 @@ function Sucursales() {
 
   const listaSucursalesMostradas = mostrarInactivas ? inactivas : sucursales
 
-  // Sucursales disponibles como posibles padres (opcionalmente puedes filtrar por empresa seleccionada)
+  // Sucursales disponibles como posibles padres
   const posiblesPadres = useMemo(() => {
     const base = formData.id_empresa
       ? sucursales.filter(s => String(s.id_empresa) === String(formData.id_empresa))
@@ -313,7 +313,7 @@ function Sucursales() {
 
   return (
     <div className="empresas-container">
-      <button className="btn-crear-empresa" onClick={() => setFormVisible(true)}>
+      <button className="btn-crear-empresa" onClick={() => { resetFormulario(); setFormVisible(true); }}>
         Crear Sucursal
       </button>
 
@@ -353,14 +353,18 @@ function Sucursales() {
               <p><strong>Representante:</strong> {rep ? personaLabel(rep) : '—'}</p>
               <p><strong>Padre:</strong> {padre ? sucursalLabel(padre) : '—'}</p>
 
-              {suc.estado === true ? (
-                <>
-                  <button onClick={() => iniciarEdicion(suc)}>Editar</button>
-                  <button onClick={() => eliminarSucursal(suc.id)}>Desactivar</button>
-                </>
-              ) : (
-                <button onClick={() => reactivarSucursal(suc.id)}>Reactivar</button>
-              )}
+              {/* AQUÍ ESTÁ LA CORRECCIÓN: Encapsulamos los botones en card-actions */}
+              <div className="card-actions">
+                {suc.estado === true ? (
+                  <>
+                    <button onClick={() => iniciarEdicion(suc)}>Editar</button>
+                    {/* Agregué btn-danger para que se vea rojo igual que en Empresas */}
+                    <button className="btn-danger" onClick={() => eliminarSucursal(suc.id)}>Desactivar</button>
+                  </>
+                ) : (
+                  <button onClick={() => reactivarSucursal(suc.id)}>Reactivar</button>
+                )}
+              </div>
             </div>
           )
         })}
@@ -369,6 +373,9 @@ function Sucursales() {
       {formVisible && (
         <div className="form-overlay">
           <div className="form-container">
+            {/* AQUÍ ESTÁ LA CORRECCIÓN: Título dinámico h2 */}
+            <h2>{sucursalEditando ? 'Editar Sucursal' : 'Nueva Sucursal'}</h2>
+
             <label>Empresa</label>
             <select
               name="id_empresa"
@@ -433,7 +440,8 @@ function Sucursales() {
               <button onClick={sucursalEditando ? actualizarSucursal : crearSucursal}>
                 {loading ? 'Cargando...' : (sucursalEditando ? 'Actualizar Sucursal' : 'Crear Sucursal')}
               </button>
-              <button onClick={resetFormulario}>Cancelar</button>
+              {/* Agregué btn-cancel para que tenga el estilo gris */}
+              <button onClick={resetFormulario} className="btn-cancel">Cancelar</button>
             </div>
           </div>
         </div>

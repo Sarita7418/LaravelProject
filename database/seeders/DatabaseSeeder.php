@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
             EmpresaSeeder::class,
             SucursalesSeeder::class,
             LogosSeeder::class,
-            ProductosSeeder::class,
+            ClasificacionesLinameSeeder::class,
         ]);
     }
 }
