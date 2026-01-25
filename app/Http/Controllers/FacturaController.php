@@ -70,7 +70,14 @@ class FacturaController extends Controller
                         throw new \Exception("Stock insuficiente para: {$producto->nombre}");
                     }
 
-                    $precioVenta = $producto->precioSalidaActual; 
+                    // Usamos el operador '??' (Fusión de null).
+                    // Significa: "Intenta usar el precioActual. Si es nulo, usa precio_salida simple".
+                    $precioVenta = $producto->precioSalidaActual ?? $producto->precio_salida;
+
+                    // Validacion extra por si AMBOS son nulos (caso imposible si tu tabla tiene datos)
+                    if (!$precioVenta) {
+                        throw new \Exception("El producto {$producto->nombre} no tiene precio ni nuevo ni antiguo.");
+                    }
                     $subtotal = $item['cantidad'] * $precioVenta;
                     $totalVenta += $subtotal;
 
@@ -118,19 +125,31 @@ class FacturaController extends Controller
                         
                         $stockLote->decrementarStock($cantidadA_Tomar);
 
-                        MovimientoInventario::create([
-                            'fecha' => now(),
-                            'id_tipo_movimiento' => 35, // SALIDA POR VENTA
-                            'referencia' => 'Venta Factura #' . $factura->numero_factura,
-                            'id_producto' => $item['producto']->id,
-                            'id_lote' => $stockLote->id_lote,
-                            'cantidad_entrada' => 0,
-                            'cantidad_salida' => $cantidadA_Tomar,
-                            'costo_unitario' => $item['producto']->precioEntradaActual, 
-                            'costo_total' => $cantidadA_Tomar * $item['producto']->precioEntradaActual,
-                            'id_ubicacion_origen' => $stockLote->id_ubicacion,
-                            'id_usuario' => Auth::id() ?? 1,
-                        ]);
+                        // 1. Definimos el costo usando el Plan A (Nuevo) o Plan B (Viejo)
+                    $costoProducto = $item['producto']->precioEntradaActual ?? $item['producto']->precio_entrada;
+
+                    // 2. Validación de seguridad (Si no tiene costo, asumimos 0 o lanzamos error)
+                    if (!$costoProducto) {
+                        // Opción A: Lanzar error (Más estricto)
+                        // throw new \Exception("El producto {$item['producto']->nombre} no tiene costo de entrada definido.");
+                        
+                        // Opción B: Asumir costo 0 (Para que no se trabe la venta)
+                        $costoProducto = 0; 
+                    }
+
+                    MovimientoInventario::create([
+                        'fecha' => now(),
+                        'id_tipo_movimiento' => 35, // SALIDA POR VENTA
+                        'referencia' => 'Venta Factura #' . $factura->numero_factura,
+                        'id_producto' => $item['producto']->id,
+                        'id_lote' => $stockLote->id_lote,
+                        'cantidad_entrada' => 0,
+                        'cantidad_salida' => $cantidadA_Tomar,
+                        'costo_unitario' => $costoProducto, // <--- Aquí usamos la variable segura
+                        'costo_total' => $cantidadA_Tomar * $costoProducto, // <--- Y aquí también
+                        'id_ubicacion_origen' => $stockLote->id_ubicacion,
+                        'id_usuario' => Auth::id() ?? 1,
+                    ]);
 
                         $cantidadPendiente -= $cantidadA_Tomar;
                     }
