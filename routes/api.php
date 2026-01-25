@@ -34,6 +34,8 @@ use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\CompraController;
+use App\Http\Controllers\KardexController;
+
 use App\Http\Controllers\MedicamentoLinameController;
 
 Route::post('/personas', [PersonaCrudController::class, 'store']);
@@ -236,6 +238,23 @@ Route::middleware([
     Route::get('/proveedores/{id}', [ProveedorController::class, 'show'])->middleware('auth:sanctum');
     Route::put('/proveedores/{id}', [ProveedorController::class, 'update'])->middleware('auth:sanctum');
     Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy'])->middleware('auth:sanctum');
+
+    // PRODUCTOS
+    Route::get('/productos/categorias', [ProductoController::class, 'getCategorias'])->middleware('auth:sanctum');
+    Route::get('/productos/unidades', [ProductoController::class, 'getUnidades'])->middleware('auth:sanctum');
+    Route::get('/productos/estados', [ProductoController::class, 'getEstados'])->middleware('auth:sanctum');
+
+    
+    Route::post('/facturas', [FacturaController::class, 'store']);
+    // Si quieres listar ventas también:
+    Route::get('/facturas', [FacturaController::class, 'index']);
+        
+    // Rutas de Kardex
+    Route::get('/kardex/{producto_id}', [KardexController::class, 'show']);
+        
+
+
+    Route::get('/clientes/buscar/{nit}', [FacturaController::class, 'buscarCliente']);
 
     // ==========================================
     // PRODUCTOS - CATÁLOGOS (ORDEN IMPORTANTE)

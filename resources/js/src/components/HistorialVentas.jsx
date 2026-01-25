@@ -73,42 +73,42 @@ const HistorialVentas = () => {
     };
 
     // --- FUNCIÓN GENERAR PDF (Opción 3: Diseño Limpio) ---
-   // --- FUNCIÓN GENERAR PDF (CORREGIDA: CUF LEGIBLE Y TEXTO ALINEADO) ---
+    // --- FUNCIÓN GENERAR PDF (CORREGIDA: CUF LEGIBLE Y TEXTO ALINEADO) ---
     const generarFacturaPDF = async (factura) => {
         try {
             let detallesFactura = factura.detalles || [];
-            if(detallesFactura.length === 0) console.warn("Sin detalles");
+            if (detallesFactura.length === 0) console.warn("Sin detalles");
 
-            const doc = new jsPDF('p', 'mm', 'letter'); 
+            const doc = new jsPDF('p', 'mm', 'letter');
             const pageWidth = doc.internal.pageSize.getWidth();
-            const marginL = 15; 
-            const marginR = pageWidth - 15; 
-            
+            const marginL = 15;
+            const marginR = pageWidth - 15;
+
             // Fuentes
             const fontSizeStandard = 9;
-            const fontSizeTitle = 11; 
-            const fontSizeBig = 14;   
+            const fontSizeTitle = 11;
+            const fontSizeBig = 14;
 
             // Definimos columnas fijas para el bloque derecho
             // colEtiquetas: Donde dice "NIT:", "CUF:"
             // colValores: Donde empieza el texto del valor (para que quede como bloque)
-            const colEtiquetas = 130; 
+            const colEtiquetas = 130;
             const colValores = 152; // Damos 22mm para la etiqueta
             const anchoTextoDerecha = marginR - colValores; // Espacio disponible para el texto (~49mm)
 
             // ==========================================
             // 1. CABECERA
             // ==========================================
-            
+
             // --- IZQUIERDA (EMPRESA) ---
             doc.setFontSize(fontSizeTitle);
             doc.setFont('helvetica', 'bold');
-            doc.text("MI EMPRESA S.A.", marginL, 20); 
-            
+            doc.text("MI EMPRESA S.A.", marginL, 20);
+
             doc.setFontSize(fontSizeStandard);
             doc.setFont('helvetica', 'bold');
             doc.text("CASA MATRIZ", marginL, 25);
-            
+
             doc.setFont('helvetica', 'normal');
             doc.text("Calle Falsa 123 #54 - Zona Sopocachi", marginL, 29);
             doc.text("Teléfono: 222-3333", marginL, 33);
@@ -136,28 +136,28 @@ const HistorialVentas = () => {
             yFiscal += 5;
             doc.setFont('helvetica', 'bold');
             doc.text("CUF:", colEtiquetas, yFiscal);
-            
+
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(8); // Tamaño 8 es legible y entra bien
             // Cortamos el texto para que entre en la columna
             const cufLines = doc.splitTextToSize(factura.cuf || "---", anchoTextoDerecha);
             doc.text(cufLines, colValores, yFiscal, { align: 'left' }); // Bloque alineado a la izq
-            
+
             // Ajuste dinámico de altura según líneas del CUF
-            yFiscal += (cufLines.length * 3) + 2; 
+            yFiscal += (cufLines.length * 3) + 2;
 
             // ACTIVIDAD (CORREGIDO: ALINEACIÓN Y ANCHO)
             doc.setFontSize(fontSizeStandard); // Volvemos a tamaño 9
             doc.setFont('helvetica', 'bold');
             doc.text("ACTIVIDAD:", colEtiquetas, yFiscal);
-            
+
             doc.setFont('helvetica', 'normal');
             const actividadTexto = "Venta de abarrotes, suministros y diversos productos sin especialización";
             // Cortamos el texto exactamente al ancho disponible
             const actividadLines = doc.splitTextToSize(actividadTexto, anchoTextoDerecha);
-            
+
             // align: 'left' en la columna de valores crea el efecto "Justificado" visual (borde izquierdo recto)
-            doc.text(actividadLines, colValores, yFiscal, { align: 'left' }); 
+            doc.text(actividadLines, colValores, yFiscal, { align: 'left' });
 
 
             // ==========================================
@@ -165,11 +165,11 @@ const HistorialVentas = () => {
             // ==========================================
             // Calculamos Y para no chocar si la actividad fue muy larga
             let yTitulo = Math.max(50, yFiscal + (actividadLines.length * 3) + 5);
-            
+
             doc.setFontSize(fontSizeBig);
             doc.setFont('helvetica', 'bold');
             doc.text("FACTURA", pageWidth / 2, yTitulo, { align: "center" });
-            
+
             doc.setFontSize(8);
             doc.text("(Con Derecho a Crédito Fiscal)", pageWidth / 2, yTitulo + 5, { align: "center" });
 
@@ -185,10 +185,10 @@ const HistorialVentas = () => {
             doc.setFont('helvetica', 'bold');
             doc.text("Fecha:", marginL, yInfo);
             doc.setFont('helvetica', 'normal');
-            doc.text(fechaFormateada, marginL + 15, yInfo); 
+            doc.text(fechaFormateada, marginL + 15, yInfo);
 
             doc.setFont('helvetica', 'bold');
-            doc.text("NIT/CI/CEX:", 130, yInfo); 
+            doc.text("NIT/CI/CEX:", 130, yInfo);
             doc.setFont('helvetica', 'normal');
             doc.text(factura.cliente?.nit_ci || "0", 152, yInfo, { align: 'left' }); // Alineado con el bloque de arriba
 
@@ -204,7 +204,7 @@ const HistorialVentas = () => {
             // 4. TABLA
             // ==========================================
             const tableBody = detallesFactura.map(det => [
-                det.producto?.codigo_interno || "PROD-"+det.producto_id,
+                det.producto?.codigo_interno || "PROD-" + det.producto_id,
                 det.cantidad,
                 det.producto?.nombre || "Producto desconocido",
                 parseFloat(det.precio_unitario).toFixed(2),
@@ -212,13 +212,29 @@ const HistorialVentas = () => {
                 parseFloat(det.subtotal).toFixed(2)
             ]);
 
+            // ... (tu código anterior de tableBody) ...
+
             autoTable(doc, {
                 startY: yInfo + 8,
                 head: [['CÓDIGO', 'CANT.', 'DESCRIPCIÓN', 'P. UNITARIO', 'DESC.', 'SUBTOTAL']],
                 body: tableBody,
                 theme: 'plain',
-                styles: { fontSize: 8, cellPadding: 2, lineWidth: 0.1, lineColor: [0, 0, 0], valign: 'middle', font: 'helvetica' },
-                headStyles: { fillColor: [240, 240, 240], textColor: 0, fontStyle: 'bold', halign: 'center', lineWidth: 0.1, lineColor: [0,0,0] },
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    lineWidth: 0.1,
+                    lineColor: [0, 0, 0],
+                    valign: 'middle',
+                    font: 'helvetica'
+                },
+                headStyles: {
+                    fillColor: [240, 240, 240],
+                    textColor: 0,
+                    fontStyle: 'bold',
+                    halign: 'center',
+                    lineWidth: 0.1,
+                    lineColor: [0, 0, 0]
+                },
                 columnStyles: {
                     0: { halign: 'left', cellWidth: 25 },
                     1: { halign: 'center', cellWidth: 15 },
@@ -228,39 +244,124 @@ const HistorialVentas = () => {
                     5: { halign: 'right', cellWidth: 25 },
                 },
                 foot: [
-                    ['', '', '', '', 'TOTAL Bs', parseFloat(factura.monto_total).toFixed(2)],
-                    ['', '', '', '', 'IMPORTE BASE', parseFloat(factura.monto_total).toFixed(2)]
+                    // Fila 1: TOTAL
+                    [
+                        '', // Col 0 vacía
+                        '', // Col 1 vacía
+                        '', // Col 2 vacía
+                        {
+                            content: 'TOTAL Bs',
+                            colSpan: 2, // FUSIONAMOS Col 3 y 4
+                            styles: { halign: 'right' }
+                        },
+                        // Col 5 (Valor)
+                        parseFloat(factura.monto_total).toFixed(2)
+                    ],
+                    // Fila 2: IMPORTE BASE
+                    [
+                        '',
+                        '',
+                        '',
+                        {
+                            content: 'IMPORTE BASE',
+                            colSpan: 2, // FUSIONAMOS Col 3 y 4
+                            styles: { halign: 'right' }
+                        },
+                        parseFloat(factura.monto_total).toFixed(2)
+                    ]
                 ],
-                footStyles: { fillColor: [255, 255, 255], textColor: 0, fontStyle: 'bold', halign: 'right', lineWidth: 0.1, lineColor: [0,0,0] }
+                footStyles: {
+                    fillColor: [255, 255, 255],
+                    textColor: 0,
+                    fontStyle: 'bold',
+                    halign: 'right',
+                },
+                didParseCell: function (data) {
+                    if (data.section === 'foot') {
+                        // AHORA el límite es 3, porque la celda de texto empieza en la columna 3
+                        if (data.column.index < 3) {
+                            data.cell.styles.lineWidth = 0;
+                            data.cell.styles.fillColor = null;
+                        } else {
+                            data.cell.styles.lineWidth = 0.1;
+                            data.cell.styles.lineColor = [0, 0, 0];
+                        }
+                    }
+                }
             });
 
             let finalY = doc.lastAutoTable.finalY + 10;
 
+
             // ==========================================
             // 5. LITERAL Y PIE
             // ==========================================
-            
+
+            // ==========================================
+            // 5. LITERAL Y PIE
+            // ==========================================
+
+            // --- 5.1. LITERAL ---
             doc.setFontSize(fontSizeStandard);
             doc.setFont('helvetica', 'bold');
-            doc.text("Son:", marginL, finalY);
-            doc.setFont('helvetica', 'normal');
             const literal = numeroALetras(factura.monto_total);
-            doc.text(literal, marginL + 10, finalY);
+            doc.text(`Son: ${literal}`, marginL, finalY);
 
-            finalY += 10;
-            
-            doc.setFontSize(6);
+            // --- 5.2. LEYENDAS Y QR (ALINEACIÓN VERTICAL PERFECTA) ---
+
+            // Definimos Y base donde empieza el bloque del QR
+            let yFooter = finalY + 10;
+
+            // 1. CONFIGURACIÓN DEL QR
+            const qrSize = 32;
+            const xQR = pageWidth - 15 - qrSize; // Pegado a la derecha
+
+            // 2. PREPARACIÓN DEL TEXTO
+            const paddingQR = 5;
+            const anchoTextoPie = xQR - marginL - paddingQR;
+            const xCentroTexto = marginL + (anchoTextoPie / 2);
+
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+
+            // Dividimos el texto en líneas
             const leyenda1 = '"ESTA FACTURA CONTRIBUYE AL DESARROLLO DEL PAÍS, EL USO ILÍCITO DE ÉSTA SERÁ SANCIONADO DE ACUERDO A LEY"';
-            const leyenda2 = 'Ley N° 453: Tienes derecho a recibir información sobre las características y contenidos de los servicios que utilices.';
-            
-            doc.text(leyenda1, marginL, finalY + 10, { maxWidth: 120 });
-            doc.text(leyenda2, marginL, finalY + 14, { maxWidth: 120 });
+            const linesLeyenda1 = doc.splitTextToSize(leyenda1, anchoTextoPie);
 
-            const qrSize = 30;
+            const leyenda2 = 'Ley N° 453: Tienes derecho a recibir información sobre las características y contenidos de los servicios que utilices.';
+            const linesLeyenda2 = doc.splitTextToSize(leyenda2, anchoTextoPie);
+
+            // 3. CÁLCULO DE ALTURAS PARA CENTRADO VERTICAL
+            // jsPDF con tamaño 8 usa aprox 3.5mm por línea de altura (lineHeight)
+            const lineHeight = 3.5;
+            const gapEntreLeyendas = 2; // Espacio entre los dos bloques de texto
+
+            const altoBloque1 = linesLeyenda1.length * lineHeight;
+            const altoBloque2 = linesLeyenda2.length * lineHeight;
+            const alturaTotalTexto = altoBloque1 + gapEntreLeyendas + altoBloque2;
+
+            // FÓRMULA MÁGICA: (AltoQR - AltoTexto) / 2
+            // Esto nos da el margen superior exacto para centrar el texto respecto al QR
+            const margenSuperiorTexto = (qrSize - alturaTotalTexto) / 2;
+
+            // Ajustamos +3 extra para compensar la línea base de la fuente (la letra se escribe hacia arriba)
+            let yTexto = yFooter + margenSuperiorTexto + 3;
+
+
+            // 4. DIBUJADO FINAL
+
+            // Dibujamos el QR
             const qrData = `${factura.cuf}|${factura.numero_factura}|${factura.monto_total}|${fechaFormateada}`;
             const qrDataUrl = await QRCode.toDataURL(qrData);
-            doc.addImage(qrDataUrl, 'PNG', marginR - qrSize, finalY, qrSize, qrSize); 
+            doc.addImage(qrDataUrl, 'PNG', xQR, yFooter, qrSize, qrSize);
 
+            // Dibujamos Leyenda 1
+            doc.text(linesLeyenda1, xCentroTexto, yTexto, { align: 'center' });
+
+            // Dibujamos Leyenda 2 (calculamos su posición basándonos en la 1)
+            doc.text(linesLeyenda2, xCentroTexto, yTexto + altoBloque1 + gapEntreLeyendas, { align: 'center' });
+
+            // Guardar
             doc.save(`Factura_${factura.numero_factura}.pdf`);
 
         } catch (error) {
@@ -300,16 +401,16 @@ const HistorialVentas = () => {
                                     <td>{f.cliente?.nit_ci}</td>
                                     <td>{parseFloat(f.monto_total).toFixed(2)}</td>
                                     <td>
-                                        <span style={{ 
+                                        <span style={{
                                             color: f.estado === 'VALIDA' ? 'green' : 'red',
-                                            fontWeight: 'bold' 
+                                            fontWeight: 'bold'
                                         }}>
                                             {f.estado}
                                         </span>
                                     </td>
                                     <td>
-                                        <button 
-                                            className="btn btn-primary" 
+                                        <button
+                                            className="btn btn-primary"
                                             style={{ padding: '5px 10px', fontSize: '12px', width: 'auto' }}
                                             onClick={() => generarFacturaPDF(f)}
                                         >

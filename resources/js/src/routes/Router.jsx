@@ -24,6 +24,7 @@ import VerCompra from '../components/inventarios/VerCompra'
 import Factura from '../components/Factura'
 import Ventas from '../components/Ventas'
 import HistorialVentas from '../components/HistorialVentas'
+import Kardex from '../components/Kardex'
 
 
 export default function Router() {
@@ -217,7 +218,7 @@ export default function Router() {
           } />
         )}
 
-        
+
         {permisos.includes("/dashboard/historial-ventas") && (
           <Route path="historial-ventas" element={
             <PrivateRoute
@@ -226,6 +227,18 @@ export default function Router() {
               allowedPermisos={["/dashboard/historial-ventas"]}
             >
               <HistorialVentas />
+            </PrivateRoute>
+          } />
+        )}
+
+        {permisos.includes("/dashboard/kardex") && (
+          <Route path="kardex" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/dashboard/kardex"]}
+            >
+              <Kardex />
             </PrivateRoute>
           } />
         )}

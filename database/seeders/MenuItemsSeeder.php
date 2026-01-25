@@ -156,6 +156,13 @@ class MenuItemsSeeder extends Seeder
             'nivel' => 3,
             'orden' => 2,
         ]);
+        MenuItem::create([
+            'item' => 'Kardex Físico - Valorado',
+            'ruta' => '/dashboard/kardex',
+            'id_padre' => $ventasfacturacion->id,
+            'nivel' => 3,
+            'orden' => 3,
+        ]);
 
 
     }
