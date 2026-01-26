@@ -30,10 +30,16 @@ use App\Http\Controllers\Crud\SucursalCrudController;
 use App\Http\Controllers\Crud\LogoCrudController;
 
 use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\CatalogoMedicosController;
+
+use App\Http\Controllers\MedicoController;
+use App\Http\Controllers\EspecialidadController;
+    
 
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\CompraController;
+use Illuminate\Support\Facades\DB;
 
 Route::post('/personas', [PersonaCrudController::class, 'store']);
 
@@ -222,6 +228,15 @@ Route::middleware([
     Route::post('/facturas', [FacturaController::class, 'store']);
     // Si quieres listar ventas también:
     Route::get('/facturas', [FacturaController::class, 'index']);
+
+    // Médicos
+    Route::get('/medicos', [MedicoController::class, 'index']);
+    Route::post('/medicos', [MedicoController::class, 'store']);
+    Route::put('/medicos/{id}', [MedicoController::class, 'update']);
+    Route::delete('/medicos/{id}', [MedicoController::class, 'destroy']);
+
+    // Especialidades
+    Route::get('/especialidades', [EspecialidadController::class, 'index']);
 
 
     Route::get('/clientes/buscar/{nit}', [FacturaController::class, 'buscarCliente']);

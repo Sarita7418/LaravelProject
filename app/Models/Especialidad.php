@@ -6,15 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Especialidad extends Model
 {
-    protected $table = 'especialidades';
+    protected $table = 'especialidades_medicas';
     
-    protected $fillable = [
-        'nombre'
-    ];
-    
-    // Relaciones
-    public function protocolos()
+    protected $fillable = ['nombre'];
+
+    public function medicos()
     {
-        return $this->hasMany(Protocolo::class, 'id_especialidad');
+        return $this->hasMany(Medico::class, 'id_especialidad');
     }
 }

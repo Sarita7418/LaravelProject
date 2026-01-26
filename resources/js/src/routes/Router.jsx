@@ -22,6 +22,7 @@ import Compras from '../components/inventarios/Compras'
 import CrearCompra from '../components/inventarios/CrearCompra'
 import VerCompra from '../components/inventarios/VerCompra'
 import Factura from '../components/Factura'
+import CatalogoMedicos from '../components/CatalogoMedicos'
 import Ventas from '../components/Ventas'
 import HistorialVentas from '../components/HistorialVentas'
 
@@ -156,6 +157,18 @@ export default function Router() {
             </PrivateRoute>
           } />
         )}
+
+        {permisos.includes("/dashboard/catalogo-medicos") && (
+          <Route path="catalogo-medicos" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/dashboard/catalogo-medicos"]}
+            >
+              <CatalogoMedicos />
+            </PrivateRoute>
+          } />
+        )}  
 
         {permisos.includes("/dashboard/empresas") && (
           <Route path="empresas" element={

@@ -22,7 +22,8 @@ class MenuItemRolSeeder extends Seeder
         $reportes = MenuItem::where('ruta', '/dashboard/reportes')->first();
         $comprobantes = MenuItem::where('ruta', '/dashboard/comprobantes')->first();
         $facturas = MenuItem::where('ruta', '/dashboard/facturas')->first();
-        
+        $catalogoMedicos = MenuItem::where('item', 'Catálogo de Médicos')->first();
+
         $inventarios = MenuItem::where('item', 'Inventarios')->first();
         $compras = MenuItem::where('ruta', '/dashboard/compras')->first();
 
@@ -35,7 +36,7 @@ class MenuItemRolSeeder extends Seeder
             $administracion, $usuarios, $roles, $personas, $protocolos, 
             $sucursales, $empresas, $reportes, $comprobantes,
             $planCuentas, $planPresupuestarios,
-            $inventarios, $compras, $facturas, $ventas, $historialVentas, $ventasfacturacion
+            $inventarios, $compras, $facturas, $catalogoMedicos, $ventas, $historialVentas, $ventasfacturacion
         ] as $menuItem) {
             if ($menuItem) {
                 MenuItemRol::create([
