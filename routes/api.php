@@ -37,6 +37,7 @@ use App\Http\Controllers\CompraController;
 use App\Http\Controllers\KardexController;
 
 use App\Http\Controllers\MedicamentoLinameController;
+use App\Http\Controllers\StockController;
 
 Route::post('/personas', [PersonaCrudController::class, 'store']);
 
@@ -243,7 +244,7 @@ Route::middleware([
     Route::get('/productos/categorias', [ProductoController::class, 'getCategorias'])->middleware('auth:sanctum');
     Route::get('/productos/unidades', [ProductoController::class, 'getUnidades'])->middleware('auth:sanctum');
     Route::get('/productos/estados', [ProductoController::class, 'getEstados'])->middleware('auth:sanctum');
-
+    Route::get('/stock-actual', [StockController::class, 'getStockActual']);
     
     Route::post('/facturas', [FacturaController::class, 'store']);
     // Si quieres listar ventas también:
