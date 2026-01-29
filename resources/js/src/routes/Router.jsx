@@ -25,6 +25,7 @@ import Factura from '../components/Factura'
 import Ventas from '../components/Ventas'
 import HistorialVentas from '../components/HistorialVentas'
 import Kardex from '../components/Kardex'
+import StockActual from '../components/StockActual'
 
 
 export default function Router() {
@@ -239,6 +240,18 @@ export default function Router() {
               allowedPermisos={["/dashboard/kardex"]}
             >
               <Kardex />
+            </PrivateRoute>
+          } />
+        )}
+
+        {permisos.includes("/dashboard/stock-actual") && (
+          <Route path="stock-actual" element={
+            <PrivateRoute
+              isAuthenticated={isAuthenticated}
+              userPermisos={permisos}
+              allowedPermisos={["/dashboard/stock-actual"]}
+            >
+              <StockActual />
             </PrivateRoute>
           } />
         )}

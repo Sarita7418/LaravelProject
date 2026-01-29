@@ -5,6 +5,7 @@ use App\Models\StockActual;
 use App\Models\Producto;
 use App\Models\Subdominio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StockController extends Controller
 {
