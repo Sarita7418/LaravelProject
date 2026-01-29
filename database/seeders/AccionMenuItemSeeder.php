@@ -25,6 +25,7 @@ class AccionMenuItemSeeder extends Seeder
             '/dashboard/ventas',
             '/dashboard/historial-ventas',
             '/dashboard/kardex',
+            '/dashboard/stock-actual',
         ];
 
         $menus = MenuItem::whereIn('ruta', $rutas)->get();

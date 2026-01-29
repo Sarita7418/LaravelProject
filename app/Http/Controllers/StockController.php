@@ -5,6 +5,7 @@ use App\Models\StockActual;
 use App\Models\Producto;
 use App\Models\Subdominio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StockController extends Controller
 {
@@ -197,4 +198,26 @@ class StockController extends Controller
         
         return response()->json(['success' => true, 'data' => $stock]);
     }
+
+    public function getStockActual()
+    {
+        // Hacemos JOIN para combinar la info del producto con su cantidad real
+        $inventario = DB::table('stock_actual')
+            ->join('productos', 'stock_actual.id_producto', '=', 'productos.id')
+            ->select(
+                // IMPORTANTE: Seleccionamos 'productos.id' como el ID principal para la lista
+                'productos.id', 
+                'productos.nombre',
+                'productos.codigo_interno',
+                'productos.precio_salida',
+                'productos.stock_minimo',
+                // Traemos la cantidad desde la tabla de stock
+                'stock_actual.cantidad',
+                'stock_actual.updated_at' 
+            )
+            ->get();
+
+        return response()->json($inventario);
+    }
+
 }

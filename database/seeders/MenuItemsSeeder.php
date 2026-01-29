@@ -132,6 +132,14 @@ class MenuItemsSeeder extends Seeder
             'orden' => 1,
         ]);
 
+        MenuItem::create([
+            'item' => 'Stock Actual',
+            'ruta' => '/dashboard/stock-actual',
+            'id_padre' => $inventarios->id,
+            'nivel' => 3,
+            'orden' => 2,
+        ]);
+
 
         
         $ventasfacturacion = MenuItem::create([
